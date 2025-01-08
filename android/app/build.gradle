@@ -1,5 +1,8 @@
 plugins {
     id "com.android.application"
+    // START: FlutterFire Configuration
+    id 'com.google.gms.google-services'
+    // END: FlutterFire Configuration
     id "kotlin-android"
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id "dev.flutter.flutter-gradle-plugin"
@@ -30,9 +33,9 @@ android {
         versionName = flutter.versionName
 
         //optional
-        ndk {
-            abiFilters "armeabi-v7a", "arm64-v8a" // Remove x86 and x86_64 for debug builds
-        }
+//        ndk {
+//            abiFilters "armeabi-v7a", "arm64-v8a" // Remove x86 and x86_64 for debug builds
+//        }
     }
 
     buildTypes {
@@ -43,11 +46,11 @@ android {
         }
 
         //        optional
-        debug {
-            minifyEnabled true // Enable shrinking
-            shrinkResources true // Enable resource shrinking
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
+//        debug {
+//            minifyEnabled true // Enable shrinking
+//            shrinkResources true // Enable resource shrinking
+//            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+//        }
     }
 }
 

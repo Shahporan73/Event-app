@@ -3,7 +3,7 @@
 import 'package:event_app/res/app_images/App_images.dart';
 import 'package:event_app/res/common_widget/RoundTextField.dart';
 import 'package:event_app/res/custom_style/custom_size.dart';
-import 'package:event_app/view/create_event_view/view/user_profile_screen.dart';
+import 'package:event_app/view/profile_view/view/user_profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -57,8 +57,8 @@ class SeeAllMemeberScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(30.r),
                           child: Image.network(
                             'https://t4.ftcdn.net/jpg/03/64/21/11/360_F_364211147_1qgLVxv1Tcq0Ohz3FawUfrtONzz8nq3e.jpg',
-                            width: 40.w,
-                            height: 40.h,
+                            width: 40,
+                            height: 40,
                             fit: BoxFit.cover,
                           ),
                         ),

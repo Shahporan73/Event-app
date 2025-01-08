@@ -1,26 +1,51 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, sort_child_properties_last
 
+import 'dart:math';
+
+import 'package:event_app/data/services/socket_controller.dart';
+import 'package:event_app/data/token_manager/const_veriable.dart';
+import 'package:event_app/data/token_manager/local_storage.dart';
 import 'package:event_app/res/common_widget/custom_network_image_widget.dart';
 import 'package:event_app/res/custom_style/custom_size.dart';
-import 'package:event_app/view/message_view/view/see_all_memeber_screen.dart';
+import 'package:event_app/view/message_view/controller/media_controller.dart';
+import 'package:event_app/view/message_view/controller/upload_image_controller.dart';
+import 'package:event_app/view/message_view/model/chat_list_model.dart';
+import 'package:event_app/view/message_view/view/see_all_media_screen.dart';
+import 'package:event_app/view/message_view/widget/see_all_user_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../res/app_colors/App_Colors.dart';
 
 class CommunityDetailsScreen extends StatefulWidget {
-  const CommunityDetailsScreen({super.key});
+  final String communityName;
+  final List<Participant> members;
+  final String communityImage;
+  final String communityId;
+  final bool isCommunityOwner;
+  CommunityDetailsScreen({
+    super.key,
+    required this.communityName,
+    required this.members,
+    required this.communityImage,
+    required this.communityId,
+    this.isCommunityOwner = false,
+  });
 
   @override
   State<CommunityDetailsScreen> createState() => _CommunityDetailsScreenState();
 }
 
 class _CommunityDetailsScreenState extends State<CommunityDetailsScreen> {
-  String groupName = "Bachata Restaurant"; // Initial name
+  String groupName = ''; // Initial name
   final TextEditingController _nameController = TextEditingController();
   bool isChecked = false;
+  final UploadImageController uploadImageController = Get.put(UploadImageController());
+  final SocketService socketService = Get.find<SocketService>();
+  final MediaController mediaController = Get.put(MediaController());
 
   @override
   Widget build(BuildContext context) {
@@ -40,32 +65,38 @@ class _CommunityDetailsScreenState extends State<CommunityDetailsScreen> {
               // =========== group top section
               Column(
                 children: [
+
                   // Group Avatar Section with Edit Icon
                   Center(
                     child: Stack(
                       children: [
                         GestureDetector(
-                          // onTap: () => showImageDialog(context, imageUrl),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(100.r),
+                          child: Obx(() => ClipRRect(
+                            borderRadius: BorderRadius.circular(100),
                             child: CustomNetworkImage(
-                              imageUrl: "https://t3.ftcdn.net/jpg/02/43/12/34/360_F_243123463_zTooub557xEWABDLk0jJklDyLSGl2jrr.jpg",
-                              width: 180.w,
-                              height: 180.h,
+                              imageUrl: uploadImageController.communityUpdateImageUrl.value.isNotEmpty ?
+                              uploadImageController.communityUpdateImageUrl.value :
+                              widget.communityImage.isNotEmpty ? widget.communityImage : placeholderImage,
+                              width: 180,
+                              height: 180,
                             ),
-                          ),
+                          ),),
                         ),
-                        Positioned(
+                        widget.isCommunityOwner==false ? SizedBox(): Positioned(
                           bottom: 6,
                           right: 15,
                           child: GestureDetector(
                             onTap: () async {
-                              _showImagePickerDialog(context);
+                              await uploadImageController.pickCommunityImage(context);
+                              await socketService.updateCommunityPicture(
+                                    communityId: widget.communityId,
+                                    picture: uploadImageController.communityUpdateImageUrl.value,
+                                  );
                             },
                             child: Container(
                               alignment: Alignment.center,
-                              width: 34.w,
-                              height: 34.h,
+                              width: 34,
+                              height: 34,
                               decoration: BoxDecoration(
                                 color: AppColors.whiteColor,
                                 borderRadius: BorderRadius.only(
@@ -77,7 +108,7 @@ class _CommunityDetailsScreenState extends State<CommunityDetailsScreen> {
                               child: Icon(
                                 Icons.camera_alt_outlined,
                                 color: AppColors.blackColor,
-                                size: 28.w.h,
+                                size: 28,
                               ),
                             ),
                           ),
@@ -86,13 +117,16 @@ class _CommunityDetailsScreenState extends State<CommunityDetailsScreen> {
                     ),
                   ),
 
+
+
+
                   // Group Name and Edit Icon
                   heightBox20,
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        groupName,
+                        groupName.isNotEmpty ? groupName : widget.communityName ?? "N/A",
                         style: GoogleFonts.roboto(
                           fontSize: 20.sp,
                           fontWeight: FontWeight.w600,
@@ -100,9 +134,11 @@ class _CommunityDetailsScreenState extends State<CommunityDetailsScreen> {
                         ),
                       ),
                       SizedBox(width: 10),
-                      GestureDetector(
+                      widget.isCommunityOwner==false ?
+                      SizedBox(): GestureDetector(
                         onTap: () {
                           _showChangeNameDialog(context);
+
                         },
                         child: Icon(Icons.edit, size: 24), // Edit icon
                       ),
@@ -110,9 +146,9 @@ class _CommunityDetailsScreenState extends State<CommunityDetailsScreen> {
                   ),
                   SizedBox(height: 10),
                   Text(
-                    "10 Members",
+                    "${widget.members.length ?? 0} Members",
                     style: GoogleFonts.roboto(
-                      fontSize: 18.sp,
+                      fontSize: 18,
                       fontWeight: FontWeight.w400,
                       color: Colors.black,
                     ),
@@ -124,10 +160,13 @@ class _CommunityDetailsScreenState extends State<CommunityDetailsScreen> {
               SizedBox(height: 20),
               GestureDetector(
                 onTap: () {
-                  Get.to(() => SeeAllMemeberScreen(),
+                  /*Get.to(() => SeeAllMemeberScreen(),
                       transition: Transition.rightToLeft,
                       duration: Duration(milliseconds: 500)
-                  );
+                  );*/
+
+                  showSeeAllUserDialog(context, widget.members);
+
                 },
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 30, vertical: 8),
@@ -145,13 +184,13 @@ class _CommunityDetailsScreenState extends State<CommunityDetailsScreen> {
                             height: 50,
                             child: Row(
                               children: List.generate(
-                                3,
+                                min(3, widget.members.length),
                                     (index) => Align(
                                   widthFactor: 0.3,
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(30),
                                     child: Image.network(
-                                      'https://t3.ftcdn.net/jpg/02/43/12/34/360_F_243123463_zTooub557xEWABDLk0jJklDyLSGl2jrr.jpg', // Replace with actual URLs
+                                      widget.members[index].user?.profilePicture ?? placeholderImage, // Replace with actual URLs
                                       height: 40,
                                       width: 40,
                                       fit: BoxFit.cover,
@@ -163,9 +202,9 @@ class _CommunityDetailsScreenState extends State<CommunityDetailsScreen> {
                           ),
                           SizedBox(width: 10),
                           Text(
-                            "See all members",
+                            widget.members.isEmpty? "No members" : "See all members",
                             style: GoogleFonts.urbanist(
-                              fontSize: 20.sp,
+                              fontSize: 14,
                               fontWeight: FontWeight.w600,
                               color: Colors.white,
                             ),
@@ -188,33 +227,42 @@ class _CommunityDetailsScreenState extends State<CommunityDetailsScreen> {
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text("Media, Links & Documents",
+                        Text("See all media",
                             style: GoogleFonts.poppins(
                                 fontWeight: FontWeight.w500,
-                              fontSize: 14.sp,
+                              fontSize: 12,
                               color: AppColors.black100
                             ),
                         ),
-                        Text("152",  style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 14.sp,
-                            color: AppColors.primaryColor
+                        Obx(() => mediaController.isLoading.value
+                            ? SpinKitThreeBounce(color: AppColors.primaryColor, size: 8,) :
+                        Text("${mediaController.imageList.length + mediaController.videoList.length}",
+                          style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 12,
+                              color: AppColors.primaryColor
                           ),
-                        ),
+                        ),),
                       ],
                     ),
                     onTap: () {
                       // Action for media links
+                      // LocalStorage.saveData(key: 'mediaCommunityId', data: widget.communityId);
+                      Get.to(
+                        () => SeeAllMediaScreen(),
+                      );
                     },
                   ),
 
-                  ListTile(
-                    leading: Icon(Icons.notifications_off, size: 24.sp),
+
+                  // Mute Notification
+                  /*ListTile(
+                    leading: Icon(Icons.notifications_off, size: 24),
                     title: Text(
                       "Mute Notification",
                       style: GoogleFonts.poppins(
                         fontWeight: FontWeight.w500,
-                        fontSize: 14.sp,
+                        fontSize: 12,
                         color: AppColors.black100,
                       ),
                     ),
@@ -227,18 +275,22 @@ class _CommunityDetailsScreenState extends State<CommunityDetailsScreen> {
                         });
                       },
                     ),
-                  ),
+                  ),*/
+
+
                   ListTile(
-                    leading: Icon(Icons.logout, size: 24.sp, color: Colors.red),
+                    leading: Icon(Icons.logout, size: 24, color: Colors.red),
                     title: Text("Leave Community", style: GoogleFonts.poppins(
                         fontWeight: FontWeight.w500,
-                        fontSize: 14.sp,
+                        fontSize: 12,
                         color: AppColors.black100
                     ),),
                     onTap: () {
                       _showLeaveGroupDialog(context);
                     },
                   ),
+
+
                 ],
               ),
             ],
@@ -248,38 +300,8 @@ class _CommunityDetailsScreenState extends State<CommunityDetailsScreen> {
     );
   }
 
-
-  Future<void> _showImagePickerDialog(BuildContext context) async {
-    return showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Select an image'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: Icon(Icons.photo_library),
-              title: Text('Gallery'),
-              onTap: () {
-                // Add logic for selecting an image from the gallery
-                Navigator.of(context).pop();
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.camera_alt),
-              title: Text('Camera'),
-              onTap: () {
-                // Add logic for taking a new image with the camera
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   void _showChangeNameDialog(BuildContext context) {
+    groupName = widget.communityName;
     _nameController.text = groupName;
     showDialog(
       context: context,
@@ -299,10 +321,20 @@ class _CommunityDetailsScreenState extends State<CommunityDetailsScreen> {
             ),
             ElevatedButton(
               onPressed: () {
+                socketService.updateCommunityName(communityId: widget.communityId, communityName: _nameController.text);
                 setState(() {
                   groupName = _nameController.text;
                 });
+
                 Navigator.of(context).pop();
+                // Navigate back two screens
+                if (Navigator.of(context).canPop()) {
+                  Navigator.of(context).pop(); // Go back one screen
+                }
+                if (Navigator.of(context).canPop()) {
+                  Navigator.of(context).pop(); // Go back the second screen
+                }
+
               },
               child: Text("Save"),
             ),
@@ -327,6 +359,16 @@ class _CommunityDetailsScreenState extends State<CommunityDetailsScreen> {
             onPressed: () {
               // Logic for leaving the group
               Navigator.of(context).pop();
+              socketService.LeaveCommunity(communityId: widget.communityId);
+
+              // Navigate back two screens
+              if (Navigator.of(context).canPop()) {
+                Navigator.of(context).pop(); // Go back one screen
+              }
+              if (Navigator.of(context).canPop()) {
+                Navigator.of(context).pop(); // Go back the second screen
+              }
+
             },
             child: Text("Leave", style: TextStyle(color: Colors.white)),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
@@ -335,4 +377,5 @@ class _CommunityDetailsScreenState extends State<CommunityDetailsScreen> {
       ),
     );
   }
+
 }

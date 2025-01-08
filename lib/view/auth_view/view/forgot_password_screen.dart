@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:event_app/res/common_widget/RoundTextField.dart';
+import 'package:event_app/view/auth_view/controller/forgot_password_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -14,7 +15,8 @@ import '../../../res/custom_style/custom_size.dart';
 import 'otp_screen.dart';
 
 class ForgotPasswordScreen extends StatelessWidget {
-  const ForgotPasswordScreen({super.key});
+  ForgotPasswordScreen({super.key});
+  final ForgotPasswordController controller = Get.put(ForgotPasswordController());
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +73,8 @@ class ForgotPasswordScreen extends StatelessWidget {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 5.0),
                             child: RoundTextField(
-                              hint: 'example@gmail.com',
+                              controller: controller.emailController,
+                              hint: 'Enter email address',
                               fillColor: Colors.white,
                               filled: true,
                               prefixIcon: Icon(Icons.email_outlined),
@@ -80,15 +83,13 @@ class ForgotPasswordScreen extends StatelessWidget {
                           50.heightBox,
                           Padding(
                             padding: EdgeInsets.symmetric(horizontal: 5.w),
-                            child: Roundbutton(
+                            child: Obx(() => Roundbutton(
                               title: "get_otp".tr,
+                              isLoading: controller.isLoading.value,
                               onTap: () {
-                                Get.to(
-                                      () => OtpScreen(),
-                                  transition: Transition.rightToLeft,
-                                  duration: const Duration(milliseconds: 500),
-                                );
-                              },
+                                controller.forgotPassword();
+                               },
+                              ),
                             ),
                           ),
                         ],

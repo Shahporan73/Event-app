@@ -46,7 +46,7 @@ class MyTranslations extends Translations {
       'get_otp': 'Get OTP',
       'verify_otp': 'Verify OTP',
       'email_verification': 'Email verification',
-      'please_enter_the_6_digit_code_that_was_sent_to_xyzgmailcom': 'Please enter the 6 digit code that was sent to xyz@gmail.com',
+      'please_enter_the_6_digit_code_that_was_sent_to': 'Please enter the 6 digit code that was sent to ',
       'did_not_get_the_otp': 'Did not get the OTP?',
       'resent': 'Resent',
       'create_new_password': 'Create New Password',

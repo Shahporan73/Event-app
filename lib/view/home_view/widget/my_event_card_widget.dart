@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -25,18 +27,18 @@ class MyEventCardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 280.w,
-      height: 150.h,
-      margin: EdgeInsets.only(right: 10.w),
+      width: 280,
+      height: 150,
+      margin: EdgeInsets.only(right: 10),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15.r),
+        borderRadius: BorderRadius.circular(15),
         image: DecorationImage(
           image: NetworkImage(imageUrl),
           fit: BoxFit.cover,
         ),
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(15.r),
+        borderRadius: BorderRadius.circular(15),
         child: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -51,7 +53,7 @@ class MyEventCardWidget extends StatelessWidget {
             ),
           ),
           child: Padding(
-            padding: EdgeInsets.all(12.w),
+            padding: EdgeInsets.all(12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.end,
@@ -60,11 +62,11 @@ class MyEventCardWidget extends StatelessWidget {
                   title,
                   style: GoogleFonts.poppins(
                     color: Colors.white,
-                    fontSize: 14.sp,
+                    fontSize: 14,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                SizedBox(height: 8.h), // Reduced spacing here
+                SizedBox(height: 8), // Reduced spacing here
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -73,24 +75,26 @@ class MyEventCardWidget extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                rating.toString(),
+                                '${rating.toStringAsFixed(1)}',
                                 style: GoogleFonts.poppins(
                                   color: Colors.orange,
-                                  fontSize: 12.sp,
+                                  fontSize: 12,
                                   fontWeight: FontWeight.w400,
                                 ),
                               ),
-                              SizedBox(width: 3.w), // Reduced spacing here
+                              SizedBox(width: 3), // Reduced spacing here
                               RatingBarIndicator(
-                                rating: rating,
+                                rating: (rating).toDouble(),
                                 itemBuilder: (context, index) => Icon(
                                   Icons.star,
                                   color: Colors.orange,
                                 ),
+                                unratedColor: Colors.grey,
                                 itemCount: 5,
-                                itemSize: 12.sp, // Reduced item size
+                                itemSize: 12, // Reduced item size
                                 direction: Axis.horizontal,
                               ),
                               SizedBox(width: 3.w),
