@@ -1,13 +1,19 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'dart:io';
+
 import 'package:dotted_border/dotted_border.dart';
 import 'package:event_app/res/app_colors/App_Colors.dart';
 import 'package:event_app/res/common_widget/RoundButton.dart';
 import 'package:event_app/res/common_widget/custom_app_bar.dart';
 import 'package:event_app/res/common_widget/custom_dotted_widget.dart';
+import 'package:event_app/res/common_widget/custom_drop_down_widget.dart';
 import 'package:event_app/res/common_widget/custom_text.dart';
+import 'package:event_app/res/common_widget/responsive_helper.dart';
 import 'package:event_app/res/custom_style/custom_size.dart';
+import 'package:event_app/view/create_event_view/controller/create_event_by_map_controller.dart';
 import 'package:event_app/view/create_event_view/view/congratulation_screen.dart';
+import 'package:event_app/view/home_view/model/category_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -15,34 +21,16 @@ import 'package:get/get.dart';
 import 'selected_contact_screen.dart';
 
 class CreateEventByMapScreen extends StatefulWidget {
-  const CreateEventByMapScreen({super.key});
+  CreateEventByMapScreen({super.key});
 
   @override
   State<CreateEventByMapScreen> createState() => _CreateEventByMapScreenState();
 }
 
 class _CreateEventByMapScreenState extends State<CreateEventByMapScreen> {
-  // List of event categories
-  final List<String> categories = [
-    'Music',
-    'Sports',
-    'Art',
-    'Conference',
-    'Festival',
-    'Workshop',
-  ];
-
-  String? selectedCategory; // Set initial value to null
-  DateTime? selectedDate;
-
-  TimeOfDay? openTime;
-  TimeOfDay? closeTime;
-
-  bool isPublicSelected = true;
-  bool isPrivateSelected = false;
-
-  List<int> selectedContactIndices = [];
-
+  String date = '';
+  String sTime = '';
+  String eTime = '';
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
@@ -51,10 +39,10 @@ class _CreateEventByMapScreenState extends State<CreateEventByMapScreen> {
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
     );
-    if (pickedDate != null && pickedDate != selectedDate) {
-      setState(() {
-        selectedDate = pickedDate;
-      });
+    if (pickedDate != null) {
+      // Convert the selected date to ISO 8601 format
+      date = '${pickedDate.day}-${pickedDate.month}-${pickedDate.year}';
+      controller.eventSelectedDate.value = pickedDate.toIso8601String();
     }
   }
 
@@ -63,17 +51,57 @@ class _CreateEventByMapScreenState extends State<CreateEventByMapScreen> {
       context: context,
       initialTime: TimeOfDay.now(),
     );
+
     if (pickedTime != null) {
-      setState(() {
-        if (isOpening) {
-          openTime = pickedTime;
-        } else {
-          closeTime = pickedTime;
+      final now = DateTime.now();
+
+      // Combine the selected time with the current date
+      DateTime selectedDateTime = DateTime(
+        now.year,
+        now.month,
+        now.day,
+        pickedTime.hour,
+        pickedTime.minute,
+      );
+
+      // Ensure the selected time is in the future
+      if (selectedDateTime.isBefore(now)) {
+        // Adjust time to the future (add 1 hour, for example)
+        selectedDateTime = selectedDateTime.add(Duration(hours: 1));  // Adjust this as necessary
+      }
+
+      // Convert the selected time to UTC
+      String isoTime = selectedDateTime.toUtc().toIso8601String();
+
+      String formattedTime = pickedTime.format(context);
+
+      if (isOpening) {
+        // If it's opening time, store it in controller
+        sTime = formattedTime;
+        controller.eventStartTime.value = isoTime;
+      } else {
+        // If it's closing time, store it in controller
+        eTime = formattedTime;
+        controller.eventEndTime.value = isoTime;
+
+        // Ensure that the end time is after the start time
+        DateTime startTime = DateTime.parse(controller.eventStartTime.value);
+        DateTime endTime = DateTime.parse(controller.eventEndTime.value);
+
+        if (endTime.isBefore(startTime)) {
+          // Handle case where end time is before start time
+          // Adjust the end time to be 1 hour after the start time (or any suitable adjustment)
+          endTime = startTime.add(Duration(hours: 1)); // Example: add 1 hour to the end time
+          controller.eventEndTime.value = endTime.toUtc().toIso8601String();
+          eTime = endTime.toLocal().toString(); // Update the formatted end time
         }
-      });
+      }
     }
   }
 
+
+
+  final CreateEventByMapController controller = Get.put(CreateEventByMapController());
 
   @override
   Widget build(BuildContext context) {
@@ -85,313 +113,322 @@ class _CreateEventByMapScreenState extends State<CreateEventByMapScreen> {
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // appbar
-                CustomAppBar(
-                  appBarName: "Create Event",
-                  onTap: () {
-                    Get.back();
-                  },
-                ),
-                heightBox20,
-                CustomDottedWidget(
-                  containerHeight: 120,
-                  centerWidget: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.add,
-                        color: AppColors.primaryColor,
+            child: Obx(
+              () => Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // appbar
+                  CustomAppBar(
+                    appBarName: "Create Event",
+                    onTap: () {
+                      Get.back();
+                    },
+                  ),
+                  heightBox20,
+                  controller.imgUrl.isEmpty? CustomDottedWidget(
+                    containerHeight: 120,
+                    centerWidget: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.add,
+                          color: AppColors.primaryColor,
+                        ),
+                        heightBox5,
+                        CustomText(
+                          title: "Upload Banner",
+                          color: AppColors.primaryColor,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ],
+                    ),
+                    onTap: () async {
+                      await controller.pickImage();
+                    },
+                  ): GestureDetector(
+                    onTap: () async {
+                      await controller.pickImage();
+                    },
+                    child: Image.file(
+                      File(controller.imgUrl.value),  // If it's a local image
+                      fit: BoxFit.cover,
+                      scale: 1.0,
+                      alignment: Alignment.center,
+                      width: width,
+                      height: ResponsiveHelper.h(context, 120),
+                    ),
+                  ),
+
+                  // Event name field
+                  heightBox20,
+                  CustomText(
+                    title: "Event name",
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
+                    color: AppColors.black33,
+                  ),
+                  heightBox8,
+                  TextField(
+                    controller: controller.eventNameController,
+                    decoration: InputDecoration(
+                      hintText: 'Enter event name',
+                      hintStyle: TextStyle(color: Colors.grey, fontSize: 14.sp),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.r),
                       ),
-                      heightBox5,
-                      CustomText(
-                        title: "Upload Banner",
-                        color: AppColors.primaryColor,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
+                    ),
+                    keyboardType: TextInputType.emailAddress,
+                  ),
+
+                  // Event address field
+                  heightBox20,
+                  CustomText(
+                    title: "Address",
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
+                    color: AppColors.black33,
+                  ),
+                  heightBox8,
+                  TextField(
+                    controller: controller.eventAddressController.value,
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(
+                        Icons.location_on_outlined,
+                        color: Colors.grey,
+                      ),
+                      hintText: 'Enter address',
+                      hintStyle: TextStyle(color: Colors.grey, fontSize: 14.sp),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                    ),
+                    keyboardType: TextInputType.emailAddress,
+                  ),
+
+                  // Event Type section
+                  heightBox20,
+                  CustomText(
+                    title: "Event Type",
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
+                    color: AppColors.black33,
+                  ),
+                  heightBox8,
+                  Row(
+                children: [
+                  Expanded(
+                    child: Roundbutton(
+                      buttonColor: controller.eventType.value == 'PUBLIC'
+                          ? AppColors.primaryColor
+                          : AppColors.whiteColor,
+                      borderRadius: 8,
+                      titleColor:
+                      controller.eventType.value == 'PUBLIC'
+                          ? Colors.white
+                          : Colors.black,
+                      title: "PUBLIC",
+                      border: controller.eventType.value == 'PUBLIC'
+                          ? Border.all(color: AppColors.primaryColor, width: 1)
+                          : null,
+                      onTap: () {
+                        controller.eventType.value = 'PUBLIC';  // Select Public
+                      },
+                    ),
+                  ),
+                  widthBox10,
+                  Expanded(
+                    child: Roundbutton(
+                      buttonColor: controller.eventType.value == 'PRIVATE'
+                          ? AppColors.primaryColor
+                          : AppColors.whiteColor,
+                      borderRadius: 8,
+                      titleColor:
+                      controller.eventType.value == 'PRIVATE'
+                          ? Colors.white
+                          : Colors.black,
+                      title: "PRIVATE",
+                      border: controller.eventType.value == 'PRIVATE'
+                          ? Border.all(color: AppColors.primaryColor, width: 1)
+                          : null,
+                      onTap: () {
+                        controller.eventType.value = 'PRIVATE';  // Select Private
+                      },
+                    ),
+                  ),
+                ],
+              ),
+
+                  // Category section
+                  heightBox20,
+                  CustomText(
+                    title: "Category",
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
+                    color: AppColors.black33,
+                  ),
+                  heightBox8,
+                  CustomDropDownWidget(
+                      selectedValue: controller.selectedCatName.value,
+                      items: controller.categoryList
+                          .where((e) => e.name != null && e.name!.isNotEmpty) // Filter out null or empty names
+                          .map((e) => e.name ?? '')
+                          .toList(),
+                      onChanged: (value) {
+                        if (value != null) {
+                          print("value ====> $value");
+                          controller.selectedCatName.value = value;
+                          // You can also find the corresponding category ID based on the selected name
+                          CategoryList selectedCategory = controller.categoryList.firstWhere(
+                                (category) => category.name == value,
+                          );
+                          controller.selectedCatId.value = selectedCategory.id!;
+                          print("selectedCatId ====> ${controller.selectedCatId.value}");
+                        }
+                      },
+                      hintText: 'Select category event'
+                  ),
+
+
+
+                  // Select Date
+                  heightBox20,
+                  CustomText(
+                    title: "Select Date",
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
+                    color: AppColors.black33,
+                  ),
+                  heightBox8,
+                  TextField(
+                    readOnly: true,
+                    decoration: InputDecoration(
+                      prefixIcon: GestureDetector(
+                        onTap: () => _selectDate(context), // Open the date picker
+                        child: Icon(
+                          Icons.calendar_month_outlined,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      hintText: controller.eventSelectedDate.value.isNotEmpty
+                          ? date // Display selected date or placeholder
+                          : 'Select date',
+                      hintStyle: TextStyle(color: Colors.grey, fontSize: 14.sp),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                    ),
+                    onTap: () => _selectDate(context), // Open date picker on tap
+                  ),
+
+                  // opening time and closing time
+                  heightBox20,
+                  CustomText(
+                    title: "Select Time",
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
+                    color: AppColors.black33,
+                  ),
+                  heightBox8,
+                  Row(
+                    children: [
+                      // Open Time Field
+                      Expanded(
+                        child: TextField(
+                          readOnly: true,
+                          decoration: InputDecoration(
+                            prefixIcon: GestureDetector(
+                              onTap: () => _selectTime(context, true), // Open time picker for opening time
+                              child: Icon(
+                                Icons.access_time,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            hintText: controller.eventStartTime.value.isNotEmpty
+                                ? sTime // Display selected time or placeholder
+                                : 'Opening time',
+                            hintStyle: TextStyle(color: Colors.grey, fontSize: 14.sp),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.r),
+                            ),
+                          ),
+                          onTap: () => _selectTime(context, true), // Open time picker for opening time
+                        ),
+                      ),
+                      widthBox10,
+                      // Close Time Field
+                      Expanded(
+                        child: TextField(
+                          readOnly: true,
+                          decoration: InputDecoration(
+                            prefixIcon: GestureDetector(
+                              onTap: () => _selectTime(context, false), // Open time picker for closing time
+                              child: Icon(
+                                Icons.access_time,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            hintText: controller.eventEndTime.value.isNotEmpty
+                                ? eTime // Display selected time or placeholder
+                                : 'Closing time',
+                            hintStyle: TextStyle(color: Colors.grey, fontSize: 14.sp),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.r),
+                            ),
+                          ),
+                          onTap: () => _selectTime(context, false), // Open time picker for closing time
+                        ),
                       ),
                     ],
                   ),
-                ),
 
-                // Event name field
-                heightBox20,
-                CustomText(
-                  title: "Event name",
-                  fontWeight: FontWeight.w400,
-                  fontSize: 14,
-                  color: AppColors.black33,
-                ),
-                heightBox8,
-                TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Enter event name',
-                    hintStyle: TextStyle(color: Colors.grey, fontSize: 14.sp),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
+
+
+                  // About Event
+                  heightBox20,
+                  CustomText(
+                    title: "About Event",
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
+                    color: AppColors.black33,
                   ),
-                  keyboardType: TextInputType.emailAddress,
-                ),
-
-                // Event address field
-                heightBox20,
-                CustomText(
-                  title: "Address",
-                  fontWeight: FontWeight.w400,
-                  fontSize: 14,
-                  color: AppColors.black33,
-                ),
-                heightBox8,
-                TextField(
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(
-                      Icons.location_on_outlined,
-                      color: Colors.grey,
-                    ),
-                    hintText: '1012 Ocean avenue, New York',
-                    hintStyle: TextStyle(color: Colors.grey, fontSize: 14.sp),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
-                  ),
-                  keyboardType: TextInputType.emailAddress,
-                ),
-
-                // Event Type section
-                heightBox20,
-                CustomText(
-                  title: "Event Type",
-                  fontWeight: FontWeight.w400,
-                  fontSize: 14,
-                  color: AppColors.black33,
-                ),
-                heightBox8,
-                Row(
-                  children: [
-                    Expanded(
-                      child: Roundbutton(
-                        buttonColor: isPublicSelected
-                            ? AppColors.primaryColor
-                            : AppColors.whiteColor,
-                        borderRadius: 8,
-                        titleColor:
-                            isPublicSelected ? Colors.white : Colors.black,
-                        title: "Public",
-                        border: isPublicSelected
-                            ? Border.all(
-                                color: AppColors.primaryColor, width: 1)
-                            : null,
-                        onTap: () {
-                          setState(() {
-                            isPublicSelected = true;
-                            isPrivateSelected = false; // Deselect Private
-                          });
-                        },
+                  heightBox8,
+                  TextField(
+                    controller: controller.eventAboutController,
+                    maxLines: 3,
+                    decoration: InputDecoration(
+                      hintText: 'Type event description',
+                      hintStyle: TextStyle(color: Colors.grey, fontSize: 14.sp),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.r),
                       ),
                     ),
-                    widthBox10,
-                    Expanded(
-                      child: Roundbutton(
-                        buttonColor: isPrivateSelected
-                            ? AppColors.primaryColor
-                            : AppColors.whiteColor,
-                        borderRadius: 8,
-                        titleColor:
-                            isPrivateSelected ? Colors.white : Colors.black,
-                        title: "Private",
-                        border: isPrivateSelected
-                            ? Border.all(
-                                color: AppColors.primaryColor, width: 1)
-                            : null,
-                        onTap: () {
-                          setState(() {
-                            isPrivateSelected = true;
-                            isPublicSelected = false; // Deselect Public
-                          });
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-
-                // Category section
-                heightBox20,
-                CustomText(
-                  title: "Category",
-                  fontWeight: FontWeight.w400,
-                  fontSize: 14,
-                  color: AppColors.black33,
-                ),
-                heightBox8,
-                Container(
-                  width: width,
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8.r),
-                    border: Border.all(
-                      color: Colors.grey,
-                      width: 1,
-                    ),
+                    keyboardType: TextInputType.emailAddress,
                   ),
-                  child: DropdownButton<String>(
-                    value: selectedCategory,
-                    hint: Text(
-                      'Select category event',
-                      style: TextStyle(color: Colors.grey, fontSize: 14.sp),
-                    ),
-                    onChanged: (String? newCategory) {
-                      setState(() {
-                        selectedCategory = newCategory;
-                      });
+
+                  //   button
+
+                  heightBox20,
+                  Roundbutton(
+                    title: "Select Contact",
+                    isLoading: controller.isLoading.value,
+                    onTap: () {
+                      // await Future.delayed(Duration(seconds: 2), () async {
+                      //
+                      //
+                      // });
+
+                      print('clicked');
+                      controller.createEventByMap();
+
                     },
-                    items: categories.map((String category) {
-                      return DropdownMenuItem<String>(
-                        value: category,
-                        child: Text(category),
-                      );
-                    }).toList(),
-                    isExpanded: true,
-                    underline: SizedBox(),
                   ),
-                ),
 
+                  heightBox50,
 
-
-                // Select Date
-                heightBox20,
-                CustomText(
-                  title: "Select Date",
-                  fontWeight: FontWeight.w400,
-                  fontSize: 14,
-                  color: AppColors.black33,
-                ),
-                heightBox8,
-                TextField(
-                  readOnly: true,
-                  decoration: InputDecoration(
-                    prefixIcon: GestureDetector(
-                      onTap: () => _selectDate(context), // Open the date picker
-                      child: Icon(
-                        Icons.calendar_month_outlined,
-                        color: Colors.grey,
-                      ),
-                    ),
-                    hintText: selectedDate != null
-                        ? '${selectedDate!.day}-${selectedDate!.month}-${selectedDate!.year}'
-                        : 'Select date', // Display selected date or placeholder
-                    hintStyle: TextStyle(color: Colors.grey, fontSize: 14.sp),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
-                  ),
-                  onTap: () => _selectDate(context), // Open date picker on tap
-                ),
-
-                // opening time and closing time
-                heightBox20,
-                CustomText(
-                  title: "Select Time",
-                  fontWeight: FontWeight.w400,
-                  fontSize: 14,
-                  color: AppColors.black33,
-                ),
-                heightBox8,
-                Row(
-                  children: [
-                    // Open Time Field
-                    Expanded(
-                      child: TextField(
-                        readOnly: true,
-                        decoration: InputDecoration(
-                          prefixIcon: GestureDetector(
-                            onTap: () => _selectTime(context, true), // Open time picker
-                            child: Icon(
-                              Icons.watch_later_outlined,
-                              color: Colors.grey,
-                            ),
-                          ),
-                          hintText: openTime != null
-                              ? openTime!.format(context)
-                              : 'Open time', // Display selected time or placeholder
-                          hintStyle: TextStyle(color: Colors.grey, fontSize: 14.sp),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.r),
-                          ),
-                        ),
-                        onTap: () => _selectTime(context, true), // Open time picker on tap
-                      ),
-                    ),
-                    widthBox10,
-                    // Close Time Field
-                    Expanded(
-                      child: TextField(
-                        readOnly: true,
-                        decoration: InputDecoration(
-                          prefixIcon: GestureDetector(
-                            onTap: () => _selectTime(context, false), // Close time picker
-                            child: Icon(
-                              Icons.watch_later_outlined,
-                              color: Colors.grey,
-                            ),
-                          ),
-                          hintText: closeTime != null
-                              ? closeTime!.format(context)
-                              : 'Close time', // Display selected time or placeholder
-                          hintStyle: TextStyle(color: Colors.grey, fontSize: 14.sp),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.r),
-                          ),
-                        ),
-                        onTap: () => _selectTime(context, false), // Close time picker on tap
-                      ),
-                    ),
-                  ],
-                ),
-
-
-
-                // About Event
-                heightBox20,
-                CustomText(
-                  title: "About Event",
-                  fontWeight: FontWeight.w400,
-                  fontSize: 14,
-                  color: AppColors.black33,
-                ),
-                heightBox8,
-                TextField(
-                  maxLines: 3,
-                  decoration: InputDecoration(
-                    hintText: 'Type event description',
-                    hintStyle: TextStyle(color: Colors.grey, fontSize: 14.sp),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
-                  ),
-                  keyboardType: TextInputType.emailAddress,
-                ),
-
-              //   button
-
-                heightBox20,
-                Roundbutton(
-                  title: "Select Contact",
-                  onTap: () {
-                    Get.to(
-                      () => SelectedContactScreen(),
-                      transition: Transition.rightToLeft,
-                      duration: const Duration(milliseconds: 500),
-                    );
-                  },
-                ),
-
-                heightBox50,
-
-              ],
+                ],
+              ),
             ),
           ),
         ),

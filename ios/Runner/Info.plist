@@ -12,6 +12,10 @@
     <string>We need access to your microphone</string>
 
 
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>Your message for location permission</string>
+<key>NSLocationAlwaysUsageDescription</key>
+<string>Your message for location permission</string>
 
 
 

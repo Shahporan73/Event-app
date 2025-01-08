@@ -33,6 +33,8 @@ class AppImages {
   static String directionIcon = "assets/icons/direction-icon.png";
   static String pinLocationIcon = "assets/icons/pin_location-cion.png";
   static String switchCamera = "assets/icons/switch-camera.png";
+  static String editButton = "assets/icons/edit-button.png";
+  static String invitedListIcon = "assets/icons/invited_list_icon.png";
 
 
   // =================================bottom bar icons=============================================

@@ -1,146 +1,189 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors
 
+import 'package:event_app/data/token_manager/const_veriable.dart';
 import 'package:event_app/res/app_colors/App_Colors.dart';
 import 'package:event_app/res/common_widget/RoundButton.dart';
 import 'package:event_app/res/common_widget/RoundTextField.dart';
 import 'package:event_app/res/common_widget/custom_text.dart';
-import 'package:event_app/res/common_widget/responsive_helper.dart';
 import 'package:event_app/res/custom_style/custom_size.dart';
-import 'package:event_app/view/create_event_view/view/congratulation_screen.dart';
+import 'package:event_app/view/create_event_view/controller/selected_contact_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 class SelectedContactScreen extends StatefulWidget {
-  const SelectedContactScreen({super.key});
+  SelectedContactScreen({super.key});
 
   @override
   State<SelectedContactScreen> createState() => _SelectedContactScreenState();
 }
 
 class _SelectedContactScreenState extends State<SelectedContactScreen> {
-  List<int> selectedContactIndices = [];
+  final SelectedContactController controller = Get.put(SelectedContactController());
+  // List to store selected contact indices
+  final List<String> selectedContactIndices = [];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: AppColors.bgColor,
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                IconButton(
+          child: Obx(
+                () {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  IconButton(
                     onPressed: () => Get.back(),
-                    icon: Icon(Icons.arrow_back, color: Colors.black,),
-                ),
-                heightBox5,
-                Center(
-                  child: CustomText(
-                    title: 'RECOMMEND WAYPLACES',
-                    fontSize: 22,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.primaryColor,
+                    icon: Icon(
+                      Icons.arrow_back,
+                      color: Colors.black,
+                    ),
                   ),
-                ),
-                heightBox8,
-                CustomText(
-                  textAlign: TextAlign.center,
+                  heightBox5,
+                  Center(
+                    child: CustomText(
+                      title: 'RECOMMEND WAYPLACES',
+                      fontSize: 22,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.primaryColor,
+                    ),
+                  ),
+                  heightBox8,
+                  CustomText(
+                    textAlign: TextAlign.center,
                     title: 'Invite your friends to join and enjoy this exciting experience together.',
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                     color: AppColors.black100,
-                ),
-
-                heightBox20,
-                RoundTextField(
+                  ),
+                  heightBox20,
+                  RoundTextField(
+                    controller: controller.searchController,
                     hint: "Search Name",
                     readOnly: false,
-                  prefixIcon: Icon(Icons.search_outlined, color: Colors.grey,),
-                  borderRadius: 20,
-                  focusBorderRadius: 20,
-                ),
+                    prefixIcon: Icon(
+                      Icons.search_outlined,
+                      color: Colors.grey,
+                    ),
+                    borderRadius: 20,
+                    focusBorderRadius: 20,
+                    onChanged: (p0) {
+                      controller.searchRecommendableUsers();
+                    },
+                  ),
+                  heightBox20,
+                  Expanded(
+                    child: controller.isSearchLoading.value ?
+                    Center(child: CircularProgressIndicator()) :
+                    ListView.builder(
+                      itemCount: controller.recommendableUserList.length,
+                      shrinkWrap: true,
+                      physics: ScrollPhysics(),
+                      scrollDirection: Axis.vertical,
+                      itemBuilder: (context, index) {
+                        var data = controller.recommendableUserList[index];
+                        String userId = data.id ?? '';
 
-                heightBox20,
-                ListView.builder(
-                  itemCount: 8,
-                  shrinkWrap: true,
-                  physics: ScrollPhysics(),
-                  scrollDirection: Axis.vertical,
-                  itemBuilder: (context, index) {
-                    return CheckboxListTile(
-                      value: selectedContactIndices.contains(index),
-                      onChanged: (bool? selected) {
-                        setState(() {
-                          if (selected == true) {
-                            selectedContactIndices.add(index);
-                          } else {
-                            selectedContactIndices.remove(index);
-                          }
-                        });
+                        return controller.recommendableUserList.isEmpty
+                            ? Center(
+                          child: CustomText(
+                            title: 'No User Found',
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                            color: AppColors.blackColor,
+                          ),
+                        )
+                            : Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            // CircleAvatar
+                            CircleAvatar(
+                              radius: 20,
+                              backgroundColor: AppColors.primaryColor,
+                              backgroundImage: NetworkImage(
+                                data.profilePicture ?? placeholderImage,
+                              ),
+                            ),
+                            SizedBox(width: 10), // Space between avatar and text
+
+                            // Text
+                            Expanded(
+                              child: Text(
+                                data.name ?? 'Unavailable',
+                                style: TextStyle(
+                                  color: AppColors.blackColor,
+                                  fontSize: 18.sp,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                                overflow: TextOverflow.ellipsis, // In case name is too long
+                              ),
+                            ),
+
+                            // Checkbox (to select a user)
+                            Checkbox(
+                              value: selectedContactIndices.contains(userId),
+                              onChanged: (bool? selected) {
+                                setState(() {
+                                  if (selected == true) {
+                                    if (!selectedContactIndices.contains(userId)) {
+                                      selectedContactIndices.add(userId);
+                                    }
+                                  } else {
+                                    selectedContactIndices.remove(userId);
+                                  }
+                                });
+                                print('Selected Contact IDs: $selectedContactIndices');
+                              },
+                              activeColor: AppColors.primaryColor,
+                            ),
+                          ],
+                        );
                       },
-                      title: Text(
-                        'Istiak Ahmed',
-                        style: TextStyle(
-                          color: AppColors.blackColor,
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                      secondary: CircleAvatar(
-                        radius: 20,
-                        backgroundImage: NetworkImage(
-                            'https://www.perfocal.com/blog/content/images/2021/01/Perfocal_17-11-2019_TYWFAQ_100_standard-3.jpg'),
-                      ),
-                      activeColor: AppColors.primaryColor,
-                    );
-                  },
-                ),
-
-                heightBox20,
-                Roundbutton(
-                  title: 'Invite',
-                  buttonColor: AppColors.primaryColor,
-                  onTap: () {
-                    goToCongratulationDialog();
-                    setState(() {
-                      selectedContactIndices.clear();
-                    });
-
-                    Future.delayed(Duration(seconds: 2), () {
-                      Get.back();
-                    });
-                  },
-                ),
-                heightBox20,
-
-              ],
-            ),
+                    ),
+                  ),
+                  heightBox20,
+                  Roundbutton(
+                    title: 'Invite',
+                    isLoading: controller.isLoading.value,
+                    buttonColor: AppColors.primaryColor,
+                    onTap: () {
+                      print('Invite button pressed. Selected Contact IDs: $selectedContactIndices');
+                      if (selectedContactIndices.isEmpty) {
+                        Get.rawSnackbar(
+                          message: "No users selected for invitation.",
+                          snackPosition: SnackPosition.TOP,
+                        );
+                      } else if(selectedContactIndices.length < 2){
+                        Get.snackbar(
+                            'Alert',
+                            "At least 2 users must be selected for invitation.",
+                            backgroundColor: Colors.red,
+                            colorText: AppColors.whiteColor
+                        );
+                      }else {
+                        controller.inviteSelectedUsers(selectedContactIndices.toList()); // Pass List directly
+                        selectedContactIndices.clear();
+                      }
+                    },
+                  ),
+                  heightBox20,
+                ],
+              );
+            },
           ),
         ),
       ),
     );
   }
-
-  Future goToCongratulationDialog(){
-    Future.delayed(Duration(seconds: 2), () {});
-    return Get.dialog(
-      Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.0),
-        ),
-        backgroundColor: Colors.white,
-        child: Container(
-          height: ResponsiveHelper.h(context, 300),
-          padding: EdgeInsets.all(16.0),
-          child: CongratulationScreen(),
-        ),
-      ),
-      barrierDismissible: true,
-      barrierColor: Colors.black26,
-    );
-  }
 }
+
+

@@ -2,6 +2,7 @@
 
 import 'package:event_app/res/app_colors/App_Colors.dart';
 import 'package:event_app/res/app_images/App_images.dart';
+import 'package:event_app/res/common_widget/custom_network_image_widget.dart';
 import 'package:event_app/res/common_widget/custom_text.dart';
 import 'package:event_app/res/common_widget/responsive_helper.dart';
 import 'package:event_app/res/custom_style/custom_size.dart';
@@ -23,8 +24,7 @@ class CategoryWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 100.w,
-      padding: EdgeInsets.symmetric(vertical: 0),
+      padding: EdgeInsets.symmetric(horizontal: 5),
       decoration: BoxDecoration(
         color: isSelected ? AppColors.primaryColor : Color(0xffF2F2F3),
         borderRadius: BorderRadius.circular(10),
@@ -40,16 +40,17 @@ class CategoryWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Image.asset(
-            image,
+          CustomNetworkImage(
+            imageUrl: image,
             width: ResponsiveHelper.w(context, 24),
             height: ResponsiveHelper.h(context, 24),
-            color: isSelected ? Colors.white : Colors.black,
+            backgroundColor: isSelected ? Colors.white : Colors.black,
           ),
           SizedBox(width: 10.w),
           CustomText(
             title: title,
             fontSize: 14,
+            overflow: TextOverflow.ellipsis,
             fontWeight: FontWeight.w400,
             color: isSelected ? Colors.white : Colors.black,
           ),

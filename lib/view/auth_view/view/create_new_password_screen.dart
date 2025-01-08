@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:event_app/res/app_colors/App_Colors.dart';
+import 'package:event_app/view/auth_view/controller/reset_password_controller.dart';
 import 'package:event_app/view/auth_view/view/sign_in_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -12,16 +13,10 @@ import '../../../res/common_widget/RoundButton.dart';
 import '../../../res/common_widget/custom_app_bar.dart';
 import '../../../res/custom_style/custom_size.dart';
 
-class CreateNewPasswordScreen extends StatefulWidget {
-  const CreateNewPasswordScreen({super.key});
+class CreateNewPasswordScreen extends StatelessWidget {
+  CreateNewPasswordScreen({super.key});
 
-  @override
-  State<CreateNewPasswordScreen> createState() => _CreateNewPasswordScreenState();
-}
-
-class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
-  bool _isNewPasswordVisible = false;
-  bool _isConfirmPasswordVisible = false;
+  final ResetPasswordController controller = Get.put(ResetPasswordController());
 
   @override
   Widget build(BuildContext context) {
@@ -68,16 +63,15 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                 heightBox30,
                 // New password field
                 TextField(
+                  controller: controller.newPasswordController,
                   decoration: InputDecoration(
                     prefixIcon: Icon(Icons.lock),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _isNewPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                        controller.isNewPasswordVisible.value ? Icons.visibility : Icons.visibility_off,
                       ),
                       onPressed: () {
-                        setState(() {
-                          _isNewPasswordVisible = !_isNewPasswordVisible;
-                        });
+                        controller.toggleNewPasswordVisibility();
                       },
                     ),
                     labelText: 'new_password'.tr,
@@ -88,21 +82,20 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                       borderRadius: BorderRadius.circular(8.r),
                     ),
                   ),
-                  obscureText: !_isNewPasswordVisible,
+                  obscureText: !controller.isNewPasswordVisible.value,
                 ),
                 SizedBox(height: 15.h),
                 // Confirm password field
                 TextField(
+                  controller: controller.confirmPasswordController,
                   decoration: InputDecoration(
                     prefixIcon: Icon(Icons.lock),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                        controller.isConfirmPasswordVisible.value ? Icons.visibility : Icons.visibility_off,
                       ),
                       onPressed: () {
-                        setState(() {
-                          _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
-                        });
+                        controller.toggleConfirmPasswordVisibility();
                       },
                     ),
                     labelText: 'confirm_password'.tr,
@@ -113,19 +106,17 @@ class _CreateNewPasswordScreenState extends State<CreateNewPasswordScreen> {
                       borderRadius: BorderRadius.circular(8.r),
                     ),
                   ),
-                  obscureText: !_isConfirmPasswordVisible,
+                  obscureText: !controller.isConfirmPasswordVisible.value,
                 ),
+
                 heightBox30,
-                Roundbutton(
+                Obx(() => Roundbutton(
+                  isLoading: controller.isLoading.value,
                   title: "save".tr,
                   onTap: () {
-                    Get.to(
-                            ()=>SignInScreen(),
-                        transition: Transition.rightToLeft,
-                        duration: Duration(seconds: 1)
-                    );
+                    controller.resetPassword();
                   },
-                ),
+                ),),
               ],
             ),
           ),

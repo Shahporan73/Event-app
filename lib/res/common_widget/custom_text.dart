@@ -13,6 +13,8 @@ class CustomText extends StatelessWidget {
   final Color? decorationColor;
   final double? decorationThickness;
   final TextAlign? textAlign;
+  final TextOverflow? overflow;
+  final int? maxLines;
   CustomText({super.key,
     required this.title,
     this.fontSize=12,
@@ -22,12 +24,16 @@ class CustomText extends StatelessWidget {
     this.decorationColor=Colors.deepOrangeAccent,
     this.decorationThickness = 2,
     this.textAlign=TextAlign.start,
+    this.overflow,
+    this.maxLines,
   });
 
   @override
   Widget build(BuildContext context) {
     return Text(
       title,
+      maxLines:maxLines ?? null,
+      overflow: overflow,
       textAlign: textAlign,
       style: GoogleFonts.poppins(
         fontSize: fontSize.sp,

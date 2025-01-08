@@ -1,6 +1,15 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:async';
 import 'dart:io';
+import 'package:event_app/res/app_colors/App_Colors.dart';
+import 'package:event_app/res/common_widget/custom_text.dart';
+import 'package:event_app/res/custom_style/custom_size.dart';
+import 'package:event_app/view/event_view/controller/camera_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 
 class ShowViewScreen extends StatefulWidget {
@@ -15,6 +24,7 @@ class ShowViewScreen extends StatefulWidget {
 class _ShowViewScreenState extends State<ShowViewScreen> {
   late VideoPlayerController _controller;
   Timer? _progressTimer;
+  final CameraManager cameraManagerController = Get.put(CameraManager());
 
   @override
   void initState() {
@@ -29,7 +39,6 @@ class _ShowViewScreenState extends State<ShowViewScreen> {
 
     _controller.addListener(() {
       if (_controller.value.position >= _controller.value.duration) {
-        // Video finished, pause automatically
         _controller.pause();
         setState(() {});
       }
@@ -46,7 +55,7 @@ class _ShowViewScreenState extends State<ShowViewScreen> {
 
   @override
   void dispose() {
-    _controller.dispose(); // Dispose of the controller to free resources
+    _controller.dispose();
     _progressTimer?.cancel();
     super.dispose();
   }
@@ -77,6 +86,63 @@ class _ShowViewScreenState extends State<ShowViewScreen> {
             Navigator.of(context).pop();
           },
         ),
+        actions: [
+          GestureDetector(
+            onTap: () async {
+              await cameraManagerController.uploadVideo(context);
+            },
+            child: Obx(
+                  () => Container(
+                padding: EdgeInsets.all(8),
+                margin: EdgeInsets.only(right: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: cameraManagerController.isUploading.value
+                    ? SpinKitCircle(
+                  size: 16,
+                  color: AppColors.primaryColor,
+                )
+                    : Row(
+                  children: [
+                    Icon(Icons.cloud_upload_outlined, color: Colors.black),
+                    widthBox8,
+                    CustomText(title: "Upload", color: Colors.black)
+                  ],
+                ),
+              ),
+            ),
+          ),
+          widthBox5,
+          GestureDetector(
+            onTap: () async {
+              cameraManagerController.deleteLocalVideo(widget.videoPath, context);
+            },
+            child: Obx(
+                  () => Container(
+                padding: EdgeInsets.all(8),
+                margin: EdgeInsets.only(right: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: cameraManagerController.isDeleting.value
+                    ? SpinKitCircle(
+                  size: 16,
+                  color: AppColors.primaryColor,
+                )
+                    : Row(
+                  children: [
+                    Icon(Icons.delete_outline, color: Colors.red),
+                    widthBox8,
+                    CustomText(title: "Delete", color: Colors.red)
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
       body: Center(
         child: _controller.value.isInitialized
@@ -85,12 +151,12 @@ class _ShowViewScreenState extends State<ShowViewScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              AspectRatio(
-                aspectRatio: _controller.value.aspectRatio,
+              SizedBox(
+                width: double.infinity,
+                height: 400,
                 child: VideoPlayer(_controller),
               ),
               SizedBox(height: 30),
-              // Linear Progress Bar
               Column(
                 children: [
                   LinearProgressIndicator(
@@ -121,7 +187,7 @@ class _ShowViewScreenState extends State<ShowViewScreen> {
                 icon: Icon(
                   _controller.value.isPlaying
                       ? Icons.pause
-                      : Icons.replay, // Show replay icon when video ends
+                      : Icons.replay,
                   color: Colors.white,
                 ),
                 onPressed: () {
@@ -130,7 +196,6 @@ class _ShowViewScreenState extends State<ShowViewScreen> {
                       _controller.pause();
                     } else if (_controller.value.position >=
                         _controller.value.duration) {
-                      // Replay the video when it's finished
                       _controller.seekTo(Duration.zero);
                       _controller.play();
                     } else {

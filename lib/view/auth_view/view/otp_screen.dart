@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:event_app/view/auth_view/controller/otp_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -10,10 +11,12 @@ import '../../../res/common_widget/RoundButton.dart';
 import '../../../res/common_widget/custom_app_bar.dart';
 import '../../../res/common_widget/custom_text.dart';
 import '../../../res/custom_style/custom_size.dart';
-import 'create_new_password_screen.dart';
 
 class OtpScreen extends StatelessWidget {
-  const OtpScreen({super.key});
+  final String email;
+  OtpScreen({super.key, required this.email});
+
+  final OtpController controller = Get.put(OtpController());
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +49,7 @@ class OtpScreen extends StatelessWidget {
                 ),
                 heightBox10,
                 CustomText(
-                    title: 'please_enter_the_6_digit_code_that_was_sent_to_xyzgmailcom'.tr,
+                  title: 'please_enter_the_6_digit_code_that_was_sent_to'.tr + ' $email',
                   fontWeight: FontWeight.w400,
                   fontSize: 12,
                   color: AppColors.black100,
@@ -63,6 +66,7 @@ class OtpScreen extends StatelessWidget {
                       return SizedBox(
                         width: 40.w, // Adjust for responsiveness
                         child: TextFormField(
+                          controller:controller.otpControllers[index], // Using individual controllers
                           textAlign: TextAlign.center,
                           decoration: InputDecoration(
                             border: OutlineInputBorder(
@@ -85,45 +89,57 @@ class OtpScreen extends StatelessWidget {
                   ),
                 ),
 
-
                 heightBox100,
                 Roundbutton(
                   title: "verify_otp".tr,
                   onTap: () {
-                    Get.to(
-                          () => CreateNewPasswordScreen(),
-                      transition: Transition.rightToLeft,
-                      duration: Duration(milliseconds: 500),
-                    );
+                    String otp = controller.otpControllers.map((e) => e.text).join(); // Concatenate OTP from each controller
+                    if (otp.length == 6) {
+                      // Implement OTP verification logic here (call API or service)
+                      controller.otpSubmitted();
+                    } else {
+                      Get.snackbar("Error", "Please enter the full OTP", snackPosition: SnackPosition.BOTTOM);
+                    }
                   },
                 ),
 
                 20.heightBox,
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                Obx(() => controller.secondsRemaining.value == 0
+                    ? Roundbutton(
+                  padding_vertical: 6,
+                  borderRadius: 4,
+                  buttonColor: Colors.red.shade50,
+                  titleColor: Colors.black,
+                  title: "resend_otp".tr,
+                  onTap: () {
+                    controller.resendOtp();  // Call resend OTP function
+                  },
+                )
+                    : Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     CustomText(
-                      title: 'did_not_get_the_otp'.tr,
-                      fontWeight: FontWeight.w400,
-                      fontSize: 16,
-                      color: AppColors.black100,
+                      title: "resend_code_in".tr,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 18,
+                      color: Colors.black,
                     ),
-
-                    InkWell(
-                      onTap: () {
-
-                      },
-                      child: CustomText(
-                        title: "resent".tr,
-                        color: AppColors.primaryColor,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    )
+                    widthBox5,
+                    CustomText(
+                      title: "${controller.secondsRemaining.value}",
+                      fontWeight: FontWeight.w500,
+                      fontSize: 18,
+                      color: AppColors.secondaryColor,
+                    ),
+                    CustomText(
+                      title: "s".tr,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 18,
+                      color: Colors.black,
+                    ),
                   ],
-                )
-
-
+                )),
               ],
             ),
           ),

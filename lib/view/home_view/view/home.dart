@@ -1,11 +1,14 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:event_app/view/auth_view/view/sign_up_screen.dart';
 import 'package:event_app/view/create_event_view/view/create_event_screen.dart';
+import 'package:event_app/view/event_view/controller/my_event_controller.dart';
 import 'package:event_app/view/home_view/view/home_screen.dart';
 import 'package:event_app/view/message_view/view/message_screen.dart';
+import 'package:event_app/view/profile_view/controller/user_profile_controller.dart';
 import 'package:event_app/view/profile_view/view/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../res/app_colors/App_Colors.dart';
 import '../../../res/app_images/App_images.dart';

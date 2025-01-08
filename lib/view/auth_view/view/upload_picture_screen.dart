@@ -1,12 +1,16 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'dart:io';
+
 import 'package:dotted_border/dotted_border.dart';
 import 'package:event_app/res/app_images/App_images.dart';
 import 'package:event_app/res/common_widget/RoundButton.dart';
+import 'package:event_app/view/auth_view/controller/sign_up_controller.dart';
 import 'package:event_app/view/auth_view/view/add_contact_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../res/app_colors/App_Colors.dart';
 import '../../../res/common_widget/custom_app_bar.dart';
@@ -14,12 +18,14 @@ import '../../../res/common_widget/custom_text.dart';
 import '../../../res/custom_style/custom_size.dart';
 
 class UploadPictureScreen extends StatelessWidget {
-  const UploadPictureScreen({super.key});
+  UploadPictureScreen({super.key});
 
+  final SignUpController controller = Get.put(SignUpController());
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: AppColors.bgColor,
       body: SafeArea(
@@ -29,16 +35,24 @@ class UploadPictureScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-
               Center(
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(50.r),
-                  child: Image.asset(AppImages.placeholderImage,
-                    width: 150, height: 150, fit: BoxFit.cover,
-                  ),
+                  borderRadius: BorderRadius.circular(100.r),
+                  child: Obx(() => controller.selectedImage.value != null
+                      ? Image.file(
+                    controller.selectedImage.value!,
+                    width: 150,
+                    height: 150,
+                    fit: BoxFit.cover,
+                  )
+                      : Image.asset(
+                    AppImages.placeholderImage,
+                    width: 150,
+                    height: 150,
+                    fit: BoxFit.cover,
+                  )),
                 ),
               ),
-
               SizedBox(height: 15.h),
               CustomText(
                 title: "profile_picture".tr,
@@ -80,47 +94,14 @@ class UploadPictureScreen extends StatelessWidget {
               heightBox30,
               Row(
                 children: [
-                  Expanded(
-                      child: DottedBorder(
-                        color: AppColors.primaryColor,
-                        // Dotted border color
-                        strokeWidth: 1,
-                        dashPattern: const [6, 3],
-                        // Length of dashes and gaps
-                        borderType: BorderType.RRect,
-                        // Rounded rectangular border
-                        radius: Radius.circular(6.r),
-                        child: Container(
-                          padding: EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            color: Color(0xffECF2FF),
-                          ),
-                          child: Column(
-                            children: [
-                              Image.asset(AppImages.captureCamera, scale: 4,),
-                              heightBox10,
-                              Roundbutton(
-                                title: "Open camera",
-                                padding_vertical: 5,
-                                fontSize: 10,
-                                borderRadius: 20.r,
-                                onTap: () {},
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                  ),
-                  widthBox10,
+
+                  // open camera
                   Expanded(
                     child: DottedBorder(
                       color: AppColors.primaryColor,
-                      // Dotted border color
                       strokeWidth: 1,
                       dashPattern: const [6, 3],
-                      // Length of dashes and gaps
                       borderType: BorderType.RRect,
-                      // Rounded rectangular border
                       radius: Radius.circular(6.r),
                       child: Container(
                         padding: EdgeInsets.all(6),
@@ -129,41 +110,79 @@ class UploadPictureScreen extends StatelessWidget {
                         ),
                         child: Column(
                           children: [
-                            Image.asset(AppImages.captureGallery, scale: 4,),
+                            Image.asset(AppImages.captureCamera, scale: 4),
                             heightBox10,
                             Roundbutton(
-                              title: "Open gallery",
+                              title: "Open camera",
                               padding_vertical: 5,
                               fontSize: 10,
                               borderRadius: 20.r,
-                              onTap: () {},
+                              onTap: () async {
+                                final pickedFile = await ImagePicker().pickImage(
+                                  source: ImageSource.camera,
+                                );
+                                if (pickedFile != null) {
+                                  controller.uploadProfileImage(File(pickedFile.path));
+                                } else {
+                                  Get.snackbar("Error", "No image selected", snackPosition: SnackPosition.BOTTOM);
+                                }
+                              },
                             ),
                           ],
                         ),
                       ),
                     ),
                   ),
-
-
-
+                  // open gallery
+                  widthBox10,
+                  Expanded(
+                    child: DottedBorder(
+                      color: AppColors.primaryColor,
+                      strokeWidth: 1,
+                      dashPattern: const [6, 3],
+                      borderType: BorderType.RRect,
+                      radius: Radius.circular(6.r),
+                      child: Container(
+                        padding: EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: Color(0xffECF2FF),
+                        ),
+                        child: Column(
+                          children: [
+                            Image.asset(AppImages.captureGallery, scale: 4),
+                            heightBox10,
+                            Roundbutton(
+                              title: "Open gallery",
+                              padding_vertical: 5,
+                              fontSize: 10,
+                              borderRadius: 20.r,
+                              onTap: () async {
+                                final pickedFile = await ImagePicker().pickImage(
+                                  source: ImageSource.gallery,
+                                );
+                                if (pickedFile != null) {
+                                  controller.uploadProfileImage(File(pickedFile.path));
+                                } else {
+                                  Get.snackbar("Error", "No image selected", snackPosition: SnackPosition.BOTTOM);
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
-
               heightBox50,
-              Roundbutton(
+              Obx(() => Roundbutton(
                 title: "continue".tr,
                 padding_vertical: 15,
-                borderRadius: 44.r,
-                onTap: (){
-                  Get.to(
-                      ()=>AddContactScreen(),
-                    transition: Transition.rightToLeft,
-                    duration: const Duration(milliseconds: 500),
-                  );
+                isLoading: controller.isLoading.value,
+                onTap: () {
+                  controller.onSignUp();
                 },
-              ),
-
-
+              ),),
             ],
           ),
         ),
@@ -171,3 +190,4 @@ class UploadPictureScreen extends StatelessWidget {
     );
   }
 }
+
