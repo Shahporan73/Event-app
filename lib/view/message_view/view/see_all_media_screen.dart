@@ -25,11 +25,11 @@ class SeeAllMediaScreen extends StatelessWidget {
           child: Scaffold(
             backgroundColor: Colors.black12,
             appBar: AppBar(
-              title: const Text('Media Viewer'),
-              bottom: const TabBar(
+              title: const Text('media_viewer'),
+              bottom: TabBar(
                 tabs: [
-                  Tab(text: 'Images'),
-                  Tab(text: 'Videos'),
+                  Tab(text: 'Images'.tr),
+                  Tab(text: 'videos'.tr),
                 ],
               ),
             ),
@@ -41,7 +41,7 @@ class SeeAllMediaScreen extends StatelessWidget {
                   controller.imageList.isEmpty ?
                   Center(
                     child: CustomText(
-                        title: 'No Images',
+                        title: 'no_images'.tr,
                       color: Colors.white,
                     ),
                   ) :
@@ -81,7 +81,7 @@ class SeeAllMediaScreen extends StatelessWidget {
                   controller.videoList.isEmpty ?
                   Center(
                     child: CustomText(
-                      title: 'No Videos',
+                      title: 'no_videos'.tr,
                       color: Colors.white,
                     ),
                   ) :GridView.builder(

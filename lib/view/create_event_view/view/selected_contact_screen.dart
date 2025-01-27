@@ -153,7 +153,7 @@ class _SelectedContactScreenState extends State<SelectedContactScreen> {
                   heightBox20,
                   Roundbutton(
                     title: 'Invite',
-                    isLoading: controller.isLoading.value,
+                    isLoading: controller.isButtonLoading.value,
                     buttonColor: AppColors.primaryColor,
                     onTap: () {
                       print('Invite button pressed. Selected Contact IDs: $selectedContactIndices');
@@ -162,10 +162,10 @@ class _SelectedContactScreenState extends State<SelectedContactScreen> {
                           message: "No users selected for invitation.",
                           snackPosition: SnackPosition.TOP,
                         );
-                      } else if(selectedContactIndices.length < 2){
+                      } else if(selectedContactIndices.length < 1){
                         Get.snackbar(
                             'Alert',
-                            "At least 2 users must be selected for invitation.",
+                            "At least 1 users must be selected for invitation.",
                             backgroundColor: Colors.red,
                             colorText: AppColors.whiteColor
                         );

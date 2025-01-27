@@ -246,9 +246,11 @@ class PostController extends GetxController{
         uploadImageList.clear();
         uploadedImageUrls.clear();
         imageKeyList.clear();
+
         cameraController.uploadedVideoLink.value = '';
         cameraController.uploadedVideoKey.clear();
         cameraController.videoArray.clear();
+
         print("Post created successfully: $responseBody");
         Get.rawSnackbar(message: "Post created successfully",
             backgroundColor: Colors.green, snackPosition: SnackPosition.BOTTOM);

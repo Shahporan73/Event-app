@@ -49,7 +49,7 @@ class NearbyEventController extends GetxController{
       }
 
     }catch(e){
-      print(e);
+      print('Nearby event method ::: $e');
     }finally{
       isLoading.value = false;
     }

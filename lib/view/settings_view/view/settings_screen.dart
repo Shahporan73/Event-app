@@ -33,7 +33,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 CustomAppBar(
-                  appBarName: "Settings",
+                  appBarName: "settings".tr,
                   onTap: () => Get.back(),
                 ),
 
@@ -42,7 +42,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ListTile(
                   leading: Icon(Icons.language_outlined, color: AppColors.primaryColor,),
                   title: CustomText(
-                      title: "Change language",
+                      title: "change_language".tr,
                       fontWeight: FontWeight.w400,
                       fontSize: 14,
                       color: AppColors.blackColor
@@ -61,7 +61,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ListTile(
                   leading: Icon(Icons.lock, color: AppColors.primaryColor,),
                   title: CustomText(
-                      title: "Change Password",
+                      title: "change_password".tr,
                       fontWeight: FontWeight.w400,
                       fontSize: 14,
                       color: AppColors.blackColor
@@ -80,7 +80,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ListTile(
                   leading: Icon(Icons.delete, color: Colors.red,),
                   title: CustomText(
-                      title: "Delete Account",
+                      title: "delete_account".tr,
                       fontWeight: FontWeight.w400,
                       fontSize: 14,
                       color: Colors.red
@@ -127,7 +127,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 Icon(Icons.warning_amber_rounded, color: Colors.red, size: 40),
                 SizedBox(height: 20),
                 Text(
-                  "Delete Account",
+                  "delete_account".tr,
                   style: GoogleFonts.poppins(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -137,7 +137,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 SizedBox(height: 10),
                 Text(
-                  "Are you sure you want to delete your account? This action cannot be undone.",
+                  "are_you_sure_you_want_to_delete_your_account".tr,
                   style: GoogleFonts.poppins(
                     fontSize: 14,
                     color: Colors.black54,
@@ -160,7 +160,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                       ),
                       child: Text(
-                        "Cancel",
+                        "cancel".tr,
                         style: GoogleFonts.poppins(
                           color: Colors.black54,
                           fontWeight: FontWeight.bold,
@@ -179,7 +179,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                       ),
                       child: Text(
-                        "Delete",
+                        "delete".tr,
                         style: GoogleFonts.poppins(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,

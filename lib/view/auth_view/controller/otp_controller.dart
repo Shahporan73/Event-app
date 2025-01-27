@@ -8,6 +8,7 @@ import 'package:event_app/data/token_manager/local_storage.dart';
 import 'package:event_app/view/auth_view/view/create_new_password_screen.dart';
 import 'package:event_app/view/auth_view/view/sign_in_screen.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:async';
 
@@ -85,8 +86,11 @@ class OtpController extends GetxController {
               transition: Transition.rightToLeft,
               duration: Duration(milliseconds: 300)
           );
+          Get.rawSnackbar(
+              message: 'otp_verified_successfully'.tr,
+              snackPosition: SnackPosition.TOP
+          );
 
-          Get.snackbar('Message', responseBody['message'], snackPosition: SnackPosition.TOP);
         } else {
           throw "Invalid response: Missing token";
         }
@@ -150,7 +154,11 @@ class OtpController extends GetxController {
               duration: Duration(milliseconds: 300)
           );
 
-          Get.snackbar('Message', 'OTP verification successfully', snackPosition: SnackPosition.TOP);
+          Get.rawSnackbar(
+              message: 'otp_verified_successfully'.tr,
+              snackPosition: SnackPosition.TOP
+          );
+
         } else {
           throw "Invalid response: Missing token";
         }
@@ -169,6 +177,7 @@ class OtpController extends GetxController {
 
 
   void resendOtp() async {
+    isLoading(true);
     // Logic to resend OTP
     Map<String, String> headers = {
       'Content-Type': 'application/json',
@@ -197,7 +206,7 @@ class OtpController extends GetxController {
         print("otp-token ===> $token");
 
         LocalStorage.saveData(key: "otp_token", data: token);
-        Get.snackbar("Alert", "OTP sent successfully");
+        Get.rawSnackbar(message: "otp_sent_successfully".tr, backgroundColor: Colors.green, snackPosition: SnackPosition.BOTTOM);
       } else {
         throw "Time expired";
       }
@@ -205,6 +214,8 @@ class OtpController extends GetxController {
       debugPrint("Catch Error:::::: " + e.toString());
       Get.snackbar("Error", "Otp creation failed!",
           snackPosition: SnackPosition.TOP);
+    }finally{
+      isLoading(false);
     }
   }
 
@@ -237,7 +248,7 @@ class OtpController extends GetxController {
         print("otp-token ===> $token");
 
         LocalStorage.saveData(key: "otp_token", data: token);
-        Get.snackbar("Alert", "OTP sent successfully");
+        Get.rawSnackbar(message: "otp_sent_successfully".tr, backgroundColor: Colors.green, snackPosition: SnackPosition.BOTTOM);
       } else {
         throw "Time expired";
       }

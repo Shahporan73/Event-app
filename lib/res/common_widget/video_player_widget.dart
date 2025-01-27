@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:event_app/res/app_colors/App_Colors.dart';
 import 'package:event_app/view/message_view/sub_screen/full_screen_video.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -14,7 +15,7 @@ class VideoPlayerWidget extends StatefulWidget {
     Key? key,
     required this.videoUrl,
     this.height = 300.0, // Default height
-    this.width = 300.0,  // Default width
+    this.width = double.infinity,  // Default width
   }) : super(key: key);
 
   @override
@@ -63,11 +64,10 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: _controller.value.isInitialized
+    return _controller.value.isInitialized
           ? SizedBox(
-          height: widget.height,
-          width: widget.width,
+          height: widget.height ,
+          width: widget.width * double.infinity,
           child: Stack(
             children: [
               Positioned.fill(
@@ -124,13 +124,15 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                             formatDuration(_controller.value.position),
                           style: TextStyle(
                               fontSize: 12,
-                              color: Colors.red
+                              color: AppColors.primaryColor,
+                              fontWeight: FontWeight.w600
                           ),
                         ),
-                        Expanded(child: SizedBox(
+                        Expanded(
+                            child: SizedBox(
                           height: 5.0,
                           child: Slider(
-                            activeColor: Colors.red,
+                            activeColor: AppColors.primaryColor,
                             inactiveColor: Colors.red.withAlpha(100),
                             value: _controller.value.position.inSeconds.toDouble(),
                             min: 0.0,
@@ -145,7 +147,8 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                         ),
                         Text(formatDuration(_controller.value.duration), style: TextStyle(
                           fontSize: 12,
-                          color: Colors.red
+                          color: AppColors.primaryColor,
+                          fontWeight: FontWeight.w600
                         ),),
                       ],
                     ),
@@ -157,7 +160,6 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
 
 
       )
-          : SpinKitCircle(color: Colors.red), // Show loader while video initializes
-    );
+          : SpinKitCircle(color: Colors.red);
   }
 }

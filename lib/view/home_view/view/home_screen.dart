@@ -5,6 +5,7 @@ import 'package:event_app/data/token_manager/local_storage.dart';
 import 'package:event_app/res/app_images/App_images.dart';
 import 'package:event_app/res/common_widget/RoundTextField.dart';
 import 'package:event_app/res/common_widget/custom_row_widget.dart';
+import 'package:event_app/res/common_widget/custom_shimmer_widget.dart';
 import 'package:event_app/res/custom_style/custom_size.dart';
 import 'package:event_app/res/custom_style/formate_time.dart';
 import 'package:event_app/res/utils/share_event.dart';
@@ -20,6 +21,7 @@ import 'package:event_app/view/profile_view/controller/profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -74,7 +76,8 @@ class _HomeScreenState extends State<HomeScreen> {
                          leading: ClipRRect(
                            borderRadius: BorderRadius.circular(100),
                            child: CustomNetworkImage(
-                             imageUrl: controller.imgURL.value ?? 'https://picsum.photos/250?image=9',
+                             imageUrl: controller.imgURL.value.isNotEmpty ?
+                             controller.imgURL.value :placeholderImage,
                              width: 50,
                              height: 50,
                            ),
@@ -115,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 // search section
                 heightBox20,
                 RoundTextField(
-                  hint: "Search Places",
+                  hint: "search_places".tr,
                   readOnly: true,
                   prefixIcon: Icon(
                     Icons.search_outlined,
@@ -136,7 +139,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 heightBox20,
                 CustomRowWidget(
                   title: CustomText(
-                    title: "My Events",
+                    title: "my_events".tr,
                     fontWeight: FontWeight.w500,
                     fontSize: 16,
                     color: Color(0xff1E2022),
@@ -150,7 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       );
                     },
                     child: CustomText(
-                      title: "see more",
+                      title: "see_more".tr,
                       fontWeight: FontWeight.w400,
                       fontSize: 14,
                       color: AppColors.secondaryColor,
@@ -160,29 +163,41 @@ class _HomeScreenState extends State<HomeScreen> {
                 heightBox10,
                 Obx(
                   () {
-                    return myEventController.myEventList.isEmpty ?
-                    Center(child: Text("No events found"),)
+                    return myEventController.isLoading.value ?
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: SizedBox(
+                            height: height * 0.25,
+                            child: Row(
+                              children: List.generate(3,
+                                    (index) => CustomShimmerWidget(height: height * 0.25, width: 280,),
+                              ),
+                            ),
+                          ),
+                        )
+                     :myEventController.myEventList.isEmpty ?
+                    Center(child: Text("no_events_found".tr),)
                         :SizedBox(
-                      height: width * 0.45, // Responsive height for the horizontal list
+                      height: height * 0.25, // Responsive height for the horizontal list
                       child: ListView.builder(
                         itemCount: myEventController.myEventList.length,
                         scrollDirection: Axis.horizontal,
                         physics: ScrollPhysics(),
                         shrinkWrap: true,
                         itemBuilder: (context, index) {
-                          var data = myEventController.myEventList[index].event!;
+                          var data = myEventController.myEventList[index];
 
                           var rating = (data.rating?.toDouble() ?? 0.0);
                           DateTime date;
                           try {
-                            date = DateTime.parse(data.date.toString());
+                            date = DateTime.parse(data.date.toString() ?? '');
                           } catch (e) {
                             date = DateTime.now();
                           }
                           String formattedDate = DateFormat('MMM d, yyyy').format(date);
 
-                          String startTime = formatTime24hr(data.startTime.toString());
-                          String endTime = formatTime24hr(data.endTime.toString());
+                          String startTime = formatTime24hr(data.startTime.toString() ?? '');
+                          String endTime = formatTime24hr(data.endTime.toString() ?? '');
 
                           return GestureDetector(
                             onTap: () {
@@ -194,11 +209,11 @@ class _HomeScreenState extends State<HomeScreen> {
                               );
                             },
                             child: MyEventCardWidget(
-                              title: data.name ?? "Unavailable",
+                              title: data.name ?? "not_available".tr,
                               imageUrl: data.image ?? placeholderImage,
                               rating: rating,
                               reviews: data.reviews ?? 0,
-                              location: data.address ?? "Unavailable",
+                              location: data.address ?? "not_available".tr,
                               date: formattedDate ?? "Unavailable",
                               time: "$startTime - $endTime" ?? "Unavailable",
                             ),
@@ -213,7 +228,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 heightBox20,
                 CustomRowWidget(
                   title: CustomText(
-                    title: "Near by Places",
+                    title: "near_by_places".tr,
                     fontWeight: FontWeight.w500,
                     fontSize: 16,
                     color: Color(0xff1E2022),
@@ -227,7 +242,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       );
                     },
                     child: CustomText(
-                      title: "see more",
+                      title: "see_more".tr,
                       fontWeight: FontWeight.w400,
                       fontSize: 14,
                       color: AppColors.secondaryColor,
@@ -237,7 +252,21 @@ class _HomeScreenState extends State<HomeScreen> {
                 heightBox10,
                 Obx(
                   () {
-                    return ListView.builder(
+                    var latitude = LocalStorage.getData(key: nearbyLatitude);
+                    var longitude = LocalStorage.getData(key: nearbyLongitude);
+
+
+                    return latitude ==null && longitude ==null?
+                    Center(child: Text("Need to first location permission"),)
+                        :
+                      nearbyEventController.isLoading.value ?
+
+                    CustomShimmerWidget(height: height * 0.25, width: width,)
+                        : nearbyEventController.nearbyEventList.isEmpty ?
+
+                    Center(child: Text("no_events_found".tr),)
+                        :
+                    ListView.builder(
                       shrinkWrap: true,
                       physics: ScrollPhysics(),
                       scrollDirection: Axis.vertical,
@@ -298,7 +327,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          "${data.name ?? "Unavailable"}",
+                                          "${data.name ?? "not_available".tr}",
                                           style: GoogleFonts.poppins(
                                             color: Colors.black,
                                             fontSize: width * 0.04,
@@ -368,7 +397,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       Icon(Icons.location_on, color: Colors.black, size: width * 0.035),
                                                       SizedBox(width: width * 0.015),
                                                       Flexible(child: Text(
-                                                        "${data.address ?? "Unavailable"}",
+                                                        "${data.address ?? "not_available".tr}",
                                                         maxLines: 1,
                                                         overflow: TextOverflow.ellipsis,
                                                         style: GoogleFonts.poppins(

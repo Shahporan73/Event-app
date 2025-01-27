@@ -123,7 +123,7 @@ class EventDetailScreen extends StatelessWidget {
 
                     // Centered Title
                     CustomText(
-                      title: 'Event Details',
+                      title: 'event_details'.tr,
                       fontSize: 18,
                       fontWeight: FontWeight.w500,
                       color: Colors.white,
@@ -197,7 +197,7 @@ class EventDetailScreen extends StatelessWidget {
                       SizedBox(height: 60),
                       // Event title and rating
                       Text(
-                        data.name??'Unavailable',
+                        data.name?? 'not_available'.tr,
                         style: GoogleFonts.poppins(
                             fontSize: 22.sp,
                             fontWeight: FontWeight.w500,
@@ -283,11 +283,11 @@ class EventDetailScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                data.organizer?.name ?? 'Unavailable',
+                                data.organizer?.name ?? 'not_available'.tr,
                                 style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
                               ),
                               Text(
-                                'Organizer',
+                                'organizer'.tr,
                                 style: GoogleFonts.poppins(
                                     fontSize: 12,
                                     color: Colors.grey[600]),
@@ -296,7 +296,7 @@ class EventDetailScreen extends StatelessWidget {
                           ),
                           Spacer(),
                           Roundbutton(
-                              title: "Message",
+                              title: "message".tr,
                               width: 120,
                               padding_vertical: 5,
                               titleColor: AppColors.primaryColor,
@@ -304,7 +304,7 @@ class EventDetailScreen extends StatelessWidget {
                               fontSize: 12,
                               onTap: () {
                                 if(data.organizer?.id == null){
-                                  Get.rawSnackbar(message: "User not found");
+                                  Get.rawSnackbar(message: "user_not_found".tr);
                                 }else{
                                   personalChatController.getChatList(
                                       receiverId: data.organizer?.id ?? "",
@@ -319,18 +319,18 @@ class EventDetailScreen extends StatelessWidget {
                       SizedBox(height: 16),
                       // About event section
                       Text(
-                        'About Event',
+                        'about_event'.tr,
                         style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       SizedBox(height: 8),
                       // Expanded text with "Read More" functionality
                       ReadMoreText(
-                        data.aboutEvent??'Not found event description',
+                        data.aboutEvent??'not_found_event_description'.tr,
                         trimLines: 3,
                         colorClickableText: Colors.teal,
                         trimMode: TrimMode.Line,
-                        trimCollapsedText: 'Read More',
-                        trimExpandedText: 'Show Less',
+                        trimCollapsedText: 'read_more'.tr,
+                        trimExpandedText: 'show_less'.tr,
                         style: GoogleFonts.poppins(color: Colors.grey[700]),
                         moreStyle: GoogleFonts.poppins(
                           fontWeight: FontWeight.bold,
@@ -340,7 +340,7 @@ class EventDetailScreen extends StatelessWidget {
                       SizedBox(height: 20),
                       // Join button
                       Roundbutton(
-                        title: "Join",
+                        title: "join".tr,
                         isLoading: controller.isLoading.value,
                         onTap: () async {
                           await controller.jointEvent(data.id.toString());
@@ -378,7 +378,7 @@ class EventDetailScreen extends StatelessWidget {
                       children: [
                         Row(
                           children: List.generate(
-                            3,
+                              data.recommendableUsers.length > 3 ? 3 : data.recommendableUsers.length,
                                 (index) {
                               var member = data.recommendableUsers[index];
                               return Align(
@@ -386,7 +386,7 @@ class EventDetailScreen extends StatelessWidget {
                                   child: ClipRRect(
                                       borderRadius: BorderRadius.circular(100),
                                       child: CustomNetworkImage(
-                                        imageUrl: member.profilePicture?? 'https://t3.ftcdn.net/jpg/02/43/12/34/360_F_243123463_zTooub557xEWABDLk0jJklDyLSGl2jrr.jpg',
+                                        imageUrl: member.profilePicture?? placeholderImage,
                                         height: 50,
                                         width: 50,
                                       )
@@ -397,7 +397,7 @@ class EventDetailScreen extends StatelessWidget {
                         ),
                         SizedBox(width: 20),
                         Text(
-                          '+${data.recommendableUsers.length - 3} People',
+                          '${data.recommendableUsers.length} '+'people'.tr,
                           style: GoogleFonts.poppins(
                             color: AppColors.primaryColor,
                             fontWeight: FontWeight.bold,

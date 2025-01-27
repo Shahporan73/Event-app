@@ -59,12 +59,12 @@ class UserOtpVerifiedScreen extends StatelessWidget {
                 heightBox50,
                 // OTP Input Fields
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                  padding: EdgeInsets.symmetric(horizontal: 20),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: List.generate(6, (index) {
                       return SizedBox(
-                        width: 40.w, // Adjust for responsiveness
+                        width: 40, // Adjust for responsiveness
                         child: TextFormField(
                           controller:controller.otpControllers[index], // Using individual controllers
                           textAlign: TextAlign.center,
@@ -90,18 +90,19 @@ class UserOtpVerifiedScreen extends StatelessWidget {
                 ),
 
                 heightBox100,
-                Roundbutton(
+                Obx(() => Roundbutton(
                   title: "verify_otp".tr,
+                  isLoading: controller.isLoading.value,
                   onTap: () {
                     String otp = controller.otpControllers.map((e) => e.text).join(); // Concatenate OTP from each controller
                     if (otp.length == 6) {
                       // Implement OTP verification logic here (call API or service)
                       controller.onVerifyOtp();
                     } else {
-                      Get.snackbar("Error", "Please enter the full OTP", snackPosition: SnackPosition.BOTTOM);
+                      Get.snackbar("error".tr, "please_enter_the_full_otp".tr, snackPosition: SnackPosition.BOTTOM);
                     }
                   },
-                ),
+                ),),
 
                 20.heightBox,
                 Obx(() => controller.secondsRemaining.value == 0

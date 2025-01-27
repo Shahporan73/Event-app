@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../data/token_manager/local_storage.dart';
 import '../../res/app_colors/App_Colors.dart';
 import '../../res/app_images/App_images.dart';
 import '../../res/common_widget/RoundButton.dart';
@@ -22,19 +23,24 @@ class WelcomeScreen extends StatefulWidget {
 class _WelcomeScreenState extends State<WelcomeScreen> {
   late String selectedLanguage;
   late String selectedFlag;
+  String _selectedLanguage = 'en';
 
   @override
   void initState() {
     super.initState();
+    // Load saved language from local storage
+    _selectedLanguage = LocalStorage.getData(key: "language") ?? 'en';
+    selectedLanguage = _selectedLanguage == 'en' ? 'English' : 'Spanish';
+    selectedFlag = _selectedLanguage == 'en' ? AppImages.english : AppImages.spanish;
+  }
 
-    // Set initial language and flag based on current locale
-    if (Get.locale?.languageCode == 'en') {
-      selectedLanguage = 'English';
-      selectedFlag = AppImages.english;
-    } else {
-      selectedLanguage = 'Spanish';
-      selectedFlag = AppImages.spanish;
-    }
+  void _changeLanguage(String languageCode) {
+    setState(() {
+      _selectedLanguage = languageCode;
+      LocalStorage.saveData(key: "language", data: languageCode); // Save language
+      Get.updateLocale(Locale(languageCode)); // Update locale
+      print('Language changed to: $languageCode'); // Debug log
+    });
   }
 
   @override
@@ -50,8 +56,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               height: 200.h,
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                gradient: LinearGradient(colors: [Color(0xffffffff),Color(0xff00BDCA)],
-                  // transform: GradientRotation(3.14 / 2),
+                gradient: LinearGradient(colors: [Color(0xffffffff), Color(0xff00BDCA)],
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
                 ),
@@ -124,10 +129,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           selectedLanguage = newValue!;
                           if (newValue == 'English') {
                             selectedFlag = AppImages.english;
-                            Get.updateLocale(Locale('en', 'US'));
+                            _changeLanguage('en');
                           } else if (newValue == 'Spanish') {
                             selectedFlag = AppImages.spanish;
-                            Get.updateLocale(Locale('es', 'ES'));
+                            _changeLanguage('es');
                           }
                         });
                       },
@@ -167,7 +172,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     textAlign: TextAlign.center,
                     TextSpan(
                       style: GoogleFonts.poppins(
-                        fontSize: 10.sp,
+                        fontSize: 10,
                         fontWeight: FontWeight.w400,
                         color: AppColors.black100,
                       ),
@@ -194,7 +199,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             )
           ],
         ),
-      )
+      ),
     );
   }
 }

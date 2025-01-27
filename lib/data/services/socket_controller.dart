@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import '../../view/message_view/model/chat_list_model.dart';
+import '../api/end_point.dart';
 
 class SocketService extends GetxService {
   late IO.Socket socket;
@@ -44,7 +45,7 @@ class SocketService extends GetxService {
     print('myID: $id');
 
     socket = IO.io(
-      'http://192.168.10.188:8001',
+      Endpoints.socketUrl,
       IO.OptionBuilder()
           .setTransports(['websocket'])
           .disableAutoConnect()
@@ -297,7 +298,7 @@ class SocketService extends GetxService {
   }
 
   void _handleIncomingMessages(dynamic data) {
-    // isLoading.value = true;
+    isLoading.value = true;
     messages.clear();
     try {
       if (data is List) {
@@ -342,7 +343,7 @@ class SocketService extends GetxService {
         print('Error processing message data: $e');
       }
     }finally {
-      // isLoading.value = false;
+      isLoading.value = false;
     }
   }
 

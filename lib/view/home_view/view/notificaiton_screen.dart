@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:event_app/res/custom_style/custom_size.dart';
+import 'package:event_app/res/utils/time_convetor.dart';
 import 'package:event_app/view/home_view/controller/notification_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -40,7 +41,7 @@ class NotificationScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CustomAppBar(
-                appBarName: "Notification",
+                appBarName: "notification".tr,
                 onTap: () {
                   Get.back();
                 },
@@ -59,7 +60,7 @@ class NotificationScreen extends StatelessWidget {
 
                     return controller.notificationList.isEmpty
                         ? Center(
-                      child: CustomText(title: 'No Notification'),
+                      child: CustomText(title: 'no_notification'.tr),
                     )
                         : ListView.builder(
                       controller: scrollController,
@@ -111,7 +112,7 @@ class NotificationScreen extends StatelessWidget {
                             color: AppColors.black33,
                           ),
                           subtitle: CustomText(
-                            title: '1 day ago',
+                            title: getRelativeTime(data.createdAt.toString() ?? ''),
                             fontSize: 10,
                             fontWeight: FontWeight.w500,
                             color: AppColors.black100,

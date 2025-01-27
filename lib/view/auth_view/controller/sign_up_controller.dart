@@ -53,27 +53,27 @@ class SignUpController extends GetxController {
     bool isValid = true;
 
     if (fullNameController.text.trim().isEmpty) {
-      fullName.value = "Full name is required";
+      fullName.value = "full_name_is_required".tr;
       isValid = false;
     } else {
       fullName.value = '';
     }
 
     if (emailController.text.trim().isEmpty) {
-      email.value = "Email is required";
+      email.value = "email_is_required".tr;
       isValid = false;
     } else if (!GetUtils.isEmail(emailController.text.trim())) {
-      email.value = "Enter a valid email";
+      email.value = "enter_a_valid_email".tr;
       isValid = false;
     } else {
       email.value = '';
     }
 
     if (passwordController.text.trim().isEmpty) {
-      password.value = "Password is required";
+      password.value = "password_is_required".tr;
       isValid = false;
     } else if (passwordController.text.trim().length < 6) {
-      password.value = "Password must be at least 6 characters";
+      password.value = "password_must_be_at_least_6_characters".tr;
       isValid = false;
     } else {
       password.value = '';
@@ -148,7 +148,7 @@ class SignUpController extends GetxController {
         String token = jsonResponse['data']['token'];
         LocalStorage.saveData(key: "signup_token", data: token);
 
-        Get.snackbar("Success", "Account created successfully!", snackPosition: SnackPosition.TOP);
+        Get.snackbar("success".tr, "account_created_successfully".tr, snackPosition: SnackPosition.TOP);
         Get.offAll(
               () => OtpScreen(email: emailController.text.toString()),
           transition: Transition.rightToLeft,
@@ -197,9 +197,6 @@ class SignUpController extends GetxController {
       return 'application/octet-stream';
     }
   }
-
-
-
 
   /// disposed
   @override

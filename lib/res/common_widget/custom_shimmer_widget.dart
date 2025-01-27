@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
 class CustomShimmerWidget extends StatelessWidget {
-  final double width;
-  CustomShimmerWidget({super.key, required this.width});
+  final double? width;
+  final double? height;
+  CustomShimmerWidget({super.key,
+    this.width,
+    this.height
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -11,8 +15,8 @@ class CustomShimmerWidget extends StatelessWidget {
       baseColor: Colors.grey[300]!,
       highlightColor: Colors.grey[100]!,
       child: Container(
-        width: width,
-        height: 150,
+        width: width ?? 150,
+        height: height ?? 150,
         margin: const EdgeInsets.only(right: 8),
         decoration: BoxDecoration(
           color: Colors.white,

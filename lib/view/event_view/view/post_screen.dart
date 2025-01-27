@@ -19,6 +19,7 @@ import 'package:event_app/view/profile_view/view/user_profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -71,7 +72,7 @@ class _PostScreenState extends State<PostScreen> {
                           left: 16,
                           child: CustomAppBar(
                             titleColor: Colors.white,
-                            appBarName: controller.eventPostModel.value.data?.name ?? "N/A",
+                            appBarName: "post".tr,
                             onTap: () => Get.back(),
                             leadingColor: Colors.white,
                           ),
@@ -179,7 +180,7 @@ class _PostScreenState extends State<PostScreen> {
                           widthBox10,
                           Expanded(
                             child: RoundTextField(
-                              hint: "Write something...",
+                              hint: "write_something".tr,
                               readOnly: true,
                               borderRadius: 44,
                               focusBorderRadius: 44,
@@ -196,14 +197,16 @@ class _PostScreenState extends State<PostScreen> {
                       ),
 
                       heightBox10,
+                      controller.isLoading.value ?
+                          Center(
+                            child: SpinKitCircle(
+                              color: AppColors.primaryColor,
+                            ),
+                          )
+                          :
                       controller.postList.isEmpty ?
                           Center(
-                            child: CustomText(
-                              title: "No post found",
-                              color: AppColors.black100,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 16,
-                            ),
+                            child: CustomText(title: 'no_post'.tr),
                           )
                           : ListView.builder(
                         shrinkWrap: true,

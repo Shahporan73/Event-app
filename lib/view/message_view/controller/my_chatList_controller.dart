@@ -23,7 +23,7 @@ class MyChatListController extends GetxController {
       isLoading(true);
 
       dynamic responseBody = await BaseClient.handleResponse(
-        await BaseClient.getRequest(api: Endpoints.chatListURL),
+        await BaseClient.getRequest(api: Endpoints.socketUrl),
       );
 
       if (kDebugMode) {

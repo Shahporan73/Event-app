@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, prefer_interpolation_to_compose_strings
 
 import 'package:event_app/data/token_manager/const_veriable.dart';
 import 'package:event_app/data/token_manager/local_storage.dart';
@@ -125,7 +125,7 @@ class CreateEventDetailsScreen extends StatelessWidget {
 
                     // Centered Title
                     CustomText(
-                      title: 'Event Details',
+                      title: 'event_details'.tr,
                       fontSize: 18,
                       fontWeight: FontWeight.w500,
                       color: Colors.white,
@@ -231,9 +231,9 @@ class CreateEventDetailsScreen extends StatelessWidget {
                               : SizedBox.shrink(), // Empty space when the list is empty
                           SizedBox(width: 20),
                           Text(
-                            '${data.recommendedUser.length} Maybe I’m Going',
+                            '${data.recommendedUser.length} ' + 'maybe_im_going'.tr,
                             style: GoogleFonts.poppins(
-                              fontSize: 12.sp,
+                              fontSize: 12,
                               color: AppColors.primaryColor,
                               fontWeight: FontWeight.bold,
                             ),
@@ -244,7 +244,7 @@ class CreateEventDetailsScreen extends StatelessWidget {
                             padding_vertical: 6,
                             borderRadius: 4,
                             fontSize: 8,
-                            title: "See Members",
+                            title: "see_members".tr,
                             onTap: () {
                               // Get.to(
                               //       () => SeeAllMemeberScreen(),
@@ -258,7 +258,7 @@ class CreateEventDetailsScreen extends StatelessWidget {
                         ],
                       ):
                       Center(
-                        child: CustomText(title: 'No Members',
+                        child: CustomText(title: 'no_members'.tr,
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
                           color: AppColors.primaryColor,
@@ -270,9 +270,9 @@ class CreateEventDetailsScreen extends StatelessWidget {
                       // Event title and rating
                       heightBox10,
                       Text(
-                        data.name ?? 'Unavailable Event',
+                        data.name ?? 'unavailable_event'.tr,
                         style: GoogleFonts.poppins(
-                            fontSize: 22.sp,
+                            fontSize: 22,
                             fontWeight: FontWeight.w500,
                             color: AppColors.black33
                         ),
@@ -280,8 +280,8 @@ class CreateEventDetailsScreen extends StatelessWidget {
                       Row(
                         children: [
                           RatingBarIndicator(
-                            itemSize: 16.sp,
-                            rating: 4.5,
+                            itemSize: 16,
+                            rating: (data.rating ?? 0.0).toDouble(),
                             itemCount: 5,
                             direction: Axis.horizontal,
                             itemBuilder: (context, index) {
@@ -293,7 +293,7 @@ class CreateEventDetailsScreen extends StatelessWidget {
                           ),
                           SizedBox(width: 5),
                           Text(
-                            '4.8 (255)',
+                            '${data.rating} (${data.reviews})',
                             style: GoogleFonts.poppins(
                               fontSize: 14,
                               color: Colors.grey[600],
@@ -337,7 +337,7 @@ class CreateEventDetailsScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                data.address ?? 'Unavailable Location',
+                                data.address ?? 'unavailable_location'.tr,
                                 style: GoogleFonts.poppins(
                                   color: Colors.grey[600],
                                   fontSize: 12,
@@ -401,18 +401,18 @@ class CreateEventDetailsScreen extends StatelessWidget {
                       SizedBox(height: 16),*/
                       // About event section
                       Text(
-                        'About Event',
+                        'about_event'.tr,
                         style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       SizedBox(height: 8),
                       // Expanded text with "Read More" functionality
                       ReadMoreText(
-                        data.aboutEvent ?? 'Unavailable Event Details',
+                        data.aboutEvent ?? 'unavailable_event_details'.tr,
                         trimLines: 3,
                         colorClickableText: Colors.teal,
                         trimMode: TrimMode.Line,
-                        trimCollapsedText: 'Read More',
-                        trimExpandedText: 'Show Less',
+                        trimCollapsedText: 'read_more'.tr,
+                        trimExpandedText: 'read_less'.tr,
                         style: GoogleFonts.poppins(color: Colors.grey[700]),
                         moreStyle: GoogleFonts.poppins(
                           fontWeight: FontWeight.bold,
@@ -451,7 +451,7 @@ class CreateEventDetailsScreen extends StatelessWidget {
                       children: [
                         Row(
                           children: List.generate(
-                            3,
+                            data.recommendableUsers.length > 3 ? 3 : data.recommendableUsers.length,
                                 (index) {
                               return Align(
                                   widthFactor: 0.6,
@@ -469,7 +469,7 @@ class CreateEventDetailsScreen extends StatelessWidget {
                         ),
                         SizedBox(width: 20),
                         Text(
-                          '+${data.recommendableUsers.length} People',
+                          '${data.recommendableUsers.length} ' + 'people'.tr,
                           style: GoogleFonts.poppins(
                             color: AppColors.primaryColor,
                             fontWeight: FontWeight.bold,
@@ -481,7 +481,7 @@ class CreateEventDetailsScreen extends StatelessWidget {
                           padding_vertical: 5,
                           borderRadius: 4,
                           fontSize: 12,
-                          title: "Invite",
+                          title: "invite".tr,
                           onTap: () {
                             Get.to(
                                     () => SelectedContactScreen(),

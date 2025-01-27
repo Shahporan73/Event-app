@@ -46,7 +46,7 @@ class _JoingingCompleteScreenState extends State<JoingingCompleteScreen> {
 
           heightBox20,
           CustomText(
-            title: 'Congratulation',
+            title: 'congratulation'.tr,
             fontSize: 20,
             fontWeight: FontWeight.w500,
             color: AppColors.primaryColor,
@@ -54,7 +54,7 @@ class _JoingingCompleteScreenState extends State<JoingingCompleteScreen> {
 
           heightBox20,
           CustomText(
-            title: 'Join this event and be part of an unforgettable experience!',
+            title: 'join_this_event_and_be_part_of_an_unforgettable_experience'.tr,
             fontSize: 16,
             textAlign: TextAlign.center,
             fontWeight: FontWeight.w400,

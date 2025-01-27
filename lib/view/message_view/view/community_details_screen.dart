@@ -4,7 +4,6 @@ import 'dart:math';
 
 import 'package:event_app/data/services/socket_controller.dart';
 import 'package:event_app/data/token_manager/const_veriable.dart';
-import 'package:event_app/data/token_manager/local_storage.dart';
 import 'package:event_app/res/common_widget/custom_network_image_widget.dart';
 import 'package:event_app/res/custom_style/custom_size.dart';
 import 'package:event_app/view/message_view/controller/media_controller.dart';
@@ -146,7 +145,7 @@ class _CommunityDetailsScreenState extends State<CommunityDetailsScreen> {
                   ),
                   SizedBox(height: 10),
                   Text(
-                    "${widget.members.length ?? 0} Members",
+                    "${widget.members.length ?? 0} "+"Members".tr,
                     style: GoogleFonts.roboto(
                       fontSize: 18,
                       fontWeight: FontWeight.w400,
@@ -202,7 +201,7 @@ class _CommunityDetailsScreenState extends State<CommunityDetailsScreen> {
                           ),
                           SizedBox(width: 10),
                           Text(
-                            widget.members.isEmpty? "No members" : "See all members",
+                            widget.members.isEmpty? "no_members".tr : "see_all_members".tr,
                             style: GoogleFonts.urbanist(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
@@ -227,7 +226,7 @@ class _CommunityDetailsScreenState extends State<CommunityDetailsScreen> {
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text("See all media",
+                        Text("see_all_media".tr,
                             style: GoogleFonts.poppins(
                                 fontWeight: FontWeight.w500,
                               fontSize: 12,
@@ -280,7 +279,7 @@ class _CommunityDetailsScreenState extends State<CommunityDetailsScreen> {
 
                   ListTile(
                     leading: Icon(Icons.logout, size: 24, color: Colors.red),
-                    title: Text("Leave Community", style: GoogleFonts.poppins(
+                    title: Text("leave_community".tr, style: GoogleFonts.poppins(
                         fontWeight: FontWeight.w500,
                         fontSize: 12,
                         color: AppColors.black100
@@ -307,17 +306,17 @@ class _CommunityDetailsScreenState extends State<CommunityDetailsScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text("Change Name"),
+          title: Text("change_name".tr),
           content: TextField(
             controller: _nameController,
-            decoration: InputDecoration(labelText: "Enter new group name"),
+            decoration: InputDecoration(labelText: "enter_new_group_name".tr),
           ),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text("Cancel"),
+              child: Text("cancel".tr),
             ),
             ElevatedButton(
               onPressed: () {
@@ -348,12 +347,12 @@ class _CommunityDetailsScreenState extends State<CommunityDetailsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text("Leave Group"),
-        content: Text("Are you sure you want to leave this group?"),
+        title: Text("leave_group".tr),
+        content: Text("are_you_sure_you_want_to_leave_this_group".tr),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text("Cancel"),
+            child: Text("cancel".tr),
           ),
           ElevatedButton(
             onPressed: () {
@@ -370,7 +369,7 @@ class _CommunityDetailsScreenState extends State<CommunityDetailsScreen> {
               }
 
             },
-            child: Text("Leave", style: TextStyle(color: Colors.white)),
+            child: Text("leave".tr, style: TextStyle(color: Colors.white)),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
           ),
         ],

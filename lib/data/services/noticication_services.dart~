@@ -1,0 +1,73 @@
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter/foundation.dart';
+
+class NotificationHelper {
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
+  AndroidInitializationSettings initializationSettingsAndroid =
+  AndroidInitializationSettings('@mipmap/launcher_icon');
+
+  DarwinInitializationSettings initializationSettingsDarwin = DarwinInitializationSettings();
+
+  final InitializationSettings initializationSettings = InitializationSettings(
+    android: initializationSettingsAndroid,
+    iOS: initializationSettingsDarwin,
+  );
+
+  flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+  Future<void> _requestNotificationPermissions() async {
+    // Check and request permissions for iOS and macOS specifically
+    if (defaultTargetPlatform == TargetPlatform.iOS ||
+        defaultTargetPlatform == TargetPlatform.macOS) {
+      final bool? result = await flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<
+          IOSFlutterLocalNotificationsPlugin>()
+          ?.requestPermissions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+
+      if (result == null || !result) {
+        print("Notification permissions were not granted on iOS/macOS.");
+      }
+    } else if (defaultTargetPlatform == TargetPlatform.android) {
+      // Android versions before 13 do not require explicit permission checks
+      print("Notification permissions are assumed granted on Android below API 33.");
+      // You may add logic for Android 13+ with the permission_handler package
+    }
+  }
+
+
+  Future<void> showNotification(String? title, String? body) async {
+    // Android-specific notification details
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+    AndroidNotificationDetails(
+      'your_channel_id',              // ID of the notification channel
+      'your_channel_name',            // Name of the notification channel
+      importance: Importance.max,     // Maximum importance level
+      priority: Priority.high,        // High priority
+      //   sound: RawResourceAndroidNotificationSound('alarm'),  // Custom sound
+      playSound: true,                // Play sound
+    );
+
+    // Darwin (iOS/macOS)-specific notification details
+/*  const DarwinNotificationDetails darwinPlatformChannelSpecifics = DarwinNotificationDetails(
+    sound: 'alarm.aiff', // Custom sound for iOS/macOS
+  );*/
+
+    // Combine both Android and iOS/macOS notification details
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(
+      android: androidPlatformChannelSpecifics,
+      //  iOS: darwinPlatformChannelSpecifics,
+    );
+
+    await flutterLocalNotificationsPlugin.show(
+      0,                                  // Notification ID
+      title,                              // Notification title
+      body,                               // Notification body
+      platformChannelSpecifics,           // Notification details
+    );
+  }
+}

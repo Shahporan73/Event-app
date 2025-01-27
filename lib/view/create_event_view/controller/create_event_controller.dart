@@ -125,12 +125,22 @@ class CreateEventController extends GetxController{
       print('Place Name: ${placeDetail['name']}');
       print('Address: ${placeDetail['formatted_address']}');
       print('Rating: ${placeDetail['rating']}');
+      print('User Ratings Total: ${placeDetail['user_ratings_total']}');
+
       var formattedAddress = placeDetail['formatted_address'];
-      var rating = placeDetail['rating'];
-      var review = placeDetail['reviews'];
-      int reviewCount = review.length;
+      // var rating = placeDetail['rating'];
+      // var reviews = placeDetail['user_ratings_total'] ?? 0;
+
+      // Ensure the rating is treated as a double
+      var rating = placeDetail['rating'] is int
+          ? (placeDetail['rating'] as int).toDouble()
+          : placeDetail['rating'];
+
+      // Ensure reviews is treated as an int
+      var reviews = placeDetail['user_ratings_total'] ?? 0;
+
       eventRating.value = rating;
-      totalReviews.value = reviewCount;
+      totalReviews.value = reviews;
       address.value = formattedAddress;
     } else {
       print("Failed to fetch place details. Status code: ${detailsResponse.statusCode}");
@@ -172,24 +182,35 @@ class CreateEventController extends GetxController{
   }
 
 
+
+
 // Function to create an event by search with image upload using MultipartRequest
   Future<void> createEventBySearch(String imgURL) async {
-    isLoading.value = true;  // Set loading state using GetX
-    try {
-      String token = LocalStorage.getData(key: "access_token");
-      double latitude = LocalStorage.getData(key: "latitude");
-      double longitude = LocalStorage.getData(key: "longitude");
+      // Set loading state using GetX
+    if(
+    nameController.text.toString().isEmpty
+        || address.value == '' || eventType.value == '' || eventSelectedDate.value == '' ||
+        aboutEventController.text.toString().isEmpty || eventRating.value == '' || totalReviews.value==''
+    || eventStartTime.value == '' || eventEndTime.value == ''
+    ){
+      Get.rawSnackbar(message: 'Something missing...');
+    }else {
+      isLoading.value = true;
+      try {
+        String token = LocalStorage.getData(key: "access_token");
+        double latitude = LocalStorage.getData(key: "latitude");
+        double longitude = LocalStorage.getData(key: "longitude");
 
-      // Prepare headers with authorization token
-      Map<String, String> headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      };
+        // Prepare headers with authorization token
+        Map<String, String> headers = {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        };
 
-      // Prepare the Uri for your API (replace with your actual API endpoint)
-      Uri uri = Uri.parse(Endpoints.createEventURL);
+        // Prepare the Uri for your API (replace with your actual API endpoint)
+        Uri uri = Uri.parse(Endpoints.createEventURL);
 
-      // if is empty img path
+        // if is empty img path
         print('Selected img method ');
         print('getImgeByClass == > ${imgURL}');
         print('getImgeByController == > ${imgUrl.value}');
@@ -215,29 +236,29 @@ class CreateEventController extends GetxController{
           ..fields['data'] = jsonEncode(data);
 
         // Add image to form data
-      if(imgUrl.isNotEmpty){
-        if (imgUrl.value.isNotEmpty) {
-          var file = File(imgUrl.value);
+        if(imgUrl.isNotEmpty){
+          if (imgUrl.value.isNotEmpty) {
+            var file = File(imgUrl.value);
 
-          if (await file.exists()) {
-            // Attach image as MultipartFile
-            String fileName = basename(file.path); // Extract file name
-            request.files.add(await http.MultipartFile.fromPath(
-              'image',    // This is the key the server expects for the image
-              file.path,
-              filename: fileName,
-            ));
+            if (await file.exists()) {
+              // Attach image as MultipartFile
+              String fileName = basename(file.path); // Extract file name
+              request.files.add(await http.MultipartFile.fromPath(
+                'image',    // This is the key the server expects for the image
+                file.path,
+                filename: fileName,
+              ));
+            } else {
+              Get.rawSnackbar(message: 'Image file not found');
+              isLoading.value = false;
+              return;
+            }
           } else {
-            Get.rawSnackbar(message: 'Image file not found');
+            Get.rawSnackbar(message: 'Please select an image.');
             isLoading.value = false;
             return;
           }
-        } else {
-          Get.rawSnackbar(message: 'Please select an image.');
-          isLoading.value = false;
-          return;
         }
-      }
 
         // Send the request
         http.StreamedResponse response = await request.send();
@@ -277,11 +298,18 @@ class CreateEventController extends GetxController{
           CustomSnackbar(message: 'Failed to create event',);
           isLoading.value = false;
         }
-    } catch (e) {
-      print('Error: $e');
-    } finally {
-      isLoading.value = false;  // Reset loading state
+      } catch (e) {
+        print('Error: $e');
+      } finally {
+        isLoading.value = false;  // Reset loading state
+      }
+
+
     }
+
+
+
+
   }
 
   // Function to pick image

@@ -22,39 +22,6 @@ class MyEventsModel {
 class MyEventList {
   MyEventList({
     required this.id,
-    required this.userId,
-    required this.eventId,
-    required this.status,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.event,
-  });
-
-  final String? id;
-  final String? userId;
-  final String? eventId;
-  final String? status;
-  final DateTime? createdAt;
-  final DateTime? updatedAt;
-  final Event? event;
-
-  factory MyEventList.fromJson(Map<String, dynamic> json){
-    return MyEventList(
-      id: json["id"],
-      userId: json["userId"],
-      eventId: json["eventId"],
-      status: json["status"],
-      createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
-      updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
-      event: json["event"] == null ? null : Event.fromJson(json["event"]),
-    );
-  }
-
-}
-
-class Event {
-  Event({
-    required this.id,
     required this.organizerId,
     required this.categoryId,
     required this.name,
@@ -86,13 +53,13 @@ class Event {
   final String? image;
   final Location? location;
   final dynamic reviews;
-  var rating;
+  final dynamic rating;
   final bool? isDelete;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
-  factory Event.fromJson(Map<String, dynamic> json){
-    return Event(
+  factory MyEventList.fromJson(Map<String, dynamic> json){
+    return MyEventList(
       id: json["id"],
       organizerId: json["organizerId"],
       categoryId: json["categoryId"],

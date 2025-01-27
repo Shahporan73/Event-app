@@ -16,7 +16,6 @@ import 'package:event_app/view/message_view/widget/videos_list_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class PersonalChatScreen extends StatefulWidget {
@@ -137,7 +136,26 @@ class _PersonalChatScreenState extends State<PersonalChatScreen> {
                   _scrollToBottom();
                 });
 
-                return ListView.builder(
+                // if (socketService.messages.isEmpty) {
+                //   return Center(
+                //       child: CustomText(
+                //           title: 'No messages yet.',
+                //           fontSize: 16,
+                //           fontWeight: FontWeight.w400,
+                //           color: AppColors.black100
+                //       ),
+                //   );
+                // }
+
+                return socketService.messages.isEmpty ?
+                Center(child: SpinKitRipple(color: AppColors.primaryColor, size: 40,)) :
+                    socketService.messages.isEmpty ? Center(child: CustomText(
+                        title: 'no_message_yet'.tr,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                        color: AppColors.black100
+                    ),) :
+                ListView.builder(
                   controller: _scrollController,
                   itemCount: socketService.messages.length,
                   shrinkWrap: true,
@@ -395,7 +413,7 @@ class _PersonalChatScreenState extends State<PersonalChatScreen> {
                     child: TextField(
                       controller: _messageController,
                       decoration: InputDecoration(
-                          hintText: 'Message',
+                          hintText: 'message'.tr,
                           suffixIcon: Container(
                             width: 80,
                             child: Row(
@@ -405,9 +423,7 @@ class _PersonalChatScreenState extends State<PersonalChatScreen> {
                                    // await uploadImageController.pickImages();
                                     uploadImageController.showMediaPicker(context);
                                   },
-                                  child: uploadImageController.isUploading.value || uploadImageController.isLoading.value ?
-                                  SpinKitThreeBounce(color: AppColors.primaryColor, size: 30) :
-                                  Icon(Icons.image, color: AppColors.secondaryColor,size: 26,),
+                                  child: Icon(Icons.image, color: AppColors.secondaryColor,size: 26,),
                                 ),
                                 widthBox10,
                                 Container(
@@ -420,16 +436,24 @@ class _PersonalChatScreenState extends State<PersonalChatScreen> {
                                   child: IconButton(
                                     onPressed: () async {
 
-                                      await socketService.submitMessage(
+                                      if(
+                                      _messageController.text.toString().isEmpty
+                                          // uploadImageController.uploadImageList.isEmpty ||
+                                          // uploadImageController.uploadVideoList.isEmpty
+                                      ){
+                                       return;
+                                      }else{
+                                        await socketService.submitMessage(
                                           text: _messageController.text,
                                           chatId:  widget.chatId,
-                                        imagesUrls: uploadImageController.uploadImageList.map((url) => url['url']).toList(),
-                                        videosUrls: uploadImageController.uploadVideoList.map((url) => url['url']).toList(),
-                                      );
+                                          imagesUrls: uploadImageController.uploadImageList.map((url) => url['url']).toList(),
+                                          videosUrls: uploadImageController.uploadVideoList.map((url) => url['url']).toList(),
+                                        );
 
-                                      _messageController.clear();
-                                      uploadImageController.uploadImageList.clear();
-                                      uploadImageController.uploadVideoList.clear();
+                                        _messageController.clear();
+                                        uploadImageController.uploadImageList.clear();
+                                        uploadImageController.uploadVideoList.clear();
+                                      }
                                     },
                                     icon: Image.asset(
                                       AppImages.sendIcon,

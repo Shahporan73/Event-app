@@ -1,6 +1,9 @@
 // Media Viewer Screen
+import 'package:event_app/data/api/base_client.dart';
 import 'package:event_app/res/common_controller/video_play_controller.dart';
+import 'package:event_app/res/common_widget/video_player_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:video_player/video_player.dart';
 
 class MediaViewerScreen extends StatefulWidget {
@@ -29,7 +32,7 @@ class _MediaViewerScreenState extends State<MediaViewerScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.black,
-        title: Text('Media Viewer'),
+        title: Text('media_viewer'.tr),
       ),
       backgroundColor: Colors.black,
       body: Column(
@@ -46,7 +49,7 @@ class _MediaViewerScreenState extends State<MediaViewerScreen> {
               itemBuilder: (context, index) {
                 final media = widget.mediaList[index];
                 if (media['type'] == 'video') {
-                  return VideoControls(videoController: VideoPlayerController.network(media['url']!));
+                  return VideoPlayerWidget(videoUrl: media['url']!);
                 } else {
                   return Image.network(
                     media['url']!,
@@ -59,7 +62,7 @@ class _MediaViewerScreenState extends State<MediaViewerScreen> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              "Viewing ${_currentIndex + 1} of ${widget.mediaList.length}",
+              "viewing".tr+" ${_currentIndex + 1} of ${widget.mediaList.length}",
               style: TextStyle(color: Colors.white, fontSize: 16),
             ),
           ),

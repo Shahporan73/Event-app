@@ -84,7 +84,7 @@ class PersonalInformationScreen extends StatelessWidget {
                 right: 16,
                 child: Center(
                     child: CustomAppBar(
-                      appBarName: "Profile",
+                      appBarName: "profile".tr,
                       titleColor: Colors.white,
                       leadingColor: Colors.white,
                       onTap: () => Get.back(),
@@ -103,7 +103,7 @@ class PersonalInformationScreen extends StatelessWidget {
                         children: [
 
                           Roundbutton(
-                            title: "Edit Profile",
+                            title: "edit_profile".tr,
                             onTap: (){
                               Get.to(
                                     () => EditProfileScreen(),
@@ -121,7 +121,7 @@ class PersonalInformationScreen extends StatelessWidget {
                           _buildListTile(
                             context: context,
                             icon: Icons.person,
-                            title: controller.name.value.isNotEmpty ? controller.name.value : 'Not Available',
+                            title: controller.name.value.isNotEmpty ? controller.name.value : 'not_available'.tr,
                             color: AppColors.primaryColor,
                             onTap: () {},
                           ),
@@ -129,7 +129,7 @@ class PersonalInformationScreen extends StatelessWidget {
                           _buildListTile(
                             context: context,
                             icon: Icons.email,
-                            title: controller.email.value.isNotEmpty ? controller.email.value : 'Not Available',
+                            title: controller.email.value.isNotEmpty ? controller.email.value : 'not_available'.tr,
                             color: AppColors.primaryColor,
                             onTap: () {},
                           ),
@@ -137,7 +137,7 @@ class PersonalInformationScreen extends StatelessWidget {
                           _buildListTile(
                             context: context,
                             icon: Icons.phone,
-                            title: controller.number.value.isNotEmpty ? controller.number.value : 'Not Available',
+                            title: controller.number.value.isNotEmpty ? controller.number.value : 'not_available'.tr,
                             color: AppColors.primaryColor,
                             onTap: () {},
                           ),
@@ -145,7 +145,7 @@ class PersonalInformationScreen extends StatelessWidget {
                           _buildListTile(
                             context: context,
                             icon: Icons.location_on,
-                            title: controller.address.value.isNotEmpty ? controller.address.value : 'Not Available',
+                            title: controller.address.value.isNotEmpty ? controller.address.value : 'not_available'.tr,
                             color: AppColors.primaryColor,
                             onTap: () {},
                           ),

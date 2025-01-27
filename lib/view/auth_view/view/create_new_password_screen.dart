@@ -62,7 +62,7 @@ class CreateNewPasswordScreen extends StatelessWidget {
                 ),
                 heightBox30,
                 // New password field
-                TextField(
+                Obx(() => TextField(
                   controller: controller.newPasswordController,
                   decoration: InputDecoration(
                     prefixIcon: Icon(Icons.lock),
@@ -83,10 +83,10 @@ class CreateNewPasswordScreen extends StatelessWidget {
                     ),
                   ),
                   obscureText: !controller.isNewPasswordVisible.value,
-                ),
+                ),),
                 SizedBox(height: 15.h),
                 // Confirm password field
-                TextField(
+                Obx(() => TextField(
                   controller: controller.confirmPasswordController,
                   decoration: InputDecoration(
                     prefixIcon: Icon(Icons.lock),
@@ -107,7 +107,7 @@ class CreateNewPasswordScreen extends StatelessWidget {
                     ),
                   ),
                   obscureText: !controller.isConfirmPasswordVisible.value,
-                ),
+                ),),
 
                 heightBox30,
                 Obx(() => Roundbutton(

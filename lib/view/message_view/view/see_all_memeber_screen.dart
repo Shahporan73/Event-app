@@ -29,7 +29,7 @@ class SeeAllMemeberScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 CustomAppBar(
-                  appBarName: "Members",
+                  appBarName: "Members".tr,
                   onTap: () {
                     Get.back();
                   },
@@ -37,12 +37,12 @@ class SeeAllMemeberScreen extends StatelessWidget {
                 heightBox20,
 
                 RoundTextField(
-                  hint: "Search Members",
+                  hint: "search_members".tr,
                   borderRadius: 44.r,
                   focusBorderRadius: 44.r,
                   prefixIcon: Icon(
                     Icons.search_outlined,
-                    size: 26.sp,
+                    size: 26,
                   ),
                 ),
                 heightBox20,
@@ -54,7 +54,7 @@ class SeeAllMemeberScreen extends StatelessWidget {
                     itemBuilder: (context, index) {
                       return ListTile(
                         leading: ClipRRect(
-                          borderRadius: BorderRadius.circular(30.r),
+                          borderRadius: BorderRadius.circular(30),
                           child: Image.network(
                             'https://t4.ftcdn.net/jpg/03/64/21/11/360_F_364211147_1qgLVxv1Tcq0Ohz3FawUfrtONzz8nq3e.jpg',
                             width: 40,

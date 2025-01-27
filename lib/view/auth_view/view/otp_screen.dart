@@ -90,18 +90,19 @@ class OtpScreen extends StatelessWidget {
                 ),
 
                 heightBox100,
-                Roundbutton(
+                Obx(() => Roundbutton(
                   title: "verify_otp".tr,
+                  isLoading: controller.isLoading.value,
                   onTap: () {
                     String otp = controller.otpControllers.map((e) => e.text).join(); // Concatenate OTP from each controller
                     if (otp.length == 6) {
                       // Implement OTP verification logic here (call API or service)
                       controller.otpSubmitted();
                     } else {
-                      Get.snackbar("Error", "Please enter the full OTP", snackPosition: SnackPosition.BOTTOM);
+                      Get.snackbar("error".tr, "please_enter_the_full_otp".tr, snackPosition: SnackPosition.BOTTOM);
                     }
                   },
-                ),
+                ),),
 
                 20.heightBox,
                 Obx(() => controller.secondsRemaining.value == 0
@@ -110,7 +111,7 @@ class OtpScreen extends StatelessWidget {
                   borderRadius: 4,
                   buttonColor: Colors.red.shade50,
                   titleColor: Colors.black,
-                  title: "resend_otp".tr,
+                  title: "Resend Otp".tr,
                   onTap: () {
                     controller.resendOtp();  // Call resend OTP function
                   },
@@ -120,7 +121,7 @@ class OtpScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     CustomText(
-                      title: "resend_code_in".tr,
+                      title: "Resend code in ".tr,
                       fontWeight: FontWeight.w500,
                       fontSize: 18,
                       color: Colors.black,

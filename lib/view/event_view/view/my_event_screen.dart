@@ -5,6 +5,7 @@ import 'package:event_app/res/common_widget/custom_app_bar.dart';
 import 'package:event_app/res/common_widget/custom_network_image_widget.dart';
 import 'package:event_app/res/custom_style/custom_size.dart';
 import 'package:event_app/res/utils/share_event.dart';
+import 'package:event_app/res/utils/time_convetor.dart';
 import 'package:event_app/view/event_view/controller/my_event_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -37,7 +38,7 @@ class MyEventScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CustomAppBar(
-                    appBarName: "My Event",
+                    appBarName: "my_event".tr,
                     widget: SizedBox(),
                   ),
 
@@ -48,14 +49,14 @@ class MyEventScreen extends StatelessWidget {
                       controller.getMyEvents();
                     },
                     child: controller.myEventList.isEmpty ?
-                    Center(child: Text("No Event Found")) :
+                    Center(child: Text("no_event_found".tr)) :
                     ListView.builder(
                       shrinkWrap: true,
                       physics: AlwaysScrollableScrollPhysics(),
                       scrollDirection: Axis.vertical,
                       itemCount: controller.myEventList.length,
                       itemBuilder: (context, index) {
-                        var data = controller.myEventList[index].event!;
+                        var data = controller.myEventList[index];
                         DateTime date;
                         try {
                           date = DateTime.parse(data.date.toString());
@@ -101,7 +102,7 @@ class MyEventScreen extends StatelessWidget {
                                     ClipRRect(
                                       borderRadius: BorderRadius.circular(8.0),
                                       child: CustomNetworkImage(
-                                        imageUrl: data.image ??  'https://mlscottsdale.com/get/files/image/galleries/Dining_Room_AZ_Shelby_Moore.jpg',
+                                        imageUrl: data.image ??  placeholderImage,
                                         height: height * 0.190,
                                         width: width * 0.90,
                                       ),
@@ -110,7 +111,7 @@ class MyEventScreen extends StatelessWidget {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          data.name ?? "Unavoidable Events",
+                                          data.name ?? 'not_available'.tr,
                                           style: GoogleFonts.poppins(
                                             color: Colors.black,
                                             fontSize: width * 0.04,
@@ -181,7 +182,7 @@ class MyEventScreen extends StatelessWidget {
                                                       SizedBox(width: width * 0.015),
                                                       Text(
                                                         overflow: TextOverflow.ellipsis,
-                                                        data.address!.length > 20 ? data.address!.substring(0, 20) + '...' : data.address ?? "New York, USA",
+                                                        getLimitedWord(data.address, 20),
                                                         style: GoogleFonts.poppins(
                                                           color: Colors.black,
                                                           fontSize: 10,

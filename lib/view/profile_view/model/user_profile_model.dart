@@ -94,7 +94,7 @@ class Post {
   final int? commentCount;
   final DateTime? createdAt;
   final DateTime? updatedAt;
-  final List<Comment> like;
+  final List<Like> like;
   final List<Comment> comment;
   final List<FileElement> files;
   final List<FileElement> videos;
@@ -109,7 +109,7 @@ class Post {
       commentCount: json["commentCount"],
       createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
       updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
-      like: json["like"] == null ? [] : List<Comment>.from(json["like"]!.map((x) => Comment.fromJson(x))),
+      like: json["like"] == null ? [] : List<Like>.from(json["like"]!.map((x) => Like.fromJson(x))),
       comment: json["comment"] == null ? [] : List<Comment>.from(json["comment"]!.map((x) => Comment.fromJson(x))),
       files: json["files"] == null ? [] : List<FileElement>.from(json["files"]!.map((x) => FileElement.fromJson(x))),
       videos: json["videos"] == null ? [] : List<FileElement>.from(json["videos"]!.map((x) => FileElement.fromJson(x))),
@@ -174,6 +174,33 @@ class FileElement {
       postId: json["postId"],
       url: json["url"],
       key: json["key"],
+      createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
+      updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
+    );
+  }
+
+}
+
+class Like {
+  Like({
+    required this.id,
+    required this.userId,
+    required this.postId,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  final String? id;
+  final String? userId;
+  final String? postId;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+
+  factory Like.fromJson(Map<String, dynamic> json){
+    return Like(
+      id: json["id"],
+      userId: json["userId"],
+      postId: json["postId"],
       createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
       updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
     );

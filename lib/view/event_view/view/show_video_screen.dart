@@ -9,7 +9,6 @@ import 'package:event_app/view/event_view/controller/camera_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 
 class ShowViewScreen extends StatefulWidget {
@@ -92,28 +91,29 @@ class _ShowViewScreenState extends State<ShowViewScreen> {
               await cameraManagerController.uploadVideo(context);
             },
             child: Obx(
-                  () => Container(
-                padding: EdgeInsets.all(8),
-                margin: EdgeInsets.only(right: 16),
+                  () =>cameraManagerController.isUploading.value
+                      ? const SpinKitThreeBounce(
+                    size: 16,
+                    color: AppColors.primaryColor,
+                  ) : Container(
+                padding: const EdgeInsets.all(8),
+                margin: const EdgeInsets.only(right: 16),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(4),
                 ),
-                child: cameraManagerController.isUploading.value
-                    ? SpinKitCircle(
-                  size: 16,
-                  color: AppColors.primaryColor,
-                )
-                    : Row(
+                child: Row(
                   children: [
-                    Icon(Icons.cloud_upload_outlined, color: Colors.black),
-                    widthBox8,
-                    CustomText(title: "Upload", color: Colors.black)
+                    const Icon(Icons.cloud_upload_outlined, color: Colors.black),
+                    const SizedBox(width: 8),
+                    CustomText(title: "upload".tr, color: Colors.black),
                   ],
                 ),
               ),
             ),
           ),
+
+
           widthBox5,
           GestureDetector(
             onTap: () async {
@@ -136,7 +136,7 @@ class _ShowViewScreenState extends State<ShowViewScreen> {
                   children: [
                     Icon(Icons.delete_outline, color: Colors.red),
                     widthBox8,
-                    CustomText(title: "Delete", color: Colors.red)
+                    CustomText(title: "Delete".tr, color: Colors.red)
                   ],
                 ),
               ),

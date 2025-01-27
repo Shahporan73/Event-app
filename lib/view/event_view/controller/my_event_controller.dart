@@ -59,6 +59,10 @@ class MyEventController extends GetxController{
     }
   }
 
+
+
+
+
   Future<void> getMyEventsPost() async {
     isLoading.value = true;
     try {

@@ -2,89 +2,43 @@
 
 import 'package:event_app/res/common_widget/custom_app_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 
+import '../../data/html_view/html_view.dart';
 import '../../res/app_colors/App_Colors.dart';
 import '../../res/common_widget/custom_text.dart';
 import '../../res/custom_style/custom_size.dart';
+import '../settings_view/controller/setting_controller.dart';
 
 class TermsAndConditionsScreen extends StatelessWidget {
-  const TermsAndConditionsScreen({super.key});
-
+  TermsAndConditionsScreen({super.key});
+  final SettingController controller = Get.put(SettingController());
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: AppColors.bgColor,
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CustomAppBar(
-                  appBarName: "Terms and Conditions",
-                  onTap: () {
-                    Get.back();
-                  },
-                ),
-
-                heightBox30,
-                CustomText(
-                  title:
-                  '1-Lorem ipsum dolor sit amet consectetur. '
-                      'Imperdiet iaculis convallis bibendum massa id '
-                      'elementum consectetur neque mauris.',
-                  fontSize: 13,
-                  fontWeight: FontWeight.w400,
-                  color: AppColors.black100,
-                ),
-                heightBox20,
-                CustomText(
-                  title:
-                  '2-Lorem ipsum dolor sit amet consectetur. '
-                      'Imperdiet iaculis convallis bibendum massa id '
-                      'elementum consectetur neque mauris.',
-                  fontSize: 13,
-                  fontWeight: FontWeight.w400,
-                  color: AppColors.black100,
-                ),
-                heightBox20,
-                CustomText(
-                  title:
-                  '3-Lorem ipsum dolor sit amet consectetur. '
-                      'Imperdiet iaculis convallis bibendum massa id '
-                      'elementum consectetur neque mauris.',
-                  fontSize: 13,
-                  fontWeight: FontWeight.w400,
-                  color: AppColors.black100,
-                ),
-                heightBox20,
-                CustomText(
-                  title:
-                  '4-Lorem ipsum dolor sit amet consectetur. '
-                      'Imperdiet iaculis convallis bibendum massa id '
-                      'elementum consectetur neque mauris.',
-                  fontSize: 13,
-                  fontWeight: FontWeight.w400,
-                  color: AppColors.black100,
-                ),
-                heightBox20,
-                CustomText(
-                  title:
-                  '5-Lorem ipsum dolor sit amet consectetur. '
-                      'Imperdiet iaculis convallis bibendum massa id '
-                      'elementum consectetur neque mauris.',
-                  fontSize: 13,
-                  fontWeight: FontWeight.w400,
-                  color: AppColors.black100,
-                ),
-              ],
+      appBar: AppBar(
+        title: CustomText(title: 'terms_and_conditions'.tr, fontSize: 18, fontWeight: FontWeight.w600,),
+        backgroundColor: AppColors.bgColor,
+        centerTitle: true,
+      ),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+        child: Obx(() => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            controller.isLoading.value? Center(
+              child: SpinKitCircle(
+                color: AppColors.primaryColor,
+              ),
+            )  :HTMLView(
+                htmlData: controller.termsAndCondition.value.toString()
             ),
-          ),
-        ),
+          ],
+        ),),
       ),
     );
   }

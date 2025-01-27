@@ -62,11 +62,11 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
                 print('myId ===> $myId, and user id => $userId');
 
-                return controller.isLoading.value ? Center(child: SpinKitCircle(color: AppColors.primaryColor),) : Column(
+                return data == null ? Center(child: SpinKitCircle(color: AppColors.primaryColor),) : Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CustomAppBar(
-                      appBarName: "Profile",
+                      appBarName: "profile".tr,
                       onTap: () {
                         Get.back();
                       },
@@ -87,7 +87,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(100.r),
                             child: CustomNetworkImage(
-                              imageUrl: data?.profilePicture ?? placeholderImage,
+                              imageUrl: data.profilePicture ?? placeholderImage,
                               width: 100,
                               height: 100,
                             ),
@@ -96,7 +96,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         widthBox10,
                         Expanded(
                           child: CustomText(
-                              title: data?.name ?? '',
+                              title: data.name ?? '',
                               fontSize: 20,
                               fontWeight: FontWeight.w700,
                               color: AppColors.blackColor
@@ -118,7 +118,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 CustomText(
-                                  title: 'Posts',
+                                  title: 'posts'.tr,
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400,
                                   color: Color(0xff52697E),
@@ -190,7 +190,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     // follow and chat button
                     heightBox20,
                     isMe? Roundbutton(
-                        title: 'Edit profile',
+                        title: 'edit_profile'.tr,
                         padding_vertical: 8,
                         borderRadius: 8,
                         onTap: (){
@@ -208,25 +208,45 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                             padding_vertical: 8,
                             borderRadius: 8,
                             fontSize: 14,
-                            title: LocalStorage.getData(key: 'is_follow') !=null ?
-                            "Following" : "Follow",
-                            onTap: () async{
-                              print("userId ====> ${data?.id.toString()}");
+                            title: controller.followStates[data.id.toString()] == true
+                                ? "Following"
+                                : "Follow",
+
+                            widget: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                CustomText(
+                                  title: controller.followStates[data.id.toString()] == true
+                                      ? "Following"
+                                      : "Follow",
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                                widthBox5,
+                                controller.isFollowLoading.value?
+                                SpinKitThreeBounce(color: Colors.white, size: 12,):SizedBox(),
+                              ],
+                            ),
+                            onTap: () async {
+                              print("userId ====> ${data.id.toString()}");
                               await controller.onFollow(
-                                data?.id.toString() ?? '',
+                                data.id.toString() ?? '',
                               );
                             },
-                          ),),
+                          ),
+                        ),
                         widthBox20,
                         GestureDetector(
                           onTap: () {
-                            if(data?.id == null){
+                            if (data?.id == null) {
                               Get.rawSnackbar(message: "User not found");
-                            }else{
+                            } else {
                               personalChatController.getChatList(
-                                  receiverId: data?.id ?? "",
-                                  userName: data?.name ?? "",
-                                  userImage: data?.profilePicture ?? ""
+                                receiverId: data?.id ?? "",
+                                userName: data?.name ?? "",
+                                userImage: data?.profilePicture ?? "",
                               );
                             }
                           },
@@ -247,10 +267,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                               ],
                             ),
                             child: CustomText(
-                                title: "Chat",
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400,
-                                color: AppColors.blackColor
+                              title: "chat".tr,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              color: AppColors.blackColor,
                             ),
                           ),
                         ),
@@ -261,7 +281,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     heightBox10,
                     Center(
                       child: CustomText(
-                          title: "Posts",
+                          title: "posts".tr,
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
                           color: AppColors.primaryColor
@@ -270,7 +290,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     Divider(),
                     controller.postList.isEmpty?
                     Center(
-                      child: CustomText(title: 'No post found',
+                      child: CustomText(title: 'no_post_found'.tr,
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
                           color: AppColors.primaryColor),
@@ -298,6 +318,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         ];
 
                         print("mediaList ====> ${mediaList}");
+                        bool isLiked = post.like.any((e) => e.userId == myId);
 
                         return PostWidget(
                           profileImage: data?.profilePicture ?? placeholderImage,
@@ -307,7 +328,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                           time: createdTime,
                           likeCount: '${post.likeCount ?? 0}',
                           commentCount: '${post.commentCount ?? 0}',
-                          isLiked: false,
+                          isLiked: isLiked,
                           onDelete: () async {
                             await myEventController.deletePost(post.id.toString());
                             mediaList.clear();
@@ -324,11 +345,11 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                             );
                           },
                           onLike: () async {
-                            if(isMe == true) {
-                              Get.rawSnackbar(message: 'Like',backgroundColor: Colors.green);
-                            }else {
-                              Get.rawSnackbar(message: 'UnLike', backgroundColor: Colors.red);
-                            }
+                            // if(isMe == true) {
+                            //   Get.rawSnackbar(message: 'Like',backgroundColor: Colors.green);
+                            // }else {
+                            //   Get.rawSnackbar(message: 'UnLike', backgroundColor: Colors.red);
+                            // }
                             await myEventController.createLike(post.id.toString());
                           },
                           onComment: () {

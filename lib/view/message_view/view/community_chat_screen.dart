@@ -62,6 +62,7 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
 
   void fetchMessages() async {
     String? communityId = await LocalStorage.getData(key: 'communityId');
+    socketService.messages.clear();
     if (communityId != null) {
       socketService.fetchMessages(chatId: communityId);
     } else {
@@ -74,75 +75,6 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
     super.dispose();
     socketService.seenMessage(chatId: widget.chatId, token: LocalStorage.getData(key: 'access_token'));
   }
-
-
-/*  void _sendMessage() async {
-    try {
-      String message = _messageController.text.trim();
-
-      // Check if the message is not empty
-      if (message.isEmpty) {
-        print('Message is empty. Cannot send.');
-        return;
-      }
-
-      String? communityId = await LocalStorage.getData(key: 'communityId');
-      String? accessToken = await LocalStorage.getData(key: 'access_token');
-
-      // Validate required data
-      if (communityId == null) {
-        print('Community ID not found!');
-        return;
-      }
-
-      if (accessToken == null) {
-        print('Access token not found!');
-        return;
-      }
-
-      // Ensure socket is connected
-      if (!socketService.socket.connected) {
-        print('Socket is not connected. Attempting to reconnect...');
-        socketService.socket.connect();
-        await Future.delayed(Duration(seconds: 2)); // Allow time for reconnection
-      }
-
-      // Emit the message event
-      print('Sending message: $message to chatId: $communityId');
-      socketService.socket.emitWithAck(
-        'send-message',
-        {
-          'chatId': communityId,
-          'content': message,
-          'token': accessToken,
-        },
-        ack: (response) {
-          if (response != null && response['success'] == true) {
-            print('Message sent successfully: $response');
-            _messageController.clear();
-            _scrollToBottom();
-          } else {
-            print('Failed to send message. Server response: ${response?['message'] ?? 'No response'}');
-          }
-        },
-      );
-    } catch (e) {
-      print('Error sending message: $e');
-    }
-  }*/
-
-
-  /*void _scrollToBottom() {
-    Future.delayed(Duration(milliseconds: 300), () {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      }
-    });
-  }*/
   void _scrollToBottom() {
     // Ensure the operation is executed after the current frame.
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -213,7 +145,7 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                         color: Color(0xff1D242D),
                       ),
                       subtitle: CustomText(
-                        title: '${widget.members.length ?? 0} members',
+                        title: '${widget.members.length ?? 0} '+'members'.tr,
                         fontSize: 10,
                         fontWeight: FontWeight.w400,
                         color: Color(0xff1D242D),
@@ -229,36 +161,13 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
             // Chat messages section
             Expanded(
               child: Obx(() {
-
-                // Check if the data is loading
-                if (socketService.isLoading.value) {
-                  return Center(
-                    child: CircularProgressIndicator(
-                      color: AppColors.primaryColor,
-                    ),
-                  );
-                }
-
-                // Show "No messages yet" when the list is empty
-                if (socketService.messages.isEmpty) {
-                  return Center(
-                    child: Text(
-                      "No messages yet",
-                      style: GoogleFonts.roboto(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 16,
-                        color: AppColors.black100,
-                      ),
-                    ),
-                  );
-                }
-
-
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   _scrollToBottom();
                 });
 
-                return ListView.builder(
+                return socketService.isLoading.value || socketService.messages.isEmpty?
+                Center(child: SpinKitRipple(color: AppColors.primaryColor, size: 32,)) :
+                ListView.builder(
                   controller: _scrollController,
                   shrinkWrap: true,
                   itemCount: socketService.messages.length,
@@ -422,7 +331,8 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
 
             // Upload image and video section
             Obx(() {
-              return uploadImageController.uploadImageList.isEmpty && uploadImageController.uploadVideoList.isEmpty
+              return uploadImageController.uploadImageList.isEmpty &&
+                  uploadImageController.uploadVideoList.isEmpty
                   ? SizedBox()
                   : SingleChildScrollView(
                 scrollDirection: Axis.horizontal, // Enable horizontal scrolling
@@ -573,7 +483,7 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                     child: TextField(
                       controller: _messageController,
                       decoration: InputDecoration(
-                        hintText: 'Message',
+                        hintText: 'message'.tr,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8.r),
                           borderSide: BorderSide.none,
@@ -590,21 +500,31 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                       // await uploadImageController.pickImages();
                       uploadImageController.showMediaPicker(context);
                     },
-                    child: uploadImageController.isUploading.value || uploadImageController.isLoading.value ?
-                    SpinKitThreeBounce(color: AppColors.primaryColor, size: 30) :
-                    Icon(Icons.image, color: AppColors.secondaryColor,size: 26,),
+                    child: Icon(Icons.image, color: AppColors.secondaryColor,size: 26,),
                   ),
                   IconButton(
                     onPressed: () async {
-                      await socketService.submitMessage(
+
+                      if(
+                      _messageController.text.isEmpty
+                          // uploadImageController.uploadImageList.isEmpty ||
+                          // uploadImageController.uploadVideoList.isEmpty
+                      ){
+                        return;
+                      }else{
+
+                        await socketService.submitMessage(
                           text: _messageController.text,
-                        chatId:  widget.chatId,
-                        imagesUrls: uploadImageController.uploadImageList.map((url) => url['url']).toList(),
-                        videosUrls: uploadImageController.uploadVideoList.map((url) => url['url']).toList(),
-                      );
-                      _messageController.clear();
-                      uploadImageController.uploadImageList.clear();
-                      uploadImageController.uploadVideoList.clear();
+                          chatId:  widget.chatId,
+                          imagesUrls: uploadImageController.uploadImageList.map((url) => url['url']).toList(),
+                          videosUrls: uploadImageController.uploadVideoList.map((url) => url['url']).toList(),
+                        );
+                        _messageController.clear();
+                        uploadImageController.uploadImageList.clear();
+                        uploadImageController.uploadVideoList.clear();
+
+                      }
+
                       },
                       icon: Image.asset(
                       AppImages.sendIcon,

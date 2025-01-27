@@ -6,6 +6,7 @@ import 'package:event_app/data/token_manager/local_storage.dart';
 import 'package:event_app/res/common_widget/custom_snackbar.dart';
 import 'package:event_app/view/auth_view/view/user_otp_verified_screen.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ForgotPasswordController extends GetxController{
@@ -28,7 +29,7 @@ class ForgotPasswordController extends GetxController{
       print('hit api ${Endpoints.forgotPasswordUrl}');
       print("responseBody ====> $responseBody");
       if(responseBody !=null){
-        CustomSnackbar(message: 'Otp sent successfully',);
+        Get.rawSnackbar(message: "otp_sent_successfully".tr, backgroundColor: Colors.green, snackPosition: SnackPosition.BOTTOM);
         LocalStorage.saveData(key: 'forgot_token', data: responseBody['data']['token']);
         print('forgot token ${responseBody['data']['token']}');
         Get.to(

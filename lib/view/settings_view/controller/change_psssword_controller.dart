@@ -32,34 +32,34 @@ class ChangePasswordController extends GetxController{
   Future<void> onChangePassword(context) async {
     // Validate form inputs before making the API request
     if (oldPasswordController.text.trim().isEmpty) {
-      Get.snackbar("Error", "Old password is required");
+      Get.snackbar("error".tr, "old_password_is_required".tr);
       return;
     }
 
     if (newPasswordController.text.trim().isEmpty) {
-      Get.snackbar("Error", "New password is required");
+      Get.snackbar("error".tr, "new_password_is_required".tr);
       return;
     }
 
     if (confirmPasswordController.text.trim().isEmpty) {
-      Get.snackbar("Error", "Confirm password is required");
+      Get.snackbar("error".tr, "confirm_password_is_required".tr);
       return;
     }
 
     // Validate the minimum length for passwords
     if (newPasswordController.text.trim().length < 6) {
-      Get.snackbar("Error", "New password must be at least 6 characters long");
+      Get.snackbar("error".tr, "new_password_must_be_at_least_6_characters_long".tr);
       return;
     }
 
     if (confirmPasswordController.text.trim().length < 6) {
-      Get.snackbar("Error", "Confirm password must be at least 6 characters long");
+      Get.snackbar("error".tr, "confirm_password_must_be_at_least_6_characters_long".tr);
       return;
     }
 
     // Check if new password and confirm password match
     if (newPasswordController.text.trim() != confirmPasswordController.text.trim()) {
-      Get.snackbar("Error", "New password and confirm password do not match");
+      Get.snackbar("error".tr, "new_password_and_confirm_password_do_not_match".tr);
       return;
     }
 
@@ -67,13 +67,13 @@ class ChangePasswordController extends GetxController{
       isLoading.value = true;
       Map<String, String> body = {
         'oldPassword': oldPasswordController.text.trim(),
-        'newPassword': newPasswordController.text.trim(),
+        'newPassword': confirmPasswordController.text.trim(),
       };
 
       dynamic responseBody = await BaseClient.handleResponse(
         await BaseClient.patchRequest(
           api: Endpoints.changePasswordURL,
-          body: body,
+          body: jsonEncode(body),
         ),
       );
 
@@ -81,10 +81,8 @@ class ChangePasswordController extends GetxController{
       print("responseBody ====> $responseBody");
 
       if (responseBody != null) {
-        Get.snackbar("Success", responseBody['message'],
-            snackPosition: SnackPosition.TOP,
-        colorText: Colors.white, backgroundColor: Colors.green
-        );
+        Get.rawSnackbar(message: responseBody['message']);
+
         Navigator.pop(context);
       }
 

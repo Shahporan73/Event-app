@@ -1,10 +1,11 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, prefer_interpolation_to_compose_strings
 
 import 'package:event_app/data/token_manager/const_veriable.dart';
 import 'package:event_app/data/token_manager/local_storage.dart';
 import 'package:event_app/res/app_colors/App_Colors.dart';
 import 'package:event_app/res/common_widget/custom_text.dart';
 import 'package:event_app/res/custom_style/custom_size.dart';
+import 'package:event_app/res/utils/time_convetor.dart';
 import 'package:event_app/view/profile_view/controller/my_invited_event_controller.dart';
 import 'package:event_app/view/profile_view/view/invited_event_details_screen.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +25,7 @@ class InviteListScreen extends StatelessWidget {
       backgroundColor: AppColors.bgColor,
       appBar: AppBar(
         backgroundColor: AppColors.bgColor,
-        title: const Text('Invite List'),
+        title: Text('invite_list'.tr),
         centerTitle: true,
         automaticallyImplyLeading: true,
       ),
@@ -36,7 +37,7 @@ class InviteListScreen extends StatelessWidget {
             Center(child: CircularProgressIndicator()) : Column(
               children: [
                 controller.myInvitePendingList.isEmpty ?
-                Center(child: CustomText(title: "No Event Found")) :
+                Center(child: CustomText(title: "not_event_request_found".tr)) :
                 ListView.builder(
                     shrinkWrap: true,
                     physics: ScrollPhysics(),
@@ -101,9 +102,7 @@ class InviteListScreen extends StatelessWidget {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       CustomText(
-                                        title: data.event?.name != null && data.event!.name!.length > 20
-                                            ? data.event!.name!.substring(0, 20) + '...'
-                                            : data.event?.name ?? "Unknown",
+                                        title: getLimitedWord(data.event?.name, 20),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                         fontSize: 14,
@@ -111,22 +110,20 @@ class InviteListScreen extends StatelessWidget {
                                         color: Colors.white,
                                       ),
                                       CustomText(
-                                        title: data.event?.address != null && data.event!.address!.length > 30
-                                            ? data.event!.address!.substring(0, 30) + '...'
-                                            : data.event?.address ?? "Unknown",
+                                        title: getLimitedWord(data.event?.address, 30),
                                         fontSize: 10,
                                         fontWeight: FontWeight.w400,
                                         color: Colors.white,
                                       ),
 
                                       CustomText(
-                                        title: 'Event Date: $formattedDate',
+                                        title: 'event_date'.tr+' $formattedDate',
                                         fontSize: 9,
                                         fontWeight: FontWeight.w400,
                                         color: Colors.white,
                                       ),
                                       CustomText(
-                                        title: 'Event Time: $time',
+                                        title: 'event_time'.tr+' $time',
                                         fontSize: 9,
                                         fontWeight: FontWeight.w400,
                                         color: Colors.white,

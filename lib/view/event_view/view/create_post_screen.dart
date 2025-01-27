@@ -37,7 +37,7 @@ class CreatePostScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CustomAppBar(
-                    appBarName: "New Post",
+                    appBarName: "new_post".tr,
                     onTap: () {
                       Get.back();
                     },
@@ -66,7 +66,7 @@ class CreatePostScreen extends StatelessWidget {
                               child: Icon(
                                 Icons.camera_alt_outlined,
                                 color: Colors.blue,
-                                size: 32.sp,
+                                size: 32,
                               ),
                             ),
                           ),
@@ -133,78 +133,95 @@ class CreatePostScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                  heightBox10,
-                  postController.uploadImageList.isEmpty ? SizedBox() : Row(
-                    children: [
-                      CustomText(
-                          title: "Remove ${postController.uploadImageList.length} images",
-                          fontWeight: FontWeight.w400, fontSize: 14,
-                          color: Colors.green
-                      ),
-                      Spacer(),
-                      GestureDetector(
-                        onTap: () {
-                          postController.deletedImages();
-                        },
-                        child: postController.isDeleting.value ? CircularProgressIndicator() : Icon(
-                          Icons.cancel_outlined,
-                          color: Colors.red,
-                        ),
-                      ),
-                    ],
-                  ),
 
 
-                  // video
-                  heightBox20,
-                  cameraController.uploadedVideoLink.value.isEmpty
-                      ? SizedBox()
-                      : Center(
-                    child: Row(
-                      children: [
-                        CustomText(
-                            title: "Video ready for post",
-                            fontWeight: FontWeight.w400, fontSize: 14,
-                            color: Colors.green
-                        ),
-                        Spacer(),
-                        GestureDetector(
-                          onTap: () {
-                            cameraController.deletedVideo();
-                          },
-                          child: cameraController.isDeleting.value ? CircularProgressIndicator() : Icon(
-                            Icons.cancel_outlined,
-                            color: Colors.red,
+                  heightBox30,
+
+                  // image , video , content
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          postController.uploadImageList.isEmpty ? SizedBox() : Row(
+                            children: [
+                              CustomText(
+                                  title: "remove"+" ${postController.uploadImageList.length} "+"images".tr,
+                                  fontWeight: FontWeight.w400, fontSize: 14,
+                                  color: Colors.green
+                              ),
+                              Spacer(),
+                              GestureDetector(
+                                onTap: () {
+                                  postController.deletedImages();
+                                },
+                                child: postController.isDeleting.value ? CircularProgressIndicator() : Icon(
+                                  Icons.cancel_outlined,
+                                  color: Colors.red,
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
+
+
+                          // video
+                          heightBox20,
+                          cameraController.uploadedVideoLink.value.isEmpty
+                              ? SizedBox()
+                              : Center(
+                            child: Row(
+                              children: [
+                                CustomText(
+                                    title: "video_ready_for_post".tr,
+                                    fontWeight: FontWeight.w400, fontSize: 14,
+                                    color: Colors.green
+                                ),
+                                Spacer(),
+                                GestureDetector(
+                                  onTap: () {
+                                    cameraController.deletedVideo();
+                                  },
+                                  child: cameraController.isDeleting.value ? CircularProgressIndicator() : Icon(
+                                    Icons.cancel_outlined,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          heightBox20,
+                          RoundTextField(
+                            controller: postController.postController,
+                            hint: "what_you_want_to_say".tr,
+                            maxLine: 5,
+                          ),
+
+
+                          heightBox30,
+                          Roundbutton(
+                            title: "post_now".tr,
+                            isLoading: postController.isLoading.value,
+                            onTap: () async{
+                              if(postController.postController.text.isEmpty) {
+                                Get.rawSnackbar(message: "please_enter_some_text".tr,
+                                    backgroundColor: Colors.red,
+                                    snackPosition: SnackPosition.TOP
+                                );
+                              }else
+                              if(postController.postController.text.length < 5) {
+                                Get.rawSnackbar(message: "please_enter_at_least_5_characters",
+                                    backgroundColor: Colors.red,
+                                    snackPosition: SnackPosition.BOTTOM);
+                              }else{
+                                await postController.createPost(context,eventId);
+                              }
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   ),
 
-                  heightBox20,
-                  RoundTextField(
-                    controller: postController.postController,
-                    hint: "What you want to say?",
-                    maxLine: 5,
-                  ),
-
-                  Spacer(),
-                  Roundbutton(
-                    title: "Post Now",
-                    isLoading: postController.isLoading.value,
-                    onTap: () async{
-                      if(postController.postController.text.isEmpty) {
-                        Get.rawSnackbar(message: "Please enter some text", backgroundColor: Colors.red, snackPosition: SnackPosition.BOTTOM);
-                      }else
-                      if(postController.postController.text.length < 5) {
-                        Get.rawSnackbar(message: "Please enter at least 5 characters",
-                            backgroundColor: Colors.red,
-                            snackPosition: SnackPosition.BOTTOM);
-                      }else{
-                        await postController.createPost(context,eventId);
-                      }
-                    },
-                  ),
                 ],
               );
             },
@@ -225,9 +242,7 @@ class CreatePostScreen extends StatelessWidget {
               children: <Widget>[
                 CustomText(
                   textAlign: TextAlign.center,
-                  title: 'Record videos effortlessly with '
-                      'a 120-second duration—perfect for '
-                      'capturing concise,impactful moments!',
+                  title: 'record_videos_effortlessly_with_a_120_second_duration_perfect_for_capturing_concise_impactful_moments'.tr,
                   fontWeight: FontWeight.w400,
                   fontSize: 14,
                   color: Color(0xff595959),
@@ -237,7 +252,7 @@ class CreatePostScreen extends StatelessWidget {
           ),
           actions: <Widget>[
             Roundbutton(
-                title: "Open Camera",
+                title: "open_camera".tr,
                 fontSize: 14,
                 onTap: () {
                   // Dismiss the dialog

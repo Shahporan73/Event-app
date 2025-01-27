@@ -76,7 +76,7 @@ class ProfileScreen extends StatelessWidget {
                           const SizedBox(height: 10),
                           // Name Text
                           Text(
-                            controller.name.value.isNotEmpty ? controller.name.value : 'User Name',
+                            controller.name.value.isNotEmpty ? controller.name.value : 'not_found'.tr,
                             style: GoogleFonts.openSans(
                               fontSize: 20,
                               color: Colors.white,
@@ -98,7 +98,7 @@ class ProfileScreen extends StatelessWidget {
               right: 16,
               child: Center(
                   child: CustomAppBar(
-                    appBarName: "Profile",
+                    appBarName: "profile".tr,
                     titleColor: Colors.white,
                     widget: SizedBox(),
                   )),
@@ -117,7 +117,7 @@ class ProfileScreen extends StatelessWidget {
                         _buildListTile(
                           context: context,
                           icon: Icons.person,
-                          title: "Personal Information",
+                          title: "personal_information".tr,
                           color: AppColors.primaryColor,
                           onTap: () {
                             Get.to(
@@ -134,7 +134,7 @@ class ProfileScreen extends StatelessWidget {
                           child: ListTile(
                             leading: Image.asset(AppImages.invitedListIcon, scale: 4,),
                             title: CustomText(
-                              title: "Invite List",
+                              title: "invite_list".tr,
                               fontWeight: FontWeight.w400,
                               fontSize: 14,
                               color: AppColors.blackColor,
@@ -156,7 +156,7 @@ class ProfileScreen extends StatelessWidget {
                           child: ListTile(
                             leading: Image.asset(AppImages.profileActive, scale: 4,),
                             title: CustomText(
-                              title: "My profile",
+                              title: "my_profile".tr,
                               fontWeight: FontWeight.w400,
                               fontSize: 14,
                               color: AppColors.blackColor,
@@ -178,7 +178,7 @@ class ProfileScreen extends StatelessWidget {
                         _buildListTile(
                           context: context,
                           icon: Icons.settings,
-                          title: "Settings",
+                          title: "settings".tr,
                           color: AppColors.primaryColor,
                           onTap: () {
                             Get.to(
@@ -192,7 +192,7 @@ class ProfileScreen extends StatelessWidget {
                         _buildListTile(
                           context: context,
                           icon: Icons.insert_drive_file,
-                          title: "Terms of Services",
+                          title: "terms_of_services".tr,
                           color: AppColors.primaryColor,
                           onTap: () {
                             Get.to(
@@ -206,7 +206,7 @@ class ProfileScreen extends StatelessWidget {
                         _buildListTile(
                           context: context,
                           icon: Icons.verified_user,
-                          title: "Privacy Policy",
+                          title: "privacy_policy".tr,
                           color: AppColors.primaryColor,
                           onTap: () {
                             Get.to(
@@ -220,7 +220,7 @@ class ProfileScreen extends StatelessWidget {
                         _buildListTile(
                           context: context,
                           icon: Icons.info,
-                          title: "About us",
+                          title: "about_us".tr,
                           color: AppColors.primaryColor,
                           onTap: () {
                             Get.to(
@@ -234,7 +234,7 @@ class ProfileScreen extends StatelessWidget {
                         _buildListTile(
                           context: context,
                           icon: Icons.logout,
-                          title: "Logout",
+                          title: "logout".tr,
                           color: Colors.red,
                           textColor: Colors.red,
                           onTap: () {
@@ -285,7 +285,7 @@ class ProfileScreen extends StatelessWidget {
     showGeneralDialog(
       context: context,
       barrierDismissible: true,
-      barrierLabel: "Logout",
+      barrierLabel: "logout".tr,
       transitionDuration: Duration(milliseconds: 300), // Animation duration
       pageBuilder: (context, animation, secondaryAnimation) {
         return Center(
@@ -307,7 +307,7 @@ class ProfileScreen extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  "Do you want to logout your profile?",
+                  "do_you_want_to_logout_your_profile".tr,
                   style: GoogleFonts.poppins(
                     fontSize: 14,
                     color: Colors.black,
@@ -331,7 +331,7 @@ class ProfileScreen extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        "Cancel",
+                        "cancel".tr,
                         style: GoogleFonts.poppins(
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
@@ -342,8 +342,9 @@ class ProfileScreen extends StatelessWidget {
                       onPressed: () async {
                         // Perform logout action
                         LocalStorage.removeData(key: 'access_token');
-                        LocalStorage.removeData(key: 'remain_email');
-                        LocalStorage.removeData(key: 'remain_password');
+                        LocalStorage.removeData(key: 'refreshToken');
+                        print('access Token removed ${LocalStorage.getData(key: 'access_token')}');
+                        print('access Token removed ${LocalStorage.getData(key: 'refreshToken')}');
                         Get.offAll(
                                 ()=> SignInScreen(),
                             duration: const Duration(milliseconds: 300),
@@ -357,7 +358,7 @@ class ProfileScreen extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        "Log Out",
+                        "logout".tr,
                         style: GoogleFonts.poppins(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
