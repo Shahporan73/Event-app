@@ -5,6 +5,7 @@ import 'package:event_app/data/token_manager/local_storage.dart';
 import 'package:event_app/res/common_widget/RoundTextField.dart';
 import 'package:event_app/res/custom_style/custom_size.dart';
 import 'package:event_app/res/custom_style/formate_time.dart';
+import 'package:event_app/res/utils/time_convetor.dart';
 import 'package:event_app/view/home_view/controller/events_controller.dart';
 import 'package:event_app/view/home_view/view/event_details_screen.dart';
 import 'package:event_app/view/home_view/widget/category_widget.dart';
@@ -18,6 +19,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../../res/app_colors/App_Colors.dart';
 import '../../../res/common_widget/custom_network_image_widget.dart';
+import '../../../res/utils/share_event.dart';
 
 class SearchEventScreen extends StatelessWidget {
   SearchEventScreen({super.key});
@@ -41,7 +43,7 @@ class SearchEventScreen extends StatelessWidget {
                   heightBox20,
                   RoundTextField(
                     controller: eventsController.searchController,
-                    hint: "Search Places",
+                    hint: "search_places".tr,
                     prefixIcon: Icon(
                       Icons.search_outlined,
                       size: 26,
@@ -101,7 +103,7 @@ class SearchEventScreen extends StatelessWidget {
                           )
                         : Center(
                             child: Text(
-                              'No category found',
+                              'no_category_found'.tr,
                               style: GoogleFonts.poppins(
                                 fontSize: 16.sp,
                                 fontWeight: FontWeight.w500,
@@ -125,7 +127,7 @@ class SearchEventScreen extends StatelessWidget {
                     child: eventsController.eventList.isEmpty
                         ? Center(
                             child: Text(
-                              'No events found',
+                              'no_events_found'.tr,
                               style: GoogleFonts.poppins(
                                 fontSize: 16.sp,
                                 fontWeight: FontWeight.w500,
@@ -206,8 +208,7 @@ class SearchEventScreen extends StatelessWidget {
                                             borderRadius:
                                                 BorderRadius.circular(8.0),
                                             child: CustomNetworkImage(
-                                              imageUrl: data.image ??
-                                                  'https://mlscottsdale.com/get/files/image/galleries/Dining_Room_AZ_Shelby_Moore.jpg',
+                                              imageUrl: data.image ?? placeholderImage,
                                               height: height * 0.190,
                                               width: width * 0.90,
                                             ),
@@ -217,8 +218,7 @@ class SearchEventScreen extends StatelessWidget {
                                                 CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                data.name ??
-                                                    "EL Tapatio Mexican Restaurant",
+                                                data.name ?? "",
                                                 style: GoogleFonts.poppins(
                                                   color: Colors.black,
                                                   fontSize: width * 0.04,
@@ -226,9 +226,7 @@ class SearchEventScreen extends StatelessWidget {
                                                 ),
                                               ),
                                               Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                 children: [
                                                   Expanded(
                                                     child: Column(
@@ -236,7 +234,7 @@ class SearchEventScreen extends StatelessWidget {
                                                         Row(
                                                           children: [
                                                             Text(
-                                                              '4.8',
+                                                              data.rating??'',
                                                               style: GoogleFonts
                                                                   .poppins(
                                                                 color: Colors
@@ -250,7 +248,7 @@ class SearchEventScreen extends StatelessWidget {
                                                               ),
                                                             ),
                                                             RatingBarIndicator(
-                                                              rating: 2.75,
+                                                              rating: (data.rating ?? 0.0).toDouble(),
                                                               itemBuilder:
                                                                   (context,
                                                                           index) =>
@@ -269,7 +267,7 @@ class SearchEventScreen extends StatelessWidget {
                                                                 width: width *
                                                                     0.02),
                                                             Text(
-                                                              "(255)",
+                                                              "(${data.reviews ?? 0})",
                                                               style: GoogleFonts
                                                                   .poppins(
                                                                 color: Colors
@@ -285,13 +283,11 @@ class SearchEventScreen extends StatelessWidget {
                                                           ],
                                                         ),
                                                         SizedBox(
-                                                            height:
-                                                                height * 0.005),
+                                                            height:height * 0.005),
                                                         Row(
                                                           children: [
                                                             Icon(
-                                                                Icons
-                                                                    .calendar_today,
+                                                                Icons.calendar_today,
                                                                 color: Colors
                                                                     .black,
                                                                 size: width *
@@ -300,8 +296,7 @@ class SearchEventScreen extends StatelessWidget {
                                                                 width: width *
                                                                     0.02),
                                                             Text(
-                                                              formattedDate ??
-                                                                  '19 July 2021',
+                                                              formattedDate ?? '19 July 2021',
                                                               style: GoogleFonts
                                                                   .poppins(
                                                                 color: Colors
@@ -335,9 +330,7 @@ class SearchEventScreen extends StatelessWidget {
                                                                 width: width *
                                                                     0.015),
                                                             Text(
-                                                              data.address!.length > 20 ?
-                                                              data.address!.substring(0, 30) + '...' :
-                                                              data.address ?? "",
+                                                              getLimitedWord(data.address, 30),
                                                               style: GoogleFonts.poppins(
                                                                 color: Colors.black,
                                                                 fontSize:width *0.02,
@@ -392,11 +385,29 @@ class SearchEventScreen extends StatelessWidget {
                                       right: width * 0.05,
                                       child: GestureDetector(
                                         onTap: () async {
-                                          await Share.share(
-                                            eventsController
-                                                    .eventList[index].image ??
-                                                '',
+                                          ShareEventData event = ShareEventData(
+                                            eventName: data.name.toString(),
+                                            eventDate: formattedDate,
+                                            eventTime: "$startTime - $endTime",
+                                            eventLocation: data.address.toString(),
+                                            eventImage: data.image.toString(),
                                           );
+
+                                          // Prepare the share content
+                                          String shareContent = '''
+🌟 Don't miss this amazing event! 🌟
+
+📅 Event Name: ${event.eventName}
+📆 Date: ${event.eventDate}
+⏰ Time: ${event.eventTime}
+📍 Location: ${event.eventLocation}
+
+👉 Tap the link to view the image: ${event.eventImage}
+
+🎉 See you there! 🎉
+''';
+
+                                          await Share.share(shareContent);
                                         },
                                         child: Container(
                                           padding:

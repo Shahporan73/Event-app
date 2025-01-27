@@ -8,6 +8,7 @@ import 'package:event_app/res/common_widget/lottie_loader_widget.dart';
 import 'package:event_app/res/custom_style/custom_size.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 
 class CongratulationScreen extends StatelessWidget {
   CongratulationScreen({super.key});
@@ -24,14 +25,14 @@ class CongratulationScreen extends StatelessWidget {
 
           LottieLoaderWidget(
             lottieAssetPath: AppImages.successAnim,
-            width: 100.w,
-            height: 100.h,
+            width: 100,
+            height: 100,
             repeat: false,
           ),
 
           heightBox20,
           CustomText(
-            title: 'Congratulation',
+            title: 'congratulation'.tr,
             fontSize: 20,
             fontWeight: FontWeight.w500,
             color: AppColors.primaryColor,
@@ -39,7 +40,7 @@ class CongratulationScreen extends StatelessWidget {
 
           heightBox20,
           CustomText(
-            title: 'You have successfully invited this person to join the event.',
+            title: 'you_have_successfully_invited_this_person_to_join_the_event'.tr,
             fontSize: 16,
             textAlign: TextAlign.center,
             fontWeight: FontWeight.w400,

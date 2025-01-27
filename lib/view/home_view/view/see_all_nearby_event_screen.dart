@@ -38,7 +38,7 @@ class SeeAllNearbyEventScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CustomAppBar(
-                      appBarName: "Nearby Events",
+                      appBarName: "nearby_events".tr,
                       onTap: () {
                         Get.back();
                       },
@@ -97,7 +97,7 @@ class SeeAllNearbyEventScreen extends StatelessWidget {
                                     ClipRRect(
                                       borderRadius: BorderRadius.circular(8.0),
                                       child: CustomNetworkImage(
-                                        imageUrl: data.image ?? 'https://mlscottsdale.com/get/files/image/galleries/Dining_Room_AZ_Shelby_Moore.jpg',
+                                        imageUrl: data.image ?? placeholderImage,
                                         height: height * 0.190,
                                         width: width * 0.90,
                                       ),
@@ -106,7 +106,7 @@ class SeeAllNearbyEventScreen extends StatelessWidget {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          "${data.name ?? "Unavailable"}",
+                                          "${data.name ?? "not_available".tr}",
                                           style: GoogleFonts.poppins(
                                             color: Colors.black,
                                             fontSize: width * 0.04,
@@ -122,7 +122,7 @@ class SeeAllNearbyEventScreen extends StatelessWidget {
                                                   Row(
                                                     children: [
                                                       Text(
-                                                        '4.8',
+                                                        data.rating??'',
                                                         style: GoogleFonts.poppins(
                                                           color: Colors.orange,
                                                           fontSize: width * 0.03,
@@ -130,7 +130,7 @@ class SeeAllNearbyEventScreen extends StatelessWidget {
                                                         ),
                                                       ),
                                                       RatingBarIndicator(
-                                                        rating: 2.75,
+                                                        rating: (data.rating ?? 0.0).toDouble(),
                                                         itemBuilder: (context, index) => Icon(
                                                           Icons.star,
                                                           color: Colors.amber,
@@ -141,7 +141,7 @@ class SeeAllNearbyEventScreen extends StatelessWidget {
                                                       ),
                                                       SizedBox(width: width * 0.02),
                                                       Text(
-                                                        "(255)",
+                                                        "(${data.reviews ?? 0})",
                                                         style: GoogleFonts.poppins(
                                                           color: Colors.black,
                                                           fontSize: width * 0.03,
@@ -156,7 +156,7 @@ class SeeAllNearbyEventScreen extends StatelessWidget {
                                                       Icon(Icons.calendar_today, color: Colors.black, size: width * 0.035),
                                                       SizedBox(width: width * 0.02),
                                                       Text(
-                                                        '${formattedDate ?? "Unavailable"}',
+                                                        '${formattedDate}',
                                                         style: GoogleFonts.poppins(
                                                           color: Colors.black,
                                                           fontSize: width * 0.03,
@@ -176,7 +176,7 @@ class SeeAllNearbyEventScreen extends StatelessWidget {
                                                       Icon(Icons.location_on, color: Colors.black, size: width * 0.035),
                                                       SizedBox(width: width * 0.015),
                                                       Flexible(child: Text(
-                                                        "${data.address ?? "Unavailable"}",
+                                                        "${data.address ?? "not_available".tr}",
                                                         maxLines: 1,
                                                         overflow: TextOverflow.ellipsis,
                                                         style: GoogleFonts.poppins(

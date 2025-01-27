@@ -90,31 +90,170 @@ class CreateEventByMapController extends GetxController{
     }
   }
 
-
+  // by map
   Future<void> createEventByMap() async {
-    isLoading.value = true;
 
-   /* if (imgUrl.value.isEmpty) {
+    if(eventNameController.text.toString().isEmpty
+        || address.value == '' || eventType.value == '' || eventSelectedDate.value == '' ||
+        eventAboutController.text.toString().isEmpty || rating.value == '' || totalReviews.value==''
+        || eventStartTime.value == '' || eventEndTime.value == ''
+    ){
+      Get.rawSnackbar(message: 'Something missing...');
+    }else{
+
+      isLoading.value = true;
+
+      /* if (imgUrl.value.isEmpty) {
       Get.snackbar('Error', 'Please select an image.');
       isLoading.value = false;
       return;
     }*/
-    print('==============');
+      print('==============');
 
-    print('Map Latitude: ${LocalStorage.getData(key: "map_latitude")}');
-    print('Map Longitude: ${LocalStorage.getData(key: "map_longitude")}');
+      print('Map Latitude: ${LocalStorage.getData(key: "map_latitude")}');
+      print('Map Longitude: ${LocalStorage.getData(key: "map_longitude")}');
+
+      try {
+        String token = LocalStorage.getData(key: "access_token");
+        String latitude = LocalStorage.getData(key: "map_latitude");
+        String longitude = LocalStorage.getData(key: "map_longitude");
+
+        // Prepare headers
+        Map<String, String> headers = {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'multipart/form-data',  // Ensure the content type is correct
+        };
+        print("address value: ${address.value}");
+
+        Uri uri = Uri.parse(Endpoints.createEventURL);
+
+        // Combine all fields into a single Map to represent the `data` field
+        Map<String, dynamic> data = {
+          "name": eventNameController.text.trim(),
+          "categoryId": selectedCatId.value,
+          "address": eventAddressController.value.text.trim(),
+          "type": eventType.value,
+          "date": eventSelectedDate.value,
+          "startTime": eventStartTime.value,
+          "endTime": eventEndTime.value,
+          "aboutEvent": eventAboutController.text.trim().toString(),
+          "latitude": latitude.toString(),
+          "longitude": longitude.toString(),
+          "rating": rating.value,
+          "reviews": totalReviews.value,
+        };
+        print("data ====> $data");
+
+        var request = http.MultipartRequest('POST', uri)
+          ..headers.addAll(headers)
+          ..fields['data'] = jsonEncode(data); // Add `data` as a JSON string
+
+        // Add image to form data
+        if (imgUrl.value.isNotEmpty) {
+          var file = File(imgUrl.value);
+
+          if (await file.exists()) {
+            // Attach image as MultipartFile
+            String fileName = basename(file.path); // Extract file name
+            request.files.add(await http.MultipartFile.fromPath(
+              'image',    // This is the key the server expects for the image
+              file.path,
+              filename: fileName,
+            ));
+          } else {
+            Get.rawSnackbar(message: 'Image file not found');
+            isLoading.value = false;
+            return;
+          }
+        } else {
+          Get.rawSnackbar(message: 'Please select an image.');
+          isLoading.value = false;
+          return;
+        }
+
+        print("body: ${request.fields}");
+        print("upload image url: ${imgUrl.value}");
+
+        // Send the request
+        // http.StreamedResponse response = await request.send();
+        var streamedResponse = await request.send();
+        var response = await http.Response.fromStream(streamedResponse);
+
+        print("Response Status Code: ${response.statusCode}");
+        print("Response Body: ${response.body}");
+
+        dynamic responseBody = jsonDecode(response.body);
+
+
+        print("Request fields: ${request.fields}");
+        print('API: ${Endpoints.createEventURL}');
+        print("Response status code: ${response.statusCode}");
+
+        if (response.statusCode == 201) {
+          // var responseBody = await response.stream.bytesToString();
+          // var parsedResponse = jsonDecode(responseBody);
+          // var eventId = parsedResponse['data']['id'];
+          var eventId = responseBody['data']['id'];
+
+          // Save the event ID locally
+          LocalStorage.saveData(key: eventIdForInviteEvent, data: eventId);
+
+          Get.rawSnackbar(message: 'Event created successfully');
+          Get.to(
+                () => SelectedContactScreen(),
+            transition: Transition.rightToLeft,
+            duration: Duration(milliseconds: 300),
+          );
+
+          // clear all values
+          clearData();
+        } else {
+          // String responseBody = await response.stream.bytesToString();
+          print("Error Response body: $responseBody");
+          print('Failed to create event. Status code: ${response.statusCode}');
+          Get.rawSnackbar(message: 'Failed to create event');
+        }
+      } catch (e) {
+        print('Error: $e');
+      } finally {
+        isLoading.value = false;
+      }
+
+    }
+
+
+  }
+
+
+  // by pin
+  Future<void> createEventByPin({
+    required String latitude,
+    required String longitude,
+    required double rating,
+    required int review,
+    required String address,
+}) async {
+
+    if(
+    eventNameController.text.toString().isEmpty
+         || eventType.value == '' || eventSelectedDate.value == '' ||
+        eventAddressController.value.text.toString().isEmpty || rating == '' || review ==''
+        || eventStartTime.value == '' || eventEndTime.value == '' || eventAboutController.text.trim().isEmpty
+    ){
+      Get.rawSnackbar(message: 'Something missing...');
+    }
+
+    isLoading.value = true;
+    print('============== CREATE EVENT BY PIN');
 
     try {
       String token = LocalStorage.getData(key: "access_token");
-      String latitude = LocalStorage.getData(key: "map_latitude");
-      String longitude = LocalStorage.getData(key: "map_longitude");
 
       // Prepare headers
       Map<String, String> headers = {
         'Authorization': 'Bearer $token',
         'Content-Type': 'multipart/form-data',  // Ensure the content type is correct
       };
-      print("address value: ${address.value}");
 
       Uri uri = Uri.parse(Endpoints.createEventURL);
 
@@ -130,8 +269,8 @@ class CreateEventByMapController extends GetxController{
         "aboutEvent": eventAboutController.text.trim().toString(),
         "latitude": latitude.toString(),
         "longitude": longitude.toString(),
-        "rating": rating.value,
-        "reviews": totalReviews.value,
+        "rating": rating,
+        "reviews": review,
       };
       print("data ====> $data");
 
@@ -195,6 +334,13 @@ class CreateEventByMapController extends GetxController{
           transition: Transition.rightToLeft,
           duration: Duration(milliseconds: 300),
         );
+        // clear all values
+        eventNameController.clear();
+        eventAddressController.value.clear();
+        eventStartTime.value = '';
+        eventEndTime.value = '';
+        eventAboutController.clear();
+        imgUrl.value = '';
       } else {
         // String responseBody = await response.stream.bytesToString();
         print("Error Response body: $responseBody");
@@ -208,100 +354,6 @@ class CreateEventByMapController extends GetxController{
     }
   }
 
-/*
-
-  Future<void> uploadHireRequest({
-    required serviceImages,
-    required String desc,
-    required String location,
-    required String catId,
-    required dynamic urgency,
-    required dynamic providerId,
-  }) async {
-    try {
-      isLoading(true);
-      String? accessToken = LocalStorage.getData(key: "access_token");
-
-      if (accessToken == null || accessToken.isEmpty) {
-        Get.snackbar(
-          "Error",
-          "No access token found. Please login again.",
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
-        return;
-      }
-
-      var request = http.MultipartRequest('POST', Uri.parse(Endpoints.createEventURL));
-
-      for (var image in serviceImages) {
-        String mimeType = lookupMimeType(image.path) ?? 'image/jpeg';
-        request.files.add(
-          await http.MultipartFile.fromPath(
-            'files',
-            image.path,
-            contentType:
-            MediaType(mimeType.split('/')[0], mimeType.split('/')[1]),
-          ),
-        );
-      }
-
-      Map<String, dynamic> data = {
-        "service": catId,
-        "address": location,
-        "description": desc,
-        "provider": providerId,
-        "priority": urgency ? "yes" : "no"
-      };
-
-      request.fields['data'] = jsonEncode(data);
-
-      request.headers.addAll({
-        'Authorization': 'Bearer $accessToken',
-        'Content-Type': 'multipart/form-data',
-      });
-
-      print("Request Fields: ${request.fields}");
-      print("Files attached: ${serviceImages.map((e) => e.path).toList()}");
-
-      var streamedResponse = await request.send();
-      var response = await http.Response.fromStream(streamedResponse);
-
-      print("Response Status Code: ${response.statusCode}");
-      print("Response Body: ${response.body}");
-
-      dynamic responseBody = jsonDecode(response.body);
-
-      if (response.statusCode == 200 && responseBody['success'] == true) {
-        CustomToast.showToast("Hire request submitted successfully",
-            isError: false);
-
-        _myServiceController.getMyService();
-        Get.to(() => DashboardView());
-      } else {
-        String errorMessage = responseBody['message'] ??
-            'Failed to submit request. Please try again.';
-        Get.snackbar(
-          "Error",
-          errorMessage,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
-      }
-    } catch (e) {
-      Get.snackbar(
-        "Error",
-        e.toString(),
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-    } finally {
-      // Hide loading indicator
-      isLoading(false);
-    }
-  }
-*/
-
 
   // Function to pick an image
   Future<void> pickImage() async {
@@ -313,6 +365,16 @@ class CreateEventByMapController extends GetxController{
     } else {
       print("No image selected");
     }
+  }
+
+  void clearData() {
+    eventNameController.clear();
+    eventAddressController.value.clear();
+    eventStartTime.value = '';
+    eventEndTime.value = '';
+    eventAboutController.clear();
+    address.value = '';
+    imgUrl.value = '';
   }
 
 }

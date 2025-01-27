@@ -15,6 +15,7 @@ import 'package:get/get.dart';
 class SelectedContactController extends GetxController{
   final TextEditingController searchController = TextEditingController();
   var isLoading = false.obs;
+  var isButtonLoading = false.obs;
   var isSearchLoading = false.obs;
   var userModel = UsersModel().obs;
   var userList = <UserList>[].obs;
@@ -201,6 +202,7 @@ class SelectedContactController extends GetxController{
     }
 
     try {
+      isButtonLoading.value = true;
       String token = LocalStorage.getData(key: "access_token");
 
       Map<String, String> headers = {
@@ -235,10 +237,60 @@ class SelectedContactController extends GetxController{
       print("Error sending invitation: $e");
     }finally{
       isLoading.value = false;
+      isButtonLoading.value = false;
     }
   }
 
+  // Method to invite selected users
+  Future<void> inviteSelectedUsersFromCreatedEvent(List<String> selectedContactUserSet) async {
+    isLoading.value = true;
+    if (selectedContactUserSet.isEmpty) {
+      Get.rawSnackbar(
+        message: "No users selected for invitation.",
+        snackPosition: SnackPosition.TOP,
+      );
+      print("No users selected for invitation.");
+      return;
+    }
 
+    try {
+      isButtonLoading.value = true;
+      String token = LocalStorage.getData(key: "access_token");
+
+      Map<String, String> headers = {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer $token"
+      };
+      /*List<String> uniqueUserIds = selectedContactUserSet.toSet().toList();*/
+
+      // Prepare request body
+      Map<String, dynamic> requestBody = {
+        "userIds": selectedContactUserSet
+      };
+
+      String eventId = LocalStorage.getData(key: eventIdForInviteEvent);
+      print('selectedContactUserSet ====> $selectedContactUserSet');
+      dynamic responseBody = await BaseClient.handleResponse(
+        await BaseClient.postRequest(
+          api: Endpoints.inviteUsersURL(eventId: eventId),
+          headers: headers,
+          body: jsonEncode(requestBody),
+        ),
+      );
+
+      if (responseBody != null) {
+        selectedContactUserSet.clear();
+        print("Invitation sent successfully!");
+        Get.rawSnackbar(message: "Invitation sent successfully!");
+        print("Response: $responseBody");
+      }
+    } catch (e) {
+      print("Error sending invitation: $e");
+    }finally{
+      isLoading.value = false;
+      isButtonLoading.value = false;
+    }
+  }
 
   Future goToCongratulationDialog(context) {
     Future.delayed(Duration(seconds: 2), () {

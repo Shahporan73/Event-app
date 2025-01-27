@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:event_app/data/api/base_client.dart';
 import 'package:event_app/data/api/end_point.dart';
+import 'package:event_app/data/token_manager/const_veriable.dart';
 import 'package:event_app/data/token_manager/local_storage.dart';
 import 'package:event_app/res/common_widget/custom_snackbar.dart';
 import 'package:event_app/view/auth_view/view/sign_in_screen.dart';
@@ -24,72 +25,92 @@ class ResetPasswordController extends GetxController{
   }
 
   Future<void> resetPassword() async {
+    // Input validation
     if (newPasswordController.text.trim().isEmpty) {
-      Get.rawSnackbar(message: 'New password is required');
+      Get.rawSnackbar(message: 'new_password_is_required'.tr);
       return;
     }
     if (newPasswordController.text.trim().length < 6) {
       Get.rawSnackbar(
-        message: 'New password must be at least 6 characters',
+        message: 'new_password_must_be_at_least_6_characters'.tr,
       );
       return;
     }
     if (confirmPasswordController.text.trim().isEmpty) {
       Get.rawSnackbar(
-        message: 'Confirm password is required',
+        message: 'confirm_password_is_required'.tr,
       );
       return;
     }
     if (newPasswordController.text.trim() != confirmPasswordController.text.trim()) {
       Get.rawSnackbar(
-        message: 'Password and confirm password do not match',
+        message: 'new_password_and_confirm_password_do_not_match'.tr,
       );
       return;
     }
+
     isLoading.value = true;
+
     try {
-      
+      String? forgotToken = LocalStorage.getData(key: "forgot_token");
+
+      // Ensure forgotToken is not null
+      if (forgotToken == null || forgotToken.isEmpty) {
+        Get.rawSnackbar(message: 'Forgot token is missing');
+        return;
+      }
+
+      print('Forgot token: $forgotToken');
+
+      // Headers and body
       Map<String, String> headers = {
         'Content-Type': 'application/json',
-        'token': LocalStorage.getData(key: "forgot_token"),
+        'token': forgotToken,
       };
 
       Map<String, String> body = {
         'password': newPasswordController.text.trim(),
       };
 
+      // API call
       dynamic responseBody = await BaseClient.handleResponse(
-          await BaseClient.postRequest(
-              api: Endpoints.resetPasswordUrl,
-              body: jsonEncode(body),
-              headers: headers
-          ),
+        await BaseClient.postRequest(
+          api: Endpoints.resetPasswordUrl,
+          body: jsonEncode(body),
+          headers: headers,
+        ),
       );
 
-      print('hit api ${Endpoints.resetPasswordUrl}');
-      print("responseBody ====> $responseBody");
+      print('Hit API: ${Endpoints.resetPasswordUrl}');
+      print("Response Body: $responseBody");
 
-      if(responseBody !=null){
-        Get.rawSnackbar (
-          message: 'Password changed successfully',
-        );
-        String token = responseBody['data']['accessToken'];
-        String refreshToken = responseBody['data']['refreshToken'];
-        LocalStorage.saveData(key: "access_token", data: token);
-        LocalStorage.saveData(key: "userId", data: responseBody['data']['id']);
-        LocalStorage.saveData(key: "refreshToken", data: refreshToken);
+      // Null safety checks
+      if (responseBody != null && responseBody['success'] == true) {
+        final data = responseBody['data'];
+        LocalStorage.saveData(key: myID, data: data['id']);
+        LocalStorage.saveData(
+            key: 'remain_password',
+            data: newPasswordController.text.trim());
+
+        // Show success message and navigate to sign-in
+        Get.rawSnackbar(message: 'password_change_successfully'.tr);
         Get.offAll(
-          () => SignInScreen(),
-          duration: Duration(milliseconds: 300),
-          transition: Transition.fade
+              () => SignInScreen(),
+          duration: Duration(milliseconds: 100),
+          transition: Transition.fade,
         );
-        LocalStorage.saveData(key: 'remain_password', data: newPasswordController.text.trim());
+      } else {
+        // Handle server response errors
+        String message = responseBody?['message'] ?? 'Something went wrong';
+        Get.rawSnackbar(message: message);
       }
-    }catch (e) {
-      debugPrint(e.toString());
+    } catch (e) {
+      debugPrint('Reset error: ${e.toString()}');
+      Get.rawSnackbar(message: 'An error occurred. Please try again.');
     } finally {
       isLoading.value = false;
     }
   }
+
 
 }

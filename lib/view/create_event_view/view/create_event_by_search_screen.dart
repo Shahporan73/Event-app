@@ -208,8 +208,9 @@ class _CreateEventBySearchScreenState extends State<CreateEventBySearchScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded(child:  CustomText(
-                            title: name.isNotEmpty? name : "Bachata Restaurant",
+                          Expanded(
+                            child:  CustomText(
+                            title: name.isNotEmpty? name : "not_found".tr,
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
                             color: AppColors.black100,
@@ -220,7 +221,7 @@ class _CreateEventBySearchScreenState extends State<CreateEventBySearchScreen> {
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 RatingBarIndicator(
-                                  itemSize: 16.sp,
+                                  itemSize: 16,
                                   rating: (controller.eventRating.value ?? 0.0).toDouble(),
                                   itemCount: 5,
                                   direction: Axis.horizontal,
@@ -256,7 +257,7 @@ class _CreateEventBySearchScreenState extends State<CreateEventBySearchScreen> {
                             size: 16.sp,
                           ),
                           Expanded(child: Text(
-                            address.isNotEmpty? address : 'Curry ford road, Orlando, FL',
+                            address.isNotEmpty? address : '',
                             style: GoogleFonts.poppins(
                               fontSize: 13,
                               fontWeight: FontWeight.w400,
@@ -284,7 +285,7 @@ class _CreateEventBySearchScreenState extends State<CreateEventBySearchScreen> {
                       // Event name field
                       heightBox20,
                       CustomText(
-                        title: "Event name",
+                        title: "event_name".tr,
                         fontWeight: FontWeight.w400,
                         fontSize: 14,
                         color: AppColors.black33,
@@ -293,7 +294,7 @@ class _CreateEventBySearchScreenState extends State<CreateEventBySearchScreen> {
                       TextField(
                         controller: controller.nameController,
                         decoration: InputDecoration(
-                          hintText: 'Enter event name',
+                          hintText: 'enter_event_name'.tr,
                           hintStyle: TextStyle(color: Colors.grey, fontSize: 14.sp),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8.r),
@@ -306,7 +307,7 @@ class _CreateEventBySearchScreenState extends State<CreateEventBySearchScreen> {
                       // Event Type section
                       heightBox20,
                       CustomText(
-                        title: "Event Type",
+                        title: "event_type".tr,
                         fontWeight: FontWeight.w400,
                         fontSize: 14,
                         color: AppColors.black33,
@@ -324,7 +325,7 @@ class _CreateEventBySearchScreenState extends State<CreateEventBySearchScreen> {
                               controller.eventType.value == 'PUBLIC'
                                   ? Colors.white
                                   : Colors.black,
-                              title: "Public",
+                              title: "public".tr,
                               border: controller.eventType.value == 'PUBLIC'
                                   ? Border.all(color: AppColors.primaryColor, width: 1)
                                   : null,
@@ -344,7 +345,7 @@ class _CreateEventBySearchScreenState extends State<CreateEventBySearchScreen> {
                               controller.eventType.value == 'PRIVATE'
                                   ? Colors.white
                                   : Colors.black,
-                              title: "Private",
+                              title: "private".tr,
                               border: controller.eventType.value == 'PRIVATE'
                                   ? Border.all(color: AppColors.primaryColor, width: 1)
                                   : null,
@@ -359,7 +360,7 @@ class _CreateEventBySearchScreenState extends State<CreateEventBySearchScreen> {
                       // Category section
                       heightBox20,
                       CustomText(
-                        title: "Category",
+                        title: "category".tr,
                         fontWeight: FontWeight.w400,
                         fontSize: 14,
                         color: AppColors.black33,
@@ -389,7 +390,7 @@ class _CreateEventBySearchScreenState extends State<CreateEventBySearchScreen> {
                       // Select Date
                       heightBox20,
                       CustomText(
-                        title: "Select Date",
+                        title: "Select_date".tr,
                         fontWeight: FontWeight.w400,
                         fontSize: 14,
                         color: AppColors.black33,
@@ -407,7 +408,7 @@ class _CreateEventBySearchScreenState extends State<CreateEventBySearchScreen> {
                           ),
                           hintText: controller.eventSelectedDate.value.isNotEmpty
                               ? date // Display selected date or placeholder
-                              : 'Select date',
+                              : 'Select_date'.tr,
                           hintStyle: TextStyle(color: Colors.grey, fontSize: 14.sp),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8.r),
@@ -419,7 +420,7 @@ class _CreateEventBySearchScreenState extends State<CreateEventBySearchScreen> {
                       // Select Time
                       heightBox20,
                       CustomText(
-                        title: "Select Time",
+                        title: "Select_time".tr,
                         fontWeight: FontWeight.w400,
                         fontSize: 14,
                         color: AppColors.black33,
@@ -441,7 +442,7 @@ class _CreateEventBySearchScreenState extends State<CreateEventBySearchScreen> {
                                 ),
                                 hintText: controller.eventStartTime.value.isNotEmpty
                                     ? sTime // Display selected time or placeholder
-                                    : 'Opening time',
+                                    : 'opening_time'.tr,
                                 hintStyle: TextStyle(color: Colors.grey, fontSize: 12),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8.r),
@@ -465,7 +466,7 @@ class _CreateEventBySearchScreenState extends State<CreateEventBySearchScreen> {
                                 ),
                                 hintText: controller.eventEndTime.value.isNotEmpty
                                     ? eTime // Display selected time or placeholder
-                                    : 'Closing time',
+                                    : 'closing_time'.tr,
                                 hintStyle: TextStyle(color: Colors.grey, fontSize: 12),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
@@ -482,7 +483,7 @@ class _CreateEventBySearchScreenState extends State<CreateEventBySearchScreen> {
                       // About Event
                       heightBox20,
                       CustomText(
-                        title: "About Event",
+                        title: "about_event".tr,
                         fontWeight: FontWeight.w400,
                         fontSize: 14,
                         color: AppColors.black33,
@@ -492,7 +493,7 @@ class _CreateEventBySearchScreenState extends State<CreateEventBySearchScreen> {
                         maxLines: 3,
                         controller: controller.aboutEventController,
                         decoration: InputDecoration(
-                          hintText: 'Type event description',
+                          hintText: 'enter_event_description'.tr,
                           hintStyle: TextStyle(color: Colors.grey, fontSize: 14.sp),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8.r),
@@ -504,7 +505,7 @@ class _CreateEventBySearchScreenState extends State<CreateEventBySearchScreen> {
                       heightBox20,
                       Roundbutton(
                         isLoading: controller.isLoading.value,
-                        title: "Select Contact",
+                        title: "select_contact".tr,
                         onTap: () {
 
                           controller.createEventBySearch(controller.imgUrl.value.isEmpty ? mapImgURL : controller.imgUrl.value);

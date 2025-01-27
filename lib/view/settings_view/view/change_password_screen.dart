@@ -33,7 +33,7 @@ class ChangePasswordScreen extends StatelessWidget {
                   children: [
                     SizedBox(height: 10),
                     CustomAppBar(
-                      appBarName: "Change Password",
+                      appBarName: "change_password".tr,
                       onTap: () => Get.back(),
                     ),
 
@@ -56,7 +56,7 @@ class ChangePasswordScreen extends StatelessWidget {
                               obscureText: !controller.isCurrentPasswordVisible.value,
                               decoration: InputDecoration(
                                 border: InputBorder.none,
-                                hintText: 'Current Password',
+                                hintText: 'current_password'.tr,
                               ),
                             ),
                           ),
@@ -92,7 +92,7 @@ class ChangePasswordScreen extends StatelessWidget {
                               obscureText: !controller.isNewPasswordVisible.value,
                               decoration: InputDecoration(
                                 border: InputBorder.none,
-                                hintText: 'New Password',
+                                hintText: 'new_password'.tr,
                               ),
                             ),
                           ),
@@ -128,7 +128,7 @@ class ChangePasswordScreen extends StatelessWidget {
                               obscureText: !controller.isConfirmPasswordVisible.value,
                               decoration: InputDecoration(
                                 border: InputBorder.none,
-                                hintText: 'Confirm New Password',
+                                hintText: 'confirm_new_password'.tr,
                               ),
                             ),
                           ),
@@ -157,7 +157,7 @@ class ChangePasswordScreen extends StatelessWidget {
                           );
                         },
                         child: CustomText(
-                          title: "Forgot the password?",
+                          title: "forgot_the_password".tr,
                           color: AppColors.primaryColor,
                           fontWeight: FontWeight.w500,
                           fontSize: 16,
@@ -170,7 +170,7 @@ class ChangePasswordScreen extends StatelessWidget {
                     // Confirm button
                     Roundbutton(
                       isLoading: controller.isLoading.value,
-                      title: "Confirm",
+                      title: "confirm",
                       borderRadius: 8,
                       onTap: () {
                         // Handle password change confirmation

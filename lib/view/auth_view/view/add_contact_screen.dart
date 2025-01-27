@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:event_app/res/app_images/App_images.dart';
 import 'package:event_app/res/common_widget/RoundButton.dart';
 import 'package:event_app/res/common_widget/custom_network_image_widget.dart';
 import 'package:event_app/res/common_widget/custom_text.dart';
@@ -49,9 +50,9 @@ class _AddContactScreenState extends State<AddContactScreen> {
                                 borderRadius: BorderRadius.circular(100.r),
                                 child: CustomNetworkImage(
                                   imageUrl:
-                                  'https://www.perfocal.com/blog/content/images/2021/01/Perfocal_17-11-2019_TYWFAQ_100_standard-3.jpg',
-                                  height: 120.h,
-                                  width: 120.w,
+                                  AppImages.placeholderImage,
+                                  height: 120,
+                                  width: 120,
                                 ),
                               ),
                               heightBox10,

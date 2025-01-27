@@ -7,7 +7,7 @@ class SplashController extends GetxController {
     super.onInit();
     // Navigate to the next screen after 2 seconds
     Future.delayed(Duration(seconds: 2), () {
-      Get.to(
+      Get.offAll(
             () => WelcomeScreen(),
         duration: Duration(milliseconds: 300),
         transition: Transition.rightToLeft,

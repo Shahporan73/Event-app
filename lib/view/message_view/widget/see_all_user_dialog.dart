@@ -70,7 +70,7 @@ class _SeeAllUsersDialogState extends State<SeeAllUsersDialog> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CustomAppBar(
-                appBarName: "Members",
+                appBarName: "Members".tr,
                 widget: IconButton(
                   onPressed: () => Navigator.of(context).pop(),
                   icon: Icon(Icons.close, color: Colors.black),
@@ -80,7 +80,7 @@ class _SeeAllUsersDialogState extends State<SeeAllUsersDialog> {
 
               RoundTextField(
                 controller: _searchController,
-                hint: "Search Members",
+                hint: "search_members".tr,
                 borderRadius: 8,
                 focusBorderRadius: 8,
                 prefixIcon: Icon(
@@ -118,7 +118,7 @@ class _SeeAllUsersDialogState extends State<SeeAllUsersDialog> {
                         Navigator.of(context).pop();
                         // Action for the message button
                         if(data.user == null){
-                          Get.rawSnackbar(message: "User not found");
+                          Get.rawSnackbar(message: "user_not_found".tr);
                         }else{
                           personalChatController.getChatList(
                               receiverId: data.user?.id ?? "",
@@ -147,7 +147,7 @@ class _SeeAllUsersDialogState extends State<SeeAllUsersDialog> {
               )
                   : Center(
                 child: Text(
-                  "No members found",
+                  "no_members_found".tr,
                   style: GoogleFonts.poppins(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,

@@ -41,7 +41,7 @@ class InvitedEventDetailsScreen extends StatelessWidget {
           // Ensure data and event are not null before proceeding
           if (data == null || data.event == null) {
             return Center(
-              child: Text('Event details are unavailable.'),
+              child: SpinKitCircle(color: AppColors.primaryColor,),
             );
           }
           if(controller.isLoading.value == true){
@@ -82,7 +82,7 @@ class InvitedEventDetailsScreen extends StatelessWidget {
                       ),
                       // Network image with loading and error handling
                       Image.network(
-                        data.event?.image ?? 'https://mlscottsdale.com/get/files/image/galleries/Dining_Room_AZ_Shelby_Moore.jpg',
+                        data.event?.image ?? placeholderImage,
                         height: 200,
                         width: double.infinity,
                         fit: BoxFit.cover,
@@ -129,7 +129,7 @@ class InvitedEventDetailsScreen extends StatelessWidget {
                     // Centered Title
                     Expanded(child: Center(
                       child: CustomText(
-                        title: 'Event Details',
+                        title: 'event_details'.tr,
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
                         color: Colors.white,
@@ -164,11 +164,10 @@ class InvitedEventDetailsScreen extends StatelessWidget {
                               borderRadius: 7,
                               title: 'I’m Going',
                               fontSize: 10,
-                              isLoading: controller.isUpdating.value,
                               buttonColor: Color(0xff2EA355),
                               onTap: () async {
                                 controller.eventStatusUpdate('GOING', data.event!.id.toString());
-                                Get.rawSnackbar(message: "Event joined successfully", snackPosition: SnackPosition.BOTTOM);
+                                Get.rawSnackbar(message: "event_joined_successfully".tr, snackPosition: SnackPosition.BOTTOM);
                                 Navigator.of(context).pop();
                               },
                             ),
@@ -179,11 +178,10 @@ class InvitedEventDetailsScreen extends StatelessWidget {
                               borderRadius: 7,
                               title: 'Maybe I’m Going',
                               fontSize: 10,
-                              isLoading: controller.isUpdating.value,
                               buttonColor: AppColors.primaryColor,
                               onTap: () async {
                                 controller.eventStatusUpdate('MAYBE_GOING', data.event!.id.toString());
-                                Get.rawSnackbar(message: "Maybe going event", snackPosition: SnackPosition.BOTTOM);
+                                Get.rawSnackbar(message: "maybe_going_event".tr, snackPosition: SnackPosition.BOTTOM);
                                 Navigator.of(context).pop();
                               },
                             ),
@@ -194,11 +192,10 @@ class InvitedEventDetailsScreen extends StatelessWidget {
                               borderRadius: 7,
                               title: 'Ignore',
                               fontSize: 10,
-                              isLoading: controller.isUpdating.value,
                               buttonColor: Colors.red,
                               onTap: () async {
                                 controller.eventStatusUpdate('IGNORED', data.event!.id.toString());
-                                Get.rawSnackbar(message: "Event ignored successfully", snackPosition: SnackPosition.BOTTOM);
+                                Get.rawSnackbar(message: "event_ignored", snackPosition: SnackPosition.BOTTOM);
                                 Navigator.of(context).pop();
                               },
                             ),
@@ -321,7 +318,7 @@ class InvitedEventDetailsScreen extends StatelessWidget {
                                 style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
                               ),
                               Text(
-                                'Organizer',
+                                'organizer'.tr,
                                 style: GoogleFonts.poppins(
                                     fontSize: 12,
                                     color: Colors.grey[600]),
@@ -330,7 +327,7 @@ class InvitedEventDetailsScreen extends StatelessWidget {
                           ),
                           Spacer(),
                           Roundbutton(
-                              title: "Message",
+                              title: "message".tr,
                               width: 120,
                               padding_vertical: 5,
                               titleColor: AppColors.primaryColor,
@@ -343,18 +340,18 @@ class InvitedEventDetailsScreen extends StatelessWidget {
                       SizedBox(height: 16),
                       // About event section
                       Text(
-                        'About Event',
+                        'about_event'.tr,
                         style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       SizedBox(height: 8),
                       // Expanded text with "Read More" functionality
                       ReadMoreText(
-                        data.event?.aboutEvent ?? 'Unavailable Event Details',
+                        data.event?.aboutEvent ?? '',
                         trimLines: 3,
                         colorClickableText: Colors.teal,
                         trimMode: TrimMode.Line,
-                        trimCollapsedText: 'Read More',
-                        trimExpandedText: 'Show Less',
+                        trimCollapsedText: 'read_more'.tr,
+                        trimExpandedText: 'show_less'.tr,
                         style: GoogleFonts.poppins(color: Colors.grey[700]),
                         moreStyle: GoogleFonts.poppins(
                           fontWeight: FontWeight.bold,

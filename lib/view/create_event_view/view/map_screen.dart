@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart'; // For reverse geocoding
 
@@ -17,7 +18,7 @@ class _MapScreenState extends State<MapScreen> {
   final Completer<GoogleMapController> _controller = Completer();
 
   Set<Marker> _markers = {};
-  String _address = "Fetching address...";
+  String _address = "fetching_address".tr;
 
   @override
   void initState() {
@@ -35,7 +36,7 @@ class _MapScreenState extends State<MapScreen> {
       });
     } catch (e) {
       setState(() {
-        _address = "Unable to fetch address";
+        _address = "unable_to_fetch_address".tr;
       });
     }
 
@@ -45,7 +46,7 @@ class _MapScreenState extends State<MapScreen> {
         Marker(
           markerId: MarkerId("current_location"),
           position: LatLng(widget.latitude, widget.longitude),
-          infoWindow: InfoWindow(title: "Your Location", snippet: _address),
+          infoWindow: InfoWindow(title: "your_location".tr, snippet: _address),
         ),
       );
     });

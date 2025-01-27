@@ -1,6 +1,16 @@
 class Endpoints {
   static const String mapApiKey = 'AIzaSyDhzY2k-tIrpnoBut75TTDJTuE1kURA_fU';
-  static const String baseURl = 'http://192.168.10.188:8000/api/v1';
+  static String placeDetailsURL ({required String PlaceId, required String apiKey}) =>
+      'https://maps.googleapis.com/maps/api/place/details/json?placeid=$PlaceId&key=$apiKey';
+
+  // local base url
+  // static const String baseURl = 'http://192.168.10.188:8000/api/v1';
+
+  // live base url
+  // static const String baseURl = 'http://159.223.184.53:4000/api/v1';
+
+  // bashpin live url
+  static const String baseURl = 'https://server.bashpin.net/api/v1';
 
   // auth
   static const String signUp = '$baseURl/auth/sign-up';
@@ -12,6 +22,11 @@ class Endpoints {
   static const String forgotPasswordUrl = '$baseURl/auth/forget-password';
   static const String resetPasswordUrl = '$baseURl/auth/reset-password';
   static const String refreshTokenURL = '$baseURl/auth/refresh-token';
+
+  // social auth
+  static const String socialAuthURL = '$baseURl/auth/social-login';
+
+
 
 
 // event
@@ -41,6 +56,7 @@ class Endpoints {
   static const String myInvitedEventsURL = '$baseURl/event/my-invited-events';
   static const String myJoinedEventsURL = '$baseURl/event/my-joined-events';
 
+  static String checkInEventURL ({required String eventId}) =>'$baseURl/event/check-in/$eventId';
 
 
 //   user
@@ -71,12 +87,23 @@ class Endpoints {
 
 
 //   notification
-  static const String notificationsURL = '$baseURl/notification/notifications?isRead=false';
+  static const String notificationsURL = '$baseURl/notification/notifications';
   static const String sendMessageURL = '$baseURl/chat/personal-chat';
 
+//   setting
+  static const String privacyPolicyURL = '$baseURl/settings/Privacy';
+  static const String termsOfConditionURL = '$baseURl/settings/Terms';
+  static const String aboutURL = '$baseURl/settings/About';
 
 
 
-//   chat socket
-  static const String chatListURL = 'http://192.168.10.188:8001';
+
+//   local socket
+//   static const String socketUrl = 'http://192.168.10.188:8001';
+
+//   live socket
+//   static const String socketUrl = 'http://159.223.184.53:4001';
+
+  //   bashpin live socket
+  static const String socketUrl = 'https://socket.bashpin.net/';
 }

@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, prefer_interpolation_to_compose_strings
 
 import 'dart:io';
 
@@ -167,7 +167,7 @@ class CameraPage extends StatelessWidget {
               child: Obx(() {
                 return Center(
                   child: Text(
-                    '${cameraManager.elapsedTime.value}s / 120s',
+                    '${cameraManager.elapsedTime.value}'+'s_120s'.tr,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 18.sp,
@@ -178,19 +178,13 @@ class CameraPage extends StatelessWidget {
             ),
 
             Positioned(
-              bottom: ResponsiveHelper.h(context, 150),
+              top: 16,
               left: 16,
-              right: 16,
-              child:// Display Elapsed Time
-              Positioned(
-                top: 16,
-                left: 16,
-                child: IconButton(
-                  icon: Icon(Icons.arrow_back, color: Colors.white),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
+              child: IconButton(
+                icon: Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
               ),
             ),
 

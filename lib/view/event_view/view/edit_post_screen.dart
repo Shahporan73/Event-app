@@ -45,7 +45,7 @@ class EditPostScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CustomAppBar(
-                    appBarName: "Edit Post",
+                    appBarName: "edit_post".tr,
                     onTap: () {
                       Get.back();
                     },
@@ -145,7 +145,7 @@ class EditPostScreen extends StatelessWidget {
                   postController.uploadImageList.isEmpty ? SizedBox() : Row(
                     children: [
                       CustomText(
-                          title: "Remove ${postController.uploadImageList.length} images",
+                          title: "remove".tr+" ${postController.uploadImageList.length} "+"images".tr,
                           fontWeight: FontWeight.w400, fontSize: 14,
                           color: Colors.green
                       ),
@@ -171,7 +171,7 @@ class EditPostScreen extends StatelessWidget {
                     child: Row(
                       children: [
                         CustomText(
-                            title: "Video ready for post",
+                            title: "video_ready_for_post".tr,
                             fontWeight: FontWeight.w400, fontSize: 14,
                             color: Colors.green
                         ),
@@ -192,13 +192,13 @@ class EditPostScreen extends StatelessWidget {
                   heightBox20,
                   RoundTextField(
                     controller: postController.editPostController,
-                    hint: "What you want to say?",
+                    hint: "what_you_want_to_say".tr,
                     maxLine: 5,
                   ),
 
                   Spacer(),
                   Roundbutton(
-                    title: "Update",
+                    title: "update".tr,
                     isLoading: postController.isLoading.value,
                     onTap: () async{
                       await postController.updatePost(context, postId);
@@ -224,9 +224,7 @@ class EditPostScreen extends StatelessWidget {
               children: <Widget>[
                 CustomText(
                   textAlign: TextAlign.center,
-                  title: 'Record videos effortlessly with '
-                      'a 120-second duration—perfect for '
-                      'capturing concise,impactful moments!',
+                  title: 'record_videos_effortlessly_with_a_120_second_duration_perfect_for_capturing_concise_impactful_moments'.tr,
                   fontWeight: FontWeight.w400,
                   fontSize: 14,
                   color: Color(0xff595959),
@@ -236,7 +234,7 @@ class EditPostScreen extends StatelessWidget {
           ),
           actions: <Widget>[
             Roundbutton(
-                title: "Open Camera",
+                title: "open_camera".tr,
                 fontSize: 14,
                 onTap: () {
                   // Dismiss the dialog

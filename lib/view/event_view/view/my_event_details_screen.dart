@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, prefer_interpolation_to_compose_strings
 
 import 'package:event_app/data/token_manager/const_veriable.dart';
 import 'package:event_app/data/token_manager/local_storage.dart';
@@ -12,6 +12,7 @@ import 'package:event_app/res/custom_style/formate_time.dart';
 import 'package:event_app/res/utils/share_event.dart';
 import 'package:event_app/view/create_event_view/view/map_screen.dart';
 import 'package:event_app/view/create_event_view/view/selected_contact_screen.dart';
+import 'package:event_app/view/create_event_view/widget/invite_member_from_event.dart';
 import 'package:event_app/view/event_view/view/post_screen.dart';
 import 'package:event_app/view/home_view/controller/event_details_controller.dart';
 import 'package:event_app/view/message_view/controller/personal_chat_controller.dart';
@@ -19,6 +20,7 @@ import 'package:event_app/view/message_view/view/see_all_memeber_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -27,10 +29,51 @@ import 'package:share_plus/share_plus.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../../res/common_widget/custom_network_image_widget.dart';
 
-class MyEventDetailsScreen extends StatelessWidget {
-  MyEventDetailsScreen({Key? key}) : super(key: key);
+class MyEventDetailsScreen extends StatefulWidget {
+  const MyEventDetailsScreen({super.key});
+
+  @override
+  State<MyEventDetailsScreen> createState() => _MyEventDetailsScreenState();
+}
+
+class _MyEventDetailsScreenState extends State<MyEventDetailsScreen> {
   final EventDetailsController controller = Get.put(EventDetailsController());
   final PersonalChatController personalChatController = Get.put(PersonalChatController());
+
+  bool isWithinDistance = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkDistance(controller.eventModel.value.data?.location?.coordinates[0] ?? 0.0,
+        controller.eventModel.value.data?.location?.coordinates[1] ?? 0.0);
+  }
+
+  Future<void> _checkDistance(double eventLatitude, double eventLongitude) async {
+    try {
+      // Get current position
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      // Calculate the distance in meters
+      double distance = Geolocator.distanceBetween(
+        position.latitude,
+        position.longitude,
+        eventLongitude,
+        eventLatitude,
+      );
+
+      print('distance ====> $distance');
+
+      // Update button state based on distance
+      setState(() {
+        isWithinDistance = distance <= 200; // 200 meters
+      });
+    } catch (e) {
+      print("Error determining distance: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +83,7 @@ class MyEventDetailsScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.bgColor,
       body: Obx(
-        () {
+            () {
           var data = controller.eventModel.value.data;
           print('event id ${data?.id}');
           print('LocalStorage id ${LocalStorage.getData(key: showEventDetailsId)}');
@@ -132,7 +175,7 @@ class MyEventDetailsScreen extends StatelessWidget {
 
                     // Centered Title
                     CustomText(
-                      title: 'Event Details',
+                      title: 'event_details'.tr,
                       fontSize: 18,
                       fontWeight: FontWeight.w500,
                       color: Colors.white,
@@ -206,7 +249,7 @@ class MyEventDetailsScreen extends StatelessWidget {
                       SizedBox(height: 60),
                       // Event title and rating
                       Text(
-                        data.name ?? 'Not Available',
+                        data.name ?? 'not_available'.tr,
                         style: GoogleFonts.poppins(
                             fontSize: 22,
                             fontWeight: FontWeight.w500,
@@ -272,40 +315,40 @@ class MyEventDetailsScreen extends StatelessWidget {
                           ),
                           SizedBox(width: 15),
                           Expanded(
-                              child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                data.name ?? 'Unavailable',
-                                style: GoogleFonts.poppins(color: Colors.grey[800]),
-                              ),
-                              Text(
-                                data.address ?? 'Unavailable',
-                                style: GoogleFonts.poppins(
-                                  color: Colors.grey[600],
-                                  fontSize: 12,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  data.name ?? 'not_available'.tr,
+                                  style: GoogleFonts.poppins(color: Colors.grey[800]),
                                 ),
-                              ),
+                                Text(
+                                  data.address ?? 'not_available'.tr,
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.grey[600],
+                                    fontSize: 12,
+                                  ),
+                                ),
 
-                              // Map button
-                              Align(
-                                alignment: Alignment.centerRight,
-                              child: GestureDetector(
-                                  onTap: () {
-                                    print('location==== ${data.location?.coordinates}');
-                                    Get.to(
-                                            () => MapScreen(
+                                // Map button
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: GestureDetector(
+                                      onTap: () {
+                                        print('location==== ${data.location?.coordinates}');
+                                        Get.to(
+                                                () => MapScreen(
                                               latitude: data.location?.coordinates[1] ?? 0.0,
                                               longitude: data.location?.coordinates[0] ?? 0.0,
                                             ),
-                                        transition: Transition.rightToLeft,
-                                        duration: Duration(milliseconds: 300)
-                                    );
-                                  },
-                                  child: Image.asset(AppImages.directionIcon, scale: 5,)
-                              ),
-                              ),
-                            ],
+                                            transition: Transition.rightToLeft,
+                                            duration: Duration(milliseconds: 300)
+                                        );
+                                      },
+                                      child: Image.asset(AppImages.directionIcon, scale: 5,)
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
@@ -323,11 +366,11 @@ class MyEventDetailsScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                data.organizer?.name ?? 'Unavailable',
+                                data.organizer?.name ?? 'not_available'.tr,
                                 style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
                               ),
                               Text(
-                                'Organizer',
+                                'organizer'.tr,
                                 style: GoogleFonts.poppins(
                                     fontSize: 12,
                                     color: Colors.grey[600]),
@@ -336,7 +379,7 @@ class MyEventDetailsScreen extends StatelessWidget {
                           ),
                           Spacer(),
                           Roundbutton(
-                              title: "Message",
+                              title: "message".tr,
                               width: 120,
                               padding_vertical: 5,
                               titleColor: AppColors.primaryColor,
@@ -344,7 +387,7 @@ class MyEventDetailsScreen extends StatelessWidget {
                               fontSize: 12,
                               onTap: () {
                                 if(data.organizer?.id == null){
-                                  Get.rawSnackbar(message: "User not found");
+                                  Get.rawSnackbar(message: "user_not_found".tr);
                                 }else{
                                   personalChatController.getChatList(
                                       receiverId: data.organizer?.id ?? "",
@@ -352,25 +395,25 @@ class MyEventDetailsScreen extends StatelessWidget {
                                       userImage: data.organizer?.profilePicture ?? ""
                                   );
                                 }
-                            }
+                              }
                           )
                         ],
                       ),
                       SizedBox(height: 16),
                       // About event section
                       Text(
-                        'About Event',
+                        'about_event'.tr,
                         style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       SizedBox(height: 8),
                       // Expanded text with "Read More" functionality
                       ReadMoreText(
-                        data.aboutEvent ?? 'Unavailable',
+                        data.aboutEvent ?? 'not_available'.tr,
                         trimLines: 3,
                         colorClickableText: Colors.teal,
                         trimMode: TrimMode.Line,
-                        trimCollapsedText: 'Read More',
-                        trimExpandedText: 'Show Less',
+                        trimCollapsedText: 'read_more'.tr,
+                        trimExpandedText: 'show_less'.tr,
                         style: GoogleFonts.poppins(color: Colors.grey[700]),
                         moreStyle: GoogleFonts.poppins(
                           fontWeight: FontWeight.bold,
@@ -381,12 +424,14 @@ class MyEventDetailsScreen extends StatelessWidget {
                       // Check In button
                       SizedBox(height: 20),
                       Roundbutton(
-                        title: "Check In",
+                        title: "check_in".tr,
                         buttonColor: Colors.white,
                         titleColor: AppColors.black100,
                         border: Border.all(color: AppColors.primaryColor, width: 0.5),
-                        onTap: () {
-
+                        onTap: () async {
+                          isWithinDistance?
+                          await controller.checkInEvent(eventId: data.id ?? "")
+                          :Get.rawSnackbar(message: "you_are_not_within_the_event_distance".tr);
                         },
                       ),
 
@@ -394,7 +439,7 @@ class MyEventDetailsScreen extends StatelessWidget {
                       // Join button
                       heightBox10,
                       Roundbutton(
-                        title: "View Post",
+                        title: "view_post".tr,
                         onTap: () {
                           LocalStorage.saveData(key: eventPostId, data: data.id);
                           print("eventPostId ====> ${LocalStorage.getData(key: eventPostId)}");
@@ -437,7 +482,7 @@ class MyEventDetailsScreen extends StatelessWidget {
                       children: [
                         Row(
                           children: List.generate(
-                            3,
+                            data.recommendableUsers.length > 3 ? 3 : data.recommendableUsers.length,
                                 (index) {
                               return Align(
                                   widthFactor: 0.6,
@@ -455,7 +500,7 @@ class MyEventDetailsScreen extends StatelessWidget {
                         ),
                         SizedBox(width: 20),
                         Text(
-                          '+${data.recommendableUsers.length} People',
+                          '${data.recommendableUsers.length} '+'people'.tr,
                           style: GoogleFonts.poppins(
                             color: AppColors.primaryColor,
                             fontWeight: FontWeight.bold,
@@ -467,11 +512,11 @@ class MyEventDetailsScreen extends StatelessWidget {
                           padding_vertical: 5,
                           borderRadius: 4,
                           fontSize: 12,
-                          title: "Invite",
+                          title: "invite".tr,
                           onTap: () {
                             LocalStorage.saveData(key: eventIdForInviteEvent, data: data.id);
                             Get.to(
-                                    () => SelectedContactScreen(),
+                                    () => InviteMemberFromEvent(),
                                 transition: Transition.downToUp,
                                 duration: Duration(milliseconds: 300)
                             );
@@ -490,3 +535,4 @@ class MyEventDetailsScreen extends StatelessWidget {
     );
   }
 }
+

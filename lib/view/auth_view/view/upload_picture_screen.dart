@@ -31,159 +31,173 @@ class UploadPictureScreen extends StatelessWidget {
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Center(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(100.r),
-                  child: Obx(() => controller.selectedImage.value != null
-                      ? Image.file(
-                    controller.selectedImage.value!,
-                    width: 150,
-                    height: 150,
-                    fit: BoxFit.cover,
-                  )
-                      : Image.asset(
-                    AppImages.placeholderImage,
-                    width: 150,
-                    height: 150,
-                    fit: BoxFit.cover,
-                  )),
-                ),
-              ),
-              SizedBox(height: 15.h),
-              CustomText(
-                title: "profile_picture".tr,
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: AppColors.black100,
-              ),
-              heightBox10,
-              CustomText(
-                textAlign: TextAlign.center,
-                title: 'the_profile_picture_is_necessary_to_guarantee_a_better_user_experience'.tr,
-                fontWeight: FontWeight.w400,
-                fontSize: 12,
-                color: Color(0xff5C5C5C),
-              ),
-              heightBox10,
-              Center(
-                child: Container(
-                  width: 120.w,
-                  height: 1.5,
-                  decoration: BoxDecoration(
-                    color: Colors.grey,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: IconButton(
+                      onPressed: () => Get.back(),
+                      icon: Icon(
+                        Icons.arrow_back,
+                        color: AppColors.blackColor,
+                      )
                   ),
                 ),
-              ),
-              heightBox10,
-              CustomText(
-                title: "registration".tr,
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: AppColors.primaryColor,
-              ),
-              CustomText(
-                title: "2_of_3".tr,
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: AppColors.black100,
-              ),
-              heightBox30,
-              Row(
-                children: [
 
-                  // open camera
-                  Expanded(
-                    child: DottedBorder(
-                      color: AppColors.primaryColor,
-                      strokeWidth: 1,
-                      dashPattern: const [6, 3],
-                      borderType: BorderType.RRect,
-                      radius: Radius.circular(6.r),
-                      child: Container(
-                        padding: EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: Color(0xffECF2FF),
-                        ),
-                        child: Column(
-                          children: [
-                            Image.asset(AppImages.captureCamera, scale: 4),
-                            heightBox10,
-                            Roundbutton(
-                              title: "Open camera",
-                              padding_vertical: 5,
-                              fontSize: 10,
-                              borderRadius: 20.r,
-                              onTap: () async {
-                                final pickedFile = await ImagePicker().pickImage(
-                                  source: ImageSource.camera,
-                                );
-                                if (pickedFile != null) {
-                                  controller.uploadProfileImage(File(pickedFile.path));
-                                } else {
-                                  Get.snackbar("Error", "No image selected", snackPosition: SnackPosition.BOTTOM);
-                                }
-                              },
-                            ),
-                          ],
+                heightBox20,
+                Center(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(100),
+                    child: Obx(() => controller.selectedImage.value != null
+                        ? Image.file(
+                      controller.selectedImage.value!,
+                      width: 150,
+                      height: 150,
+                      fit: BoxFit.cover,
+                    )
+                        : Image.asset(
+                      AppImages.placeholderImage,
+                      width: 150,
+                      height: 150,
+                      fit: BoxFit.cover,
+                    )),
+                  ),
+                ),
+                SizedBox(height: 15),
+                CustomText(
+                  title: "profile_picture".tr,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.black100,
+                ),
+                heightBox10,
+                CustomText(
+                  textAlign: TextAlign.center,
+                  title: 'the_profile_picture_is_necessary_to_guarantee_a_better_user_experience'.tr,
+                  fontWeight: FontWeight.w400,
+                  fontSize: 12,
+                  color: Color(0xff5C5C5C),
+                ),
+                heightBox10,
+                Center(
+                  child: Container(
+                    width: 120,
+                    height: 1.5,
+                    decoration: BoxDecoration(
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+                heightBox10,
+                CustomText(
+                  title: "registration".tr,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.primaryColor,
+                ),
+                CustomText(
+                  title: "2_of_3".tr,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.black100,
+                ),
+                heightBox30,
+                Row(
+                  children: [
+
+                    // open camera
+                    Expanded(
+                      child: DottedBorder(
+                        color: AppColors.primaryColor,
+                        strokeWidth: 1,
+                        dashPattern: const [6, 3],
+                        borderType: BorderType.RRect,
+                        radius: Radius.circular(6),
+                        child: Container(
+                          padding: EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: Color(0xffECF2FF),
+                          ),
+                          child: Column(
+                            children: [
+                              Image.asset(AppImages.captureCamera, scale: 4),
+                              heightBox10,
+                              Roundbutton(
+                                title: "open_camera".tr,
+                                padding_vertical: 5,
+                                fontSize: 10,
+                                borderRadius: 20,
+                                onTap: () async {
+                                  final pickedFile = await ImagePicker().pickImage(
+                                    source: ImageSource.camera,
+                                  );
+                                  if (pickedFile != null) {
+                                    controller.uploadProfileImage(File(pickedFile.path));
+                                  } else {
+                                    Get.snackbar("error".tr, "no_image_selected".tr, snackPosition: SnackPosition.BOTTOM);
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  // open gallery
-                  widthBox10,
-                  Expanded(
-                    child: DottedBorder(
-                      color: AppColors.primaryColor,
-                      strokeWidth: 1,
-                      dashPattern: const [6, 3],
-                      borderType: BorderType.RRect,
-                      radius: Radius.circular(6.r),
-                      child: Container(
-                        padding: EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: Color(0xffECF2FF),
-                        ),
-                        child: Column(
-                          children: [
-                            Image.asset(AppImages.captureGallery, scale: 4),
-                            heightBox10,
-                            Roundbutton(
-                              title: "Open gallery",
-                              padding_vertical: 5,
-                              fontSize: 10,
-                              borderRadius: 20.r,
-                              onTap: () async {
-                                final pickedFile = await ImagePicker().pickImage(
-                                  source: ImageSource.gallery,
-                                );
-                                if (pickedFile != null) {
-                                  controller.uploadProfileImage(File(pickedFile.path));
-                                } else {
-                                  Get.snackbar("Error", "No image selected", snackPosition: SnackPosition.BOTTOM);
-                                }
-                              },
-                            ),
-                          ],
+                    // open gallery
+                    widthBox10,
+                    Expanded(
+                      child: DottedBorder(
+                        color: AppColors.primaryColor,
+                        strokeWidth: 1,
+                        dashPattern: const [6, 3],
+                        borderType: BorderType.RRect,
+                        radius: Radius.circular(6),
+                        child: Container(
+                          padding: EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: Color(0xffECF2FF),
+                          ),
+                          child: Column(
+                            children: [
+                              Image.asset(AppImages.captureGallery, scale: 4),
+                              heightBox10,
+                              Roundbutton(
+                                title: "open_gallery".tr,
+                                padding_vertical: 5,
+                                fontSize: 10,
+                                borderRadius: 20,
+                                onTap: () async {
+                                  final pickedFile = await ImagePicker().pickImage(
+                                    source: ImageSource.gallery,
+                                  );
+                                  if (pickedFile != null) {
+                                    controller.uploadProfileImage(File(pickedFile.path));
+                                  } else {
+                                    Get.snackbar("error".tr, "no_image_selected".tr, snackPosition: SnackPosition.BOTTOM);
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              heightBox50,
-              Obx(() => Roundbutton(
-                title: "continue".tr,
-                padding_vertical: 15,
-                isLoading: controller.isLoading.value,
-                onTap: () {
-                  controller.onSignUp();
-                },
-              ),),
-            ],
+                  ],
+                ),
+                heightBox50,
+                Obx(() => Roundbutton(
+                  title: "continue".tr,
+                  padding_vertical: 15,
+                  isLoading: controller.isLoading.value,
+                  onTap: () {
+                    controller.onSignUp();
+                  },
+                ),),
+              ],
+            ),
           ),
         ),
       ),

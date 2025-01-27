@@ -1,12 +1,15 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:event_app/data/api/base_client.dart';
 import 'package:event_app/data/token_manager/local_storage.dart';
 import 'package:event_app/res/app_colors/App_Colors.dart';
 import 'package:event_app/res/app_images/App_images.dart';
 import 'package:event_app/res/common_widget/custom_network_image_widget.dart';
 import 'package:event_app/res/common_widget/custom_text.dart';
+import 'package:event_app/res/common_widget/video_player_widget.dart';
 import 'package:event_app/view/event_view/sub_screen/media_viewer_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:video_player/video_player.dart';
 
@@ -112,7 +115,7 @@ class PostWidget extends StatelessWidget {
                         children: [
                           Icon(Icons.edit, color: Colors.teal),
                           SizedBox(width: 8),
-                          Text('Edit', style: TextStyle(color: Colors.black)),
+                          Text('edit'.tr, style: TextStyle(color: Colors.black)),
                         ],
                       ),
                     ),
@@ -123,7 +126,7 @@ class PostWidget extends StatelessWidget {
                         children: [
                           Icon(Icons.delete, color: Colors.red),
                           SizedBox(width: 8),
-                          Text('Delete', style: TextStyle(color: Colors.black)),
+                          Text('Delete'.tr, style: TextStyle(color: Colors.black)),
                         ],
                       ),
                     ),
@@ -141,117 +144,107 @@ class PostWidget extends StatelessWidget {
               ),
             ),
             SizedBox(height: 10),
-            GridView.builder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: mediaList.length == 1 ? 1 : 2,
-                mainAxisSpacing: 4,
-                crossAxisSpacing: 4,
-                childAspectRatio: 1.6,
+            if (mediaList.length == 1 && mediaList[0]['type'] == 'video') ...[
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: VideoPlayerWidget(
+                  videoUrl: mediaList[0]['url']!,
+                ),
               ),
-              itemCount: mediaList.length > 4 ? 4 : mediaList.length,
-              itemBuilder: (context, index) {
-                if (index == 3 && mediaList.length > 4) {
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MediaViewerScreen(
-                            mediaList: mediaList,
-                            initialIndex: index,
+            ] else ...[
+              GridView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: mediaList.length == 1 ? 1 : 2,
+                  mainAxisSpacing: 4,
+                  crossAxisSpacing: 4,
+                  childAspectRatio: 16 / 9,
+                ),
+                itemCount: mediaList.length > 4 ? 4 : mediaList.length,
+                itemBuilder: (context, index) {
+                  if (index == 3 && mediaList.length > 4) {
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MediaViewerScreen(
+                              mediaList: mediaList,
+                              initialIndex: index,
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        Image.network(
-                          mediaList[index]['url']!,
-                          fit: BoxFit.cover,
-                        ),
-                        Container(
-                          color: Colors.black54,
-                          child: Center(
-                            child: Text(
-                              '+${mediaList.length - 3}',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
+                        );
+                      },
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          Image.network(
+                            mediaList[index]['url']!,
+                            fit: BoxFit.cover,
+                          ),
+                          Container(
+                            color: Colors.black54,
+                            child: Center(
+                              child: Text(
+                                '+${mediaList.length - 3}',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  );
-                } else if (mediaList[index]['type'] == 'video') {
-                  VideoPlayerController controller = VideoPlayerController.network(mediaList[index]['url'] ?? '');
-
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MediaViewerScreen(
-                            mediaList: mediaList,
-                            initialIndex: index,
+                        ],
+                      ),
+                    );
+                  } else if (mediaList[index]['type'] == 'video') {
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MediaViewerScreen(
+                              mediaList: mediaList,
+                              initialIndex: index,
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                    child: FutureBuilder(
-                      future: controller.initialize(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.done) {
-                          return Stack(
-                            children: [
-                              AspectRatio(
-                                aspectRatio: controller.value.aspectRatio,
-                                child: VideoPlayer(controller),
-                              ),
-                              Align(
-                                alignment: Alignment.bottomCenter,
-                                child: VideoControls(videoController: controller),
-                              ),
-                            ],
-                          );
-                        } else if (snapshot.hasError) {
-                          return Center(
-                            child: Icon(Icons.error, color: Colors.red),
-                          );
-                        } else {
-                          return Center(child: CircularProgressIndicator());
-                        }
+                        );
                       },
-                    ),
-                  );
-                } else {
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MediaViewerScreen(
-                            mediaList: mediaList,
-                            initialIndex: index,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: AspectRatio(
+                          aspectRatio: 16 / 9,
+                          child: VideoPlayerWidget(
+                            videoUrl: mediaList[index]['url']!,
                           ),
                         ),
-                      );
-                    },
-                    child: CustomNetworkImage(
-                      imageUrl: mediaList[index]['url']!,
-                      height: height,
-                      width: width,
-                    ),
-                  );
-                }
-              },
-            ),
-
+                      ),
+                    );
+                  } else {
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MediaViewerScreen(
+                              mediaList: mediaList,
+                              initialIndex: index,
+                            ),
+                          ),
+                        );
+                      },
+                      child: CustomNetworkImage(
+                        imageUrl: mediaList[index]['url']!,
+                        height: height,
+                        width: width,
+                      ),
+                    );
+                  }
+                },
+              ),
+            ],
             SizedBox(height: 10),
             Row(
               children: [
@@ -262,8 +255,8 @@ class PostWidget extends StatelessWidget {
                       Image.asset(
                         AppImages.likeIcon,
                         scale: 4,
-                        color: isLiked == true ?
-                             AppColors.primaryColor
+                        color: isLiked == true
+                            ? AppColors.primaryColor
                             : AppColors.blackColor,
                       ),
                       SizedBox(width: 4),
@@ -300,6 +293,12 @@ class PostWidget extends StatelessWidget {
     );
   }
 }
+
+
+
+
+
+
 
 
 class VideoControls extends StatefulWidget {

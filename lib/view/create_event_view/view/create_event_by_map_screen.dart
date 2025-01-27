@@ -99,8 +99,6 @@ class _CreateEventByMapScreenState extends State<CreateEventByMapScreen> {
     }
   }
 
-
-
   final CreateEventByMapController controller = Get.put(CreateEventByMapController());
 
   @override
@@ -119,7 +117,7 @@ class _CreateEventByMapScreenState extends State<CreateEventByMapScreen> {
                 children: [
                   // appbar
                   CustomAppBar(
-                    appBarName: "Create Event",
+                    appBarName: "create_event".tr,
                     onTap: () {
                       Get.back();
                     },
@@ -137,7 +135,7 @@ class _CreateEventByMapScreenState extends State<CreateEventByMapScreen> {
                         ),
                         heightBox5,
                         CustomText(
-                          title: "Upload Banner",
+                          title: "upload_banner".tr,
                           color: AppColors.primaryColor,
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
@@ -164,7 +162,7 @@ class _CreateEventByMapScreenState extends State<CreateEventByMapScreen> {
                   // Event name field
                   heightBox20,
                   CustomText(
-                    title: "Event name",
+                    title: "event_name".tr,
                     fontWeight: FontWeight.w400,
                     fontSize: 14,
                     color: AppColors.black33,
@@ -173,7 +171,7 @@ class _CreateEventByMapScreenState extends State<CreateEventByMapScreen> {
                   TextField(
                     controller: controller.eventNameController,
                     decoration: InputDecoration(
-                      hintText: 'Enter event name',
+                      hintText: 'enter_event_name'.tr,
                       hintStyle: TextStyle(color: Colors.grey, fontSize: 14.sp),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.r),
@@ -185,7 +183,7 @@ class _CreateEventByMapScreenState extends State<CreateEventByMapScreen> {
                   // Event address field
                   heightBox20,
                   CustomText(
-                    title: "Address",
+                    title: "address".tr,
                     fontWeight: FontWeight.w400,
                     fontSize: 14,
                     color: AppColors.black33,
@@ -198,7 +196,7 @@ class _CreateEventByMapScreenState extends State<CreateEventByMapScreen> {
                         Icons.location_on_outlined,
                         color: Colors.grey,
                       ),
-                      hintText: 'Enter address',
+                      hintText: 'enter_address'.tr,
                       hintStyle: TextStyle(color: Colors.grey, fontSize: 14.sp),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.r),
@@ -210,7 +208,7 @@ class _CreateEventByMapScreenState extends State<CreateEventByMapScreen> {
                   // Event Type section
                   heightBox20,
                   CustomText(
-                    title: "Event Type",
+                    title: "event_type".tr,
                     fontWeight: FontWeight.w400,
                     fontSize: 14,
                     color: AppColors.black33,
@@ -228,7 +226,7 @@ class _CreateEventByMapScreenState extends State<CreateEventByMapScreen> {
                       controller.eventType.value == 'PUBLIC'
                           ? Colors.white
                           : Colors.black,
-                      title: "PUBLIC",
+                      title: "public".tr,
                       border: controller.eventType.value == 'PUBLIC'
                           ? Border.all(color: AppColors.primaryColor, width: 1)
                           : null,
@@ -248,7 +246,7 @@ class _CreateEventByMapScreenState extends State<CreateEventByMapScreen> {
                       controller.eventType.value == 'PRIVATE'
                           ? Colors.white
                           : Colors.black,
-                      title: "PRIVATE",
+                      title: "private".tr,
                       border: controller.eventType.value == 'PRIVATE'
                           ? Border.all(color: AppColors.primaryColor, width: 1)
                           : null,
@@ -263,7 +261,7 @@ class _CreateEventByMapScreenState extends State<CreateEventByMapScreen> {
                   // Category section
                   heightBox20,
                   CustomText(
-                    title: "Category",
+                    title: "category".tr,
                     fontWeight: FontWeight.w400,
                     fontSize: 14,
                     color: AppColors.black33,
@@ -287,7 +285,7 @@ class _CreateEventByMapScreenState extends State<CreateEventByMapScreen> {
                           print("selectedCatId ====> ${controller.selectedCatId.value}");
                         }
                       },
-                      hintText: 'Select category event'
+                      hintText: 'select_category_event'.tr
                   ),
 
 
@@ -295,7 +293,7 @@ class _CreateEventByMapScreenState extends State<CreateEventByMapScreen> {
                   // Select Date
                   heightBox20,
                   CustomText(
-                    title: "Select Date",
+                    title: "Select_date".tr,
                     fontWeight: FontWeight.w400,
                     fontSize: 14,
                     color: AppColors.black33,
@@ -313,7 +311,7 @@ class _CreateEventByMapScreenState extends State<CreateEventByMapScreen> {
                       ),
                       hintText: controller.eventSelectedDate.value.isNotEmpty
                           ? date // Display selected date or placeholder
-                          : 'Select date',
+                          : 'select_date'.tr,
                       hintStyle: TextStyle(color: Colors.grey, fontSize: 14.sp),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.r),
@@ -325,7 +323,7 @@ class _CreateEventByMapScreenState extends State<CreateEventByMapScreen> {
                   // opening time and closing time
                   heightBox20,
                   CustomText(
-                    title: "Select Time",
+                    title: "Select_time".tr,
                     fontWeight: FontWeight.w400,
                     fontSize: 14,
                     color: AppColors.black33,
@@ -347,7 +345,7 @@ class _CreateEventByMapScreenState extends State<CreateEventByMapScreen> {
                             ),
                             hintText: controller.eventStartTime.value.isNotEmpty
                                 ? sTime // Display selected time or placeholder
-                                : 'Opening time',
+                                : 'opening_time'.tr,
                             hintStyle: TextStyle(color: Colors.grey, fontSize: 14.sp),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8.r),
@@ -371,7 +369,7 @@ class _CreateEventByMapScreenState extends State<CreateEventByMapScreen> {
                             ),
                             hintText: controller.eventEndTime.value.isNotEmpty
                                 ? eTime // Display selected time or placeholder
-                                : 'Closing time',
+                                : 'closing_time'.tr,
                             hintStyle: TextStyle(color: Colors.grey, fontSize: 14.sp),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8.r),
@@ -388,7 +386,7 @@ class _CreateEventByMapScreenState extends State<CreateEventByMapScreen> {
                   // About Event
                   heightBox20,
                   CustomText(
-                    title: "About Event",
+                    title: "about_event".tr,
                     fontWeight: FontWeight.w400,
                     fontSize: 14,
                     color: AppColors.black33,
@@ -398,7 +396,7 @@ class _CreateEventByMapScreenState extends State<CreateEventByMapScreen> {
                     controller: controller.eventAboutController,
                     maxLines: 3,
                     decoration: InputDecoration(
-                      hintText: 'Type event description',
+                      hintText: 'enter_event_description'.tr,
                       hintStyle: TextStyle(color: Colors.grey, fontSize: 14.sp),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.r),
@@ -411,7 +409,7 @@ class _CreateEventByMapScreenState extends State<CreateEventByMapScreen> {
 
                   heightBox20,
                   Roundbutton(
-                    title: "Select Contact",
+                    title: "select_contact".tr,
                     isLoading: controller.isLoading.value,
                     onTap: () {
                       // await Future.delayed(Duration(seconds: 2), () async {

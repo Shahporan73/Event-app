@@ -51,5 +51,5 @@ class AppImages {
 
   // ==================================Lottie animations=============================================
   static String successAnim = "assets/lottie/congratulation.json";
-  static String transactionSuccessAnim = "assets/lottie/tran_suc_anim.json";
+  static String welcomeLottie = "assets/lottie/Animation - 1726499332727.json";
 }

@@ -8,6 +8,7 @@ import 'package:event_app/view/home_view/view/home.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -141,7 +142,7 @@ class SignInScreen extends StatelessWidget {
                                 Checkbox(
                                   value: controller.isChecked.value,
                                   onChanged: (bool? value) {
-                                    controller.isChecked.value = value!;
+                                    controller.isChecked.value = !controller.isChecked.value;
                                   },
                                 ),
                                 Text(
@@ -169,38 +170,48 @@ class SignInScreen extends StatelessWidget {
                               title: 'sign_in'.tr,
                               isLoading: controller.isLoading.value,
                               onTap: () {
-                                controller.onSignIn();
+                                controller.onSignIn(context);
                               },),
                           ],
                         )
                     ),
                   ),
 
-                  SizedBox(height: 20.h),
+                  SizedBox(height: 20),
 
                   // Continue with social login text
                   OrContinueWith(),
-                  SizedBox(height: 15.h),
+                  SizedBox(height: 15),
 
                   // Social buttons
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      buildIconButton(
+
+
+                     /* buildIconButton(
                         context,
                         AppImages.facebook,
-                            () {},
+                        () async{
+                          controller.signInWithFacebook();
+                        },
+                        false,
                       ),
-                      SizedBox(width: 20.w),
-                      buildIconButton(
+                      SizedBox(width: 20),*/
+
+
+                      Obx(() => buildIconButton(
                         context,
                         AppImages.google,
-                            () {},
-                      ),
+                            () async {
+                          await controller.onGoogleSignIn();
+                        },
+                        controller.isGoogleSignInLoading.value,
+                      ),),
                     ],
                   ),
 
-                  SizedBox(height: 20.h),
+                  SizedBox(height: 20),
                   // Sign In link
                   Center(
                     child: RichText(
@@ -245,12 +256,12 @@ class SignInScreen extends StatelessWidget {
   }
 
   Widget buildIconButton(
-      BuildContext context, String icon, VoidCallback onTap) {
+      BuildContext context, String icon, VoidCallback onTap, bool isLoading) {
     return InkWell(
       onTap: onTap,
       child: Container(
-          width: 80.w,
-          height: 50.w,
+          width: 150,
+          height: 50,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(8.r),
@@ -263,10 +274,12 @@ class SignInScreen extends StatelessWidget {
               ),
             ],
           ),
-          child: Image.asset(
+          child: isLoading ==true ? SpinKitCircle(color: AppColors.primaryColor, size: 16,)
+              : Image.asset(
             icon,
             scale: 4,
-          )),
+          )
+      ),
     );
   }
 }

@@ -82,4 +82,34 @@ class EventDetailsController extends GetxController{
       isLoading.value = false;
     }
   }
+
+  Future<void> checkInEvent({required String eventId}) async {
+    isLoading.value = true;
+    try {
+      String token = LocalStorage.getData(key: "access_token");
+
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      };
+
+      dynamic responseBody = await BaseClient.handleResponse(
+        await BaseClient.postRequest(
+          api: Endpoints.checkInEventURL(eventId: eventId),
+          headers: headers,
+        ),
+      );
+
+      print('hit api ${Endpoints.checkInEventURL(eventId: eventId)}');
+      print("responseBody ====> $responseBody");
+      if(responseBody != null){
+        Get.rawSnackbar(message: 'Checked in successfully');
+      }
+    }catch (e) {
+      print(e);
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
 }

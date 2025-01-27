@@ -9,10 +9,10 @@ import 'package:get/get.dart';
 
 class UserProfileController extends GetxController{
   var isLoading = false.obs;
-  var isFollow = false.obs;
+  var isFollowLoading = false.obs;
   var userProfileModel = UserProfileModel().obs;
   var postList = <Post>[].obs;
-
+  var followStates = <String, bool>{}.obs; // Map to track follow states
 
 
   @override
@@ -25,8 +25,9 @@ class UserProfileController extends GetxController{
 
   Future<void> getUserProfile()async{
     isLoading.value = true;
-    String token = LocalStorage.getData(key: "access_token");
-    String userId = LocalStorage.getData(key: userProfileId);
+
+    var token = LocalStorage.getData(key: "access_token");
+    var userId = LocalStorage.getData(key: userProfileId);
     Map<String, String> headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
@@ -39,7 +40,7 @@ class UserProfileController extends GetxController{
           headers: headers,
         ),
       );
-      print('hit api ${Endpoints.userProfileURL(userId: userId)}');
+      print('hit api ${Endpoints.userProfileURL(userId: userId.isNotEmpty ? userId : '')}');
       print("responseBody ====> $response");
       if (response != null) {
         postList.clear();
@@ -57,7 +58,7 @@ class UserProfileController extends GetxController{
 
 
   Future<void> onFollow(String userId)async{
-    isLoading.value = true;
+    isFollowLoading.value = true;
     String token = LocalStorage.getData(key: "access_token");
     Map<String, String> headers = {
       'Content-Type': 'application/json',
@@ -82,12 +83,11 @@ class UserProfileController extends GetxController{
         // Determine the follow/unfollow status from the response
         final message = response['data']['message'] ?? '';
         if (message.contains('Followed')) {
-          // isFollow.value = true;
-          LocalStorage.saveData(key: 'is_follow', data: 'following');
-        }else
-        if (message.contains('Un-followed')) {
-          // isFollow.value = false;
-          LocalStorage.removeData(key: 'is_follow');
+          // Mark the user as followed
+          followStates[userId] = true;
+        } else if (message.contains('Un-followed')) {
+          // Mark the user as unfollowed
+          followStates[userId] = false;
         }
 
         // Display appropriate message
@@ -97,8 +97,7 @@ class UserProfileController extends GetxController{
     } catch (e) {
       print(e);
     }finally{
-      isLoading.value = false;
+      isFollowLoading.value = false;
     }
   }
-
 }

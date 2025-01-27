@@ -46,7 +46,7 @@ class EditProfileScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CustomAppBar(
-                    appBarName: "Edit Profile",
+                    appBarName: "Edit Profile".tr,
                     onTap: () {
                       Get.back();
                     },
@@ -98,7 +98,7 @@ class EditProfileScreen extends StatelessWidget {
                   // Name field
                   heightBox20,
                   CustomText(
-                    title: "Name",
+                    title: "name".tr,
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                     color: AppColors.whiteDarker,
@@ -106,7 +106,7 @@ class EditProfileScreen extends StatelessWidget {
                   heightBox10,
                   RoundTextField(
                     controller: controller.nameController.value,  // Use Rx<TextEditingController>
-                    hint: 'Enter name',
+                    hint: 'enter_name'.tr,
                     filled: true,
                     prefixIcon: Icon(Icons.person_outline),
                   ),
@@ -114,7 +114,7 @@ class EditProfileScreen extends StatelessWidget {
                   // Email field
                   heightBox20,
                   CustomText(
-                    title: "Email",
+                    title: "email".tr,
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                     color: AppColors.whiteDarker,
@@ -122,7 +122,7 @@ class EditProfileScreen extends StatelessWidget {
                   heightBox10,
                   RoundTextField(
                     controller: controller.emailController.value,  // Use Rx<TextEditingController>
-                    hint: 'Enter email',
+                    hint: 'enter_email'.tr,
                     filled: true,
                     prefixIcon: Icon(Icons.email_outlined),
                   ),
@@ -130,7 +130,7 @@ class EditProfileScreen extends StatelessWidget {
                   // Phone number field
                   heightBox20,
                   CustomText(
-                    title: "Phone Number",
+                    title: "phone_number".tr,
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                     color: AppColors.whiteDarker,
@@ -138,7 +138,7 @@ class EditProfileScreen extends StatelessWidget {
                   heightBox10,
                   RoundTextField(
                     controller: controller.numberController.value,  // Use Rx<TextEditingController>
-                    hint: 'Enter phone number',
+                    hint: 'enter_phone_number'.tr,
                     filled: true,
                     prefixIcon: Icon(Icons.phone),
                   ),
@@ -146,7 +146,7 @@ class EditProfileScreen extends StatelessWidget {
                   // Location field
                   heightBox20,
                   CustomText(
-                    title: "Location",
+                    title: "location".tr,
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                     color: AppColors.whiteDarker,
@@ -154,13 +154,13 @@ class EditProfileScreen extends StatelessWidget {
                   heightBox10,
                   RoundTextField(
                     controller: controller.addressController.value,  // Use Rx<TextEditingController>
-                    hint: 'Enter location',
+                    hint: 'enter_location'.tr,
                     filled: true,
                   ),
 
                   SizedBox(height: 30),
                   Roundbutton(
-                    title: "Update",
+                    title: "update".tr,
                     isLoading: controller.isProfileLoading.value,
                     onTap: () => controller.updateProfile(),
                   ),

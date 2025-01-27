@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:event_app/res/custom_style/custom_size.dart';
+import 'package:event_app/view/auth_view/controller/sign_in_controller.dart';
 import 'package:event_app/view/auth_view/controller/sign_up_controller.dart';
 import 'package:event_app/view/auth_view/view/sign_in_screen.dart';
 import 'package:event_app/view/auth_view/view/upload_picture_screen.dart';
@@ -18,6 +19,9 @@ class SignUpScreen extends StatelessWidget {
   SignUpScreen({super.key});
 
   final SignUpController controller = Get.put(SignUpController());
+  final SignInController signInController = Get.put(SignInController());
+
+  var loading = false.obs;
 
   @override
   Widget build(BuildContext context) {
@@ -47,11 +51,11 @@ class SignUpScreen extends StatelessWidget {
                     Center(
                       child: Image.asset(
                         AppImages.appLogo,
-                        width: 130.w,
+                        width: 130,
                       ),
                     ),
 
-                    SizedBox(height: 10.h),
+                    SizedBox(height: 10),
                     CustomText(
                       textAlign: TextAlign.center,
                       title: 'now_enjoy_the_advantage_of_going_to_a_place_and_knowing_with_people_you_can_share'.tr,
@@ -96,15 +100,15 @@ class SignUpScreen extends StatelessWidget {
                   controller: controller.fullNameController,
                   decoration: InputDecoration(
                     prefixIcon: Icon(Icons.person),
-                    hintText: 'Enter full name',
-                    hintStyle: TextStyle(color: Colors.grey, fontSize: 14.sp),
+                    hintText: 'enter_full_name'.tr,
+                    hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.r),
                     ),
                   ),
                   keyboardType: TextInputType.text,
                 ),
-                SizedBox(height: 15.h),
+                SizedBox(height: 15),
 
 
                 // email field
@@ -126,7 +130,7 @@ class SignUpScreen extends StatelessWidget {
                   ),
                   keyboardType: TextInputType.emailAddress,
                 ),
-                SizedBox(height: 15.h),
+                SizedBox(height: 15),
 
                 // Password field with toggle
                 CustomText(title: "password".tr,
@@ -156,56 +160,63 @@ class SignUpScreen extends StatelessWidget {
                   obscureText: !controller.isPasswordVisible.value,
                 ),
 
-                SizedBox(height: 20.h),
+                SizedBox(height: 20),
                 // Accept terms and policy with conditional background
                 Roundbutton(
                   title: "sign_up".tr,
                   buttonColor: AppColors.primaryColor,
-                  isLoading: controller.isLoading.value,
+                  isLoading: loading.value,
                   onTap: () {
+                    loading.value = true;
                     if(controller.validateForm()){
-                      Get.to(
-                        () => UploadPictureScreen(),
-                        transition: Transition.rightToLeft,
-                        duration: const Duration(milliseconds: 300),
-                      );
+                      Future.delayed(const Duration(seconds: 2), () {
+                        Get.to(
+                              () => UploadPictureScreen(),
+                          transition: Transition.rightToLeft,
+                          duration: const Duration(milliseconds: 300),
+                        );
+                        loading.value = false;
+                      });
                     }else{
-                      Get.snackbar("Error", "Please fill all the fields");
+                      Get.snackbar("error".tr, "please_fill_all_the_fields".tr);
+                      loading.value = false;
                     }
                   },
 
                 ),
 
-                SizedBox(height: 20.h),
+                SizedBox(height: 20),
 
                 // Continue with social login text
                 OrContinueWith(),
-                SizedBox(height: 15.h),
+                SizedBox(height: 15),
 
                 // Social buttons
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    buildIconButton(context,
+                    /*buildIconButton(context,
                       AppImages.facebook,
                           () {},
-                    ),
-                    SizedBox(width: 20.w),
+                    ),*/
+                    SizedBox(width: 20),
                     buildIconButton(context,
                       AppImages.google,
-                          () {},
+                          () async {
+                            signInController.onGoogleSignIn();
+                          },
                     ),
                   ],
                 ),
 
-                SizedBox(height: 20.h),
+                SizedBox(height: 20),
                 // Sign In link
                 Center(
                   child: RichText(
                     textAlign: TextAlign.center,
                     text: TextSpan(
                       text: 'already_have_an_account'.tr,
-                      style: TextStyle(color: Colors.grey[800], fontSize: 16.sp),
+                      style: TextStyle(color: Colors.grey[800], fontSize: 16),
                       children: [
                         TextSpan(
                           text: 'sign_in'.tr,
@@ -241,11 +252,11 @@ class SignUpScreen extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-          width: 80.w,
-          height: 50.w,
+          width: 150,
+          height: 50,
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(8.r),
+            borderRadius: BorderRadius.circular(8),
             boxShadow: [
               BoxShadow(
                 color: Colors.grey.withOpacity(0.1),

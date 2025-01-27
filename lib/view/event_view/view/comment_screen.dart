@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, sized_box_for_whitespace, avoid_unnecessary_containers
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, sized_box_for_whitespace, avoid_unnecessary_containers, prefer_interpolation_to_compose_strings
 
 import 'package:event_app/data/token_manager/const_veriable.dart';
 import 'package:event_app/data/token_manager/local_storage.dart';
@@ -41,15 +41,14 @@ class CommentScreen extends StatelessWidget {
                         children: [
                           heightBox20,
                           CustomText(
-                            title:
-                                "Comments (${controller.commentList.length ?? 0})",
+                            title: "comments".tr+" (${controller.commentList.length ?? 0})",
                             fontSize: 14,
                             fontWeight: FontWeight.w400,
                           ),
                           Divider(
                             thickness: 1.5,
                           ),
-                          ListView.builder(
+                          controller.isLoading.value ? SpinKitCircle(color: AppColors.primaryColor,) : ListView.builder(
                             shrinkWrap: true,
                             physics: ScrollPhysics(),
                             itemCount: controller.commentList.length,
@@ -91,7 +90,7 @@ class CommentScreen extends StatelessWidget {
                                               fontWeight: FontWeight.w400),
                                           heightBox10,
                                           CustomText(
-                                              title: data.body ?? "No Comment",
+                                              title: data.body ?? "no_comment".tr,
                                               fontSize: 11,
                                               color: AppColors.blackColor,
                                               fontWeight: FontWeight.w400),
@@ -153,7 +152,7 @@ class CommentScreen extends StatelessWidget {
                             fillColor: Color(0xffF2F2F3),
                             contentPadding: EdgeInsets.symmetric(
                                 horizontal: 16),
-                            hintText: 'be the first to comment',
+                            hintText: 'be_the_first_to_comment'.tr,
                             hintStyle:
                             TextStyle(color: Color(0xffA0A0A0)),
                             border: OutlineInputBorder(

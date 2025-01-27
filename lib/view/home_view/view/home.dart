@@ -73,11 +73,11 @@ class _HomeState extends State<Home> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              buildNavItem(AppImages.homeActive, AppImages.homeInactive, "Home", 0),
-              buildNavItem(AppImages.eventActive, AppImages.eventInactive, "Event", 1),
+              buildNavItem(AppImages.homeActive, AppImages.homeInactive, "home".tr, 0),
+              buildNavItem(AppImages.eventActive, AppImages.eventInactive, "event".tr, 1),
               SizedBox(width: 60), // Space for the centered "Create Event" button
-              buildNavItem(AppImages.messageActive, AppImages.messageInactive, "Message", 3),
-              buildNavItem(AppImages.profileActive, AppImages.profileInactive, "Profile", 4),
+              buildNavItem(AppImages.messageActive, AppImages.messageInactive, "message".tr, 3),
+              buildNavItem(AppImages.profileActive, AppImages.profileInactive, "profile".tr, 4),
             ],
           ),
         ),
@@ -87,7 +87,7 @@ class _HomeState extends State<Home> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              GestureDetector(
+              InkWell(
                 onTap: () {
                   setState(() {
                     _tabIndex = 2;
@@ -122,7 +122,7 @@ class _HomeState extends State<Home> {
               ),
               SizedBox(height: 2),
               Text(
-                "Create Event",
+                "Create_event".tr,
                 style: GoogleFonts.poppins(
                   color: _tabIndex == 2 ? AppColors.primaryColor : Color(0xff9DB2CE),
                   fontSize: 8.sp, // Adjusted font size to make it closer to the design
@@ -138,7 +138,7 @@ class _HomeState extends State<Home> {
 
   Widget buildNavItem(String activeIconPath, String inactiveIconPath, String label, int index) {
     final isSelected = _tabIndex == index;
-    return GestureDetector(
+    return InkWell(
       onTap: () {
         setState(() {
           _tabIndex = index; // Change the tab index on tap

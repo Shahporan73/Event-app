@@ -1,8 +1,13 @@
 import 'package:intl/intl.dart';
 
 String formatTime24hr(String dateTimeStr) {
-  DateTime dateTime = DateTime.parse(dateTimeStr); // Parse the string into DateTime
-  return DateFormat('HH:mm').format(dateTime); // Format to 24-hour time
+  try {
+    DateTime dateTime = DateTime.parse(dateTimeStr); // Parse the string into DateTime
+    return DateFormat('HH:mm').format(dateTime); // Format to 24-hour time
+  }catch (e) {
+    print("Error formatting time: $e");
+    return dateTimeStr; // Return original time if parsing fails
+  }
 }
 
 // Function to format 24-hour time to 12-hour format with AM/PM
