@@ -58,8 +58,8 @@ class InvitedEventDetailsScreen extends StatelessWidget {
           // Format to include day name
           String formattedDate = DateFormat('EEEE, MMM d, yyyy').format(createdAt);
 
-          String startTime = formatTime24hr(data.event!.startTime.toString());
-          String endTime = formatTime24hr(data.event!.endTime.toString());
+          String startTime = convertFormatTime12hr(data.event!.startTime.toString());
+          String endTime = convertFormatTime12hr(data.event!.endTime.toString());
           return Stack(
             children: [
               // Header image

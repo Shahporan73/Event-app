@@ -60,8 +60,8 @@ class SeeAllNearbyEventScreen extends StatelessWidget {
                         }
                         String formattedDate = DateFormat('MMM d, yyyy').format(date);
 
-                        String startTime = formatTime24hr(data.startTime.toString());
-                        String endTime = formatTime24hr(data.endTime.toString());
+                        String startTime = convertFormatTime12hr(data.startTime.toString());
+                        String endTime = convertFormatTime12hr(data.endTime.toString());
                         return GestureDetector(
                           onTap: () {
                             LocalStorage.saveData(key: showEventDetailsId, data: data.id);

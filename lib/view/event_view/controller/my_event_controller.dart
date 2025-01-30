@@ -18,6 +18,13 @@ class MyEventController extends GetxController{
   var eventPostModel = EventPostsModel().obs;
   var postList = <PostList>[].obs;
 
+  // pagination
+  var currentPage = 1.obs; // Tracks the current page
+  var isLastPage = false.obs; // Determines if we've reached the last page
+  final int pageSize = 10; // Number of events per page
+
+
+
   final UserProfileController userProfileController = Get.find<UserProfileController>();
 
   @override
@@ -28,9 +35,20 @@ class MyEventController extends GetxController{
     getMyEventsPost();
   }
 
-  Future<void> getMyEvents() async {
-    isLoading.value = true;
+  Future<void> getMyEvents(/*{bool isRefresh = false}*/) async {
     try {
+      /*if (isRefresh) {
+        // Reset values for refresh
+        currentPage.value = 1;
+        isLastPage.value = false;
+        myEventList.clear();
+      }
+
+      // Return if it's the last page or already loading
+      if (isLastPage.value || isLoading.value) return;*/
+
+      isLoading.value = true;
+
       String token = LocalStorage.getData(key: "access_token");
 
       Map<String, String> headers = {
@@ -51,6 +69,17 @@ class MyEventController extends GetxController{
         myEventList.clear();
         myEventModel.value = MyEventsModel.fromJson(responseBody);
         myEventList.assignAll(myEventModel.value.data ?? []);
+
+        // // Check if it's the last page
+        // final totalEvents = myEventModel.value?.data.meta?.total ?? 0; // Use allEventModel
+        // final currentEventsLoaded = currentPage.value * pageSize;
+        // if (currentEventsLoaded >= totalEvents) {
+        //   isLastPage.value = true; // No more pages
+        // } else {
+        //   currentPage.value++; // Increment page for the next request
+        // }
+
+
       }
     }catch (e) {
       print(e);
@@ -58,9 +87,6 @@ class MyEventController extends GetxController{
       isLoading.value = false;
     }
   }
-
-
-
 
 
   Future<void> getMyEventsPost() async {

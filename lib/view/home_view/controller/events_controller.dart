@@ -20,6 +20,12 @@ class EventsController extends GetxController{
 
   var catEventList = <EventsList>[].obs;
 
+  // pagination
+  var currentPage = 1.obs; // Tracks the current page
+  var isLastPage = false.obs; // Determines if we've reached the last page
+  final int pageSize = 10; // Number of events per page
+
+
   // map
   var mapModel = MapsModel().obs;
   var placeDetails = <MapResult>{}.obs;
@@ -81,8 +87,17 @@ class EventsController extends GetxController{
     }
   }
 
-  Future<void> getAllEvents() async {
+  Future<void> getAllEvents({bool isRefresh = false}) async {
     try {
+      if (isRefresh) {
+        // Reset values for refresh
+        currentPage.value = 1;
+        isLastPage.value = false;
+        eventList.clear();
+      }
+
+      if (isLastPage.value || isLoading.value) return;
+
       isLoading.value = true;
 
       String token = LocalStorage.getData(key: "access_token");
@@ -92,28 +107,47 @@ class EventsController extends GetxController{
         'Authorization': 'Bearer $token',
       };
 
+      // Append pagination parameters to the API URL
+      String url =
+          "${Endpoints.allEventsURL}?page=${currentPage.value}&limit=$pageSize";
+
       dynamic responseBody = await BaseClient.handleResponse(
         await BaseClient.getRequest(
-          api: Endpoints.allEventsURL,
+          api: url,
           headers: headers,
         ),
       );
 
-      print('hit api ${Endpoints.allEventsURL}');
+      print('hit api $url');
       print("responseBody ====> $responseBody");
 
-      if(responseBody != null){
-        eventList.clear();
-        allEventModel.value = AllEventsModel.fromJson(responseBody);
-        eventList.assignAll(allEventModel.value.data?.data ?? []);
-      }
+      if (responseBody != null) {
+        AllEventsModel model = AllEventsModel.fromJson(responseBody);
 
-    }catch (e) {
+        // Append or set data based on refresh or normal load
+        if (isRefresh) {
+          eventList.assignAll(model.data?.data ?? []);
+        } else {
+          eventList.addAll(model.data?.data ?? []);
+        }
+
+        // Check if it's the last page
+        final totalEvents = model.data?.meta?.total ?? 0;
+        final currentEventsLoaded = currentPage.value * pageSize;
+
+        if (currentEventsLoaded >= totalEvents) {
+          isLastPage.value = true; // No more pages
+        } else {
+          currentPage.value++; // Increment page for the next request
+        }
+      }
+    } catch (e) {
       print(e);
     } finally {
       isLoading.value = false;
     }
   }
+
 
   Future<void> getMyEvents() async {
     isLoading.value = true;

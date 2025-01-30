@@ -92,13 +92,13 @@ class BaseClient {
             );
             if (response.statusCode == 200) {
               final Map<String, dynamic> responseData = jsonDecode(response.body);
-              print('response data ${responseData}');
+              print('response update token data ${responseData}');
               LocalStorage.saveData(key: 'access_token', data: responseData["data"]["accessToken"].toString());
               LocalStorage.saveData(key: 'refreshToken', data: responseData["data"]["refreshToken"].toString());
-              Get.snackbar('Success', 'Token Updated.');
+              // Get.snackbar('Success', 'Token Updated.');
               print('access token updated');
             } else {
-              Get.snackbar('Error', 'Failed Token Updated');
+              // Get.snackbar('Error', 'Failed Token Updated');
               Get.to(
                 () => SignInScreen(),
                 transition: Transition.rightToLeft,

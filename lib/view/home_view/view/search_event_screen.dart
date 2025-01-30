@@ -24,11 +24,21 @@ import '../../../res/utils/share_event.dart';
 class SearchEventScreen extends StatelessWidget {
   SearchEventScreen({super.key});
   final EventsController eventsController = Get.put(EventsController());
+  // final ScrollController scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
+
+    // Attach scroll listener for infinite scrolling
+    /*scrollController.addListener(() {
+      if (scrollController.position.pixels ==
+          scrollController.position.maxScrollExtent) {
+        eventsController.getAllEvents(); // Load more data
+      }
+    });*/
+
     return Scaffold(
       backgroundColor: AppColors.bgColor,
       body: SafeArea(
@@ -124,7 +134,8 @@ class SearchEventScreen extends StatelessWidget {
                       eventsController.updateCat(-1);
                       eventsController.eventList.clear();
                     },
-                    child: eventsController.eventList.isEmpty
+                    child: eventsController.isLoading.value?
+                        Center(child: CircularProgressIndicator(),):eventsController.eventList.isEmpty
                         ? Center(
                             child: Text(
                               'no_events_found'.tr,
@@ -137,10 +148,22 @@ class SearchEventScreen extends StatelessWidget {
                           )
                         : ListView.builder(
                             shrinkWrap: true,
+                            // controller: scrollController,
                             physics: AlwaysScrollableScrollPhysics(),
                             scrollDirection: Axis.vertical,
                             itemCount: eventsController.eventList.length,
                             itemBuilder: (context, index) {
+                              /*if (index == eventsController.eventList.length) {
+                                // Show a loading indicator at the bottom
+                                return eventsController.isLastPage.value
+                                    ? const SizedBox() // No more data
+                                    : const Padding(
+                                  padding: EdgeInsets.all(16.0),
+                                  child: Center(child: CircularProgressIndicator()),
+                                );
+                              }*/
+
+
                               var data = eventsController.eventList[index];
                               DateTime createdAt;
                               try {
@@ -152,10 +175,8 @@ class SearchEventScreen extends StatelessWidget {
                               String formattedDate =
                                   DateFormat('MMM d, yyyy').format(createdAt);
 
-                              String startTime =
-                                  formatTime24hr(data.startTime.toString());
-                              String endTime =
-                                  formatTime24hr(data.endTime.toString());
+                              String startTime = convertFormatTime12hr(data.startTime.toString());
+                              String endTime = convertFormatTime12hr(data.endTime.toString());
 
                               // double latitude = double.parse(data.eventLocation!.latitude.toString());
                               // double longitude = double.parse(data.eventLocation!.longitude.toString());
@@ -234,34 +255,20 @@ class SearchEventScreen extends StatelessWidget {
                                                         Row(
                                                           children: [
                                                             Text(
-                                                              data.rating??'',
-                                                              style: GoogleFonts
-                                                                  .poppins(
-                                                                color: Colors
-                                                                    .orange,
-                                                                fontSize:
-                                                                    width *
-                                                                        0.03,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w400,
+                                                              (data.rating ?? 0.0).toString(),
+                                                              style: GoogleFonts.poppins(
+                                                                color: Colors.orange,
+                                                                fontSize: width * 0.03,
+                                                                fontWeight: FontWeight.w400,
                                                               ),
                                                             ),
                                                             RatingBarIndicator(
                                                               rating: (data.rating ?? 0.0).toDouble(),
-                                                              itemBuilder:
-                                                                  (context,
-                                                                          index) =>
-                                                                      Icon(
-                                                                Icons.star,
-                                                                color: Colors
-                                                                    .amber,
-                                                              ),
+                                                              itemBuilder: (context, index) =>
+                                                                      Icon(Icons.star, color: Colors.amber),
                                                               itemCount: 5,
-                                                              itemSize:
-                                                                  width * 0.035,
-                                                              direction: Axis
-                                                                  .horizontal,
+                                                              itemSize: width * 0.035,
+                                                              direction: Axis.horizontal,
                                                             ),
                                                             SizedBox(
                                                                 width: width *
@@ -296,7 +303,7 @@ class SearchEventScreen extends StatelessWidget {
                                                                 width: width *
                                                                     0.02),
                                                             Text(
-                                                              formattedDate ?? '19 July 2021',
+                                                              formattedDate,
                                                               style: GoogleFonts
                                                                   .poppins(
                                                                 color: Colors
@@ -325,15 +332,15 @@ class SearchEventScreen extends StatelessWidget {
                                                                 color: Colors
                                                                     .black,
                                                                 size: width *
-                                                                    0.035),
+                                                                    0.040),
                                                             SizedBox(
                                                                 width: width *
                                                                     0.015),
                                                             Text(
-                                                              getLimitedWord(data.address, 30),
+                                                              getLimitedWord(data.address, 20),
                                                               style: GoogleFonts.poppins(
                                                                 color: Colors.black,
-                                                                fontSize:width *0.02,
+                                                                fontSize:width *0.03,
                                                                 fontWeight:FontWeight.w400,
                                                               ),
                                                             ),

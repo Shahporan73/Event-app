@@ -10,30 +10,33 @@ import 'package:event_app/res/common_widget/custom_network_image_widget.dart';
 import 'package:event_app/res/common_widget/custom_text.dart';
 import 'package:event_app/res/common_widget/responsive_helper.dart';
 import 'package:event_app/res/custom_style/custom_size.dart';
+import 'package:event_app/res/custom_style/formate_time.dart';
 import 'package:event_app/view/create_event_view/controller/edit_event_controller.dart';
 import 'package:event_app/view/home_view/model/category_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class EditEventScreen extends StatelessWidget {
   EditEventScreen({super.key});
 
-  String date = '';
-  String sTime = '';
-  String eTime = '';
+  final EditEventController controller = Get.put(EditEventController());
+  DateTime? selectedDate;
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
+      initialDate: selectedDate ?? DateTime.now(),
+      firstDate: DateTime.now(),
       lastDate: DateTime(2100),
     );
+
     if (pickedDate != null) {
-      // Convert the selected date to ISO 8601 format
-      date = '${pickedDate.day}-${pickedDate.month}-${pickedDate.year}';
-      controller.eventSelectedDate.value = pickedDate.toIso8601String();
+      selectedDate = pickedDate;
+
+      // Update the controller with the new selected date
+      controller.eventSelectedDate.value = selectedDate.toString();
     }
   }
 
@@ -44,58 +47,73 @@ class EditEventScreen extends StatelessWidget {
     );
 
     if (pickedTime != null) {
-      final now = DateTime.now();
+      if (selectedDate == null) {
+        Get.rawSnackbar(message: "Please select a date first.");
+        return;
+      }
 
-      // Combine the selected time with the current date
+      // Combine the selected date with the picked time
       DateTime selectedDateTime = DateTime(
-        now.year,
-        now.month,
-        now.day,
+        selectedDate!.year,
+        selectedDate!.month,
+        selectedDate!.day,
         pickedTime.hour,
         pickedTime.minute,
       );
 
       // Ensure the selected time is in the future
+      final now = DateTime.now();
       if (selectedDateTime.isBefore(now)) {
-        // Adjust time to the future (add 1 hour, for example)
-        selectedDateTime = selectedDateTime.add(Duration(hours: 1));  // Adjust this as necessary
+        Get.rawSnackbar(message: "Time must be in the future.");
+        return;
       }
 
-      // Convert the selected time to UTC
-      String isoTime = selectedDateTime.toUtc().toIso8601String();
-
-      String formattedTime = pickedTime.format(context);
+      // Format the time for display purposes
+      String isoTime = selectedDateTime.toIso8601String();
+      String formattedTime = convertFormatTime12hr(isoTime);
 
       if (isOpening) {
-        // If it's opening time, store it in controller
-        sTime = formattedTime;
-        controller.eventStartTime.value = isoTime;
-      } else {
-        // If it's closing time, store it in controller
-        eTime = formattedTime;
-        controller.eventEndTime.value = isoTime;
+        // Update the start time
+        controller.eventStartTime.value = isoTime; // Store as ISO 8601
+        print("Updated Start Time: $formattedTime");
 
-        // Ensure that the end time is after the start time
-        DateTime startTime = DateTime.parse(controller.eventStartTime.value);
-        DateTime endTime = DateTime.parse(controller.eventEndTime.value);
-
-        if (endTime.isBefore(startTime)) {
-          // Handle case where end time is before start time
-          // Adjust the end time to be 1 hour after the start time (or any suitable adjustment)
-          endTime = startTime.add(Duration(hours: 1)); // Example: add 1 hour to the end time
-          controller.eventEndTime.value = endTime.toUtc().toIso8601String();
-          eTime = endTime.toLocal().toString(); // Update the formatted end time
+        // Validate the end time
+        if (controller.eventEndTime.value.isNotEmpty) {
+          DateTime endTime = DateTime.parse(controller.eventEndTime.value);
+          if (endTime.isBefore(selectedDateTime)) {
+            Get.rawSnackbar(message: "Start time cannot be after end time.");
+            return;
+          }
         }
+      } else {
+        // Ensure the end time is after the start time
+        if (controller.eventStartTime.value.isNotEmpty) {
+          DateTime startTime = DateTime.parse(controller.eventStartTime.value);
+          if (selectedDateTime.isBefore(startTime)) {
+            Get.rawSnackbar(message: "End time must be after start time.");
+            return;
+          }
+        }
+
+        // Update the end time
+        controller.eventEndTime.value = isoTime; // Store as ISO 8601
+        print("Updated End Time: $formattedTime");
       }
     }
   }
 
-  final EditEventController controller = Get.put(EditEventController());
+
+
 
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
+
+    // Initialize selectedDate from the controller
+    if (controller.eventSelectedDate.value.isNotEmpty) {
+      selectedDate = DateTime.parse(controller.eventSelectedDate.value);
+    }
     return Scaffold(
       backgroundColor: AppColors.bgColor,
       body: SafeArea(
@@ -282,11 +300,11 @@ class EditEventScreen extends StatelessWidget {
                         ),
                       ),
                       hintText: controller.eventSelectedDate.value.isNotEmpty
-                          ? controller.eventSelectedDate.value // Display selected date or placeholder
+                          ? formattedDateMethod(controller.eventSelectedDate.value) // Display selected date or placeholder
                           : 'Select_date'.tr,
-                      hintStyle: TextStyle(color: Colors.grey, fontSize: 14.sp),
+                      hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.r),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                     onTap: () => _selectDate(context), // Open date picker on tap
@@ -316,7 +334,7 @@ class EditEventScreen extends StatelessWidget {
                               ),
                             ),
                             hintText: controller.eventStartTime.value.isNotEmpty
-                                ? controller.eventStartTime.value // Display selected time or placeholder
+                                ? convertFormatTime12hr(controller.eventStartTime.value) // Display selected time or placeholder
                                 : 'opening_time'.tr,
                             hintStyle: TextStyle(color: Colors.grey, fontSize: 10),
                             border: OutlineInputBorder(
@@ -340,11 +358,11 @@ class EditEventScreen extends StatelessWidget {
                               ),
                             ),
                             hintText: controller.eventEndTime.value.isNotEmpty
-                                ? controller.eventEndTime.value // Display selected time or placeholder
+                                ? convertFormatTime12hr(controller.eventEndTime.value) // Display selected time or placeholder
                                 : 'closing_time'.tr,
                             hintStyle: TextStyle(color: Colors.grey, fontSize: 10),
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8.r),
+                              borderRadius: BorderRadius.circular(8),
                             ),
                           ),
                           onTap: () => _selectTime(context, false), // Open time picker for closing time

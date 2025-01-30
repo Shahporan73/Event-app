@@ -5,6 +5,7 @@ import 'package:event_app/data/api/base_client.dart';
 import 'package:event_app/data/api/end_point.dart';
 import 'package:event_app/data/token_manager/const_veriable.dart';
 import 'package:event_app/data/token_manager/local_storage.dart';
+import 'package:event_app/res/custom_style/formate_time.dart';
 import 'package:event_app/view/home_view/model/category_model.dart';
 import 'package:event_app/view/home_view/model/get_event_model.dart';
 import 'package:flutter/material.dart';
@@ -76,9 +77,11 @@ class EditEventController extends GetxController{
         eventAddressController.value.text = eventModel.value.data!.address!;
         address.value = eventModel.value.data!.address!;
         eventType.value = eventModel.value.data!.type!;
-        eventSelectedDate.value = eventModel.value.data!.date.toString();
-        eventStartTime.value = eventModel.value.data!.startTime.toString();
-        eventEndTime.value = eventModel.value.data!.endTime.toString();
+
+        eventSelectedDate.value = formattedDateMethod(eventModel.value.data!.date.toString());
+        eventStartTime.value = convertFormatTime12hr(eventModel.value.data!.startTime.toString());
+        eventEndTime.value = convertFormatTime12hr(eventModel.value.data!.endTime.toString());
+
         selectedCatName.value = eventModel.value.data!.category!.name!;
         selectedCatId.value = eventModel.value.data!.category!.id!;
         selectedCatIndex.value = categoryList.indexWhere((element) => element.id == selectedCatId.value);
@@ -171,7 +174,6 @@ class EditEventController extends GetxController{
   }
 
 
-
   Future<void> updateEvent(BuildContext context) async {
     isLoading.value = true;
     try {
@@ -182,12 +184,21 @@ class EditEventController extends GetxController{
       //   'Authorization': 'Bearer $token',
       // };
 
+
+      // Assuming eventSelectedDate is a DateTime object
+      DateTime eventSelectedDate = DateTime.now(); // Replace with your actual date
+
+      // Convert to ISO 8601 string
+      String isoDate = eventSelectedDate.toIso8601String();
+
+      print(isoDate); // Output: e.g., "2023-10-05T14:48:00.000Z"
+
       Map<String, String> body = {
         "category": selectedCatId.value,
         "name": eventNameController.text,
         "address": eventAddressController.value.text,
         "type": eventType.value,
-        "date": eventSelectedDate.value,
+        "date": isoDate,
         "startTime": eventStartTime.value,
         "endTime": eventEndTime.value,
         "aboutEvent": eventAboutController.text,
@@ -201,6 +212,7 @@ class EditEventController extends GetxController{
       );
 
       print('hit api ${Endpoints.updateEventURL(eventId: eventId)}');
+      print("responseBody ====> $responseBody");
       if(responseBody != null){
         print("responseBody ====> $responseBody");
         Get.rawSnackbar(message: "Event updated successfully",

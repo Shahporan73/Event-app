@@ -22,11 +22,21 @@ import 'my_event_details_screen.dart';
 class MyEventScreen extends StatelessWidget {
   MyEventScreen({super.key});
   final MyEventController controller = Get.put(MyEventController());
+  final ScrollController scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
+
+    // Attach scroll listener for infinite scrolling
+    scrollController.addListener(() {
+      if (scrollController.position.pixels ==
+          scrollController.position.maxScrollExtent) {
+        controller.getMyEvents(); // Load more data
+      }
+    });
+
     return Scaffold(
       backgroundColor: AppColors.bgColor,
       body: SafeArea(
@@ -52,10 +62,18 @@ class MyEventScreen extends StatelessWidget {
                     Center(child: Text("no_event_found".tr)) :
                     ListView.builder(
                       shrinkWrap: true,
+                      controller: scrollController,
                       physics: AlwaysScrollableScrollPhysics(),
                       scrollDirection: Axis.vertical,
-                      itemCount: controller.myEventList.length,
+                      itemCount: controller.myEventList.length + 1,
                       itemBuilder: (context, index) {
+
+                        if (index == controller.myEventList.length) {
+                          return controller.isLastPage.value
+                              ? const SizedBox() // No more data
+                              : const Center(child: CircularProgressIndicator());
+                        }
+
                         var data = controller.myEventList[index];
                         DateTime date;
                         try {
@@ -64,8 +82,8 @@ class MyEventScreen extends StatelessWidget {
                           date = DateTime.now();
                         }
                         String eventDate = DateFormat('MMM d, yyyy').format(date);
-                        String startTime = formatTime24hr(data.startTime.toString());
-                        String endTime = formatTime24hr(data.endTime.toString());
+                        String startTime = convertFormatTime12hr(data.startTime.toString());
+                        String endTime = convertFormatTime12hr(data.endTime.toString());
                         return GestureDetector(
                           onTap: () {
                             LocalStorage.saveData(key: showEventDetailsId, data: data.id);

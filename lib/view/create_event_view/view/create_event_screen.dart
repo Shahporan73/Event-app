@@ -33,7 +33,6 @@ class CreateEventScreen extends StatefulWidget {
 }
 
 class _CreateEventScreenState extends State<CreateEventScreen> {
-  @override
   final EventsController controller = Get.put(EventsController());
 
   @override
@@ -90,12 +89,12 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                         onRefresh: () async {
                           await controller.getMyEvents();
                         },
-                        child: controller.isLoading.value ?
+                        child: controller.isLoading.value && controller.myEventList.isEmpty ?
                         Center(child: SpinKitCircle(color: AppColors.primaryColor,),) :
                         controller.myEventList.isEmpty ? Center(
                             child: CustomText(
                               title: "no_event_created".tr,
-                              fontSize: 16.sp,
+                              fontSize: 16,
                               fontWeight: FontWeight.w500,
                               color: AppColors.black100,
                             )
@@ -114,8 +113,11 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                             }
                             String formattedDate = DateFormat('MMM d, yyyy').format(date);
 
-                            String startTime = formatTime24hr(data.startTime.toString());
-                            String endTime = formatTime24hr(data.endTime.toString());
+                            String startTime = convertFormatTime12hr(data.startTime.toString());
+                            String endTime = convertFormatTime12hr(data.endTime.toString());
+
+                            print('Start time: $startTime, End time: $endTime');
+
                             return GestureDetector(
                               onTap: () {
                                 LocalStorage.saveData(key: showEventDetailsId, data: data.id);
@@ -176,7 +178,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                                                     Icon(Icons.location_on, color: Colors.black, size: width * 0.035),
                                                     SizedBox(width: width * 0.015),
                                                     Text(
-                                                      getLimitedWord(data.address, 30),
+                                                      getLimitedWord(data.address, 25),
                                                       style: GoogleFonts.poppins(
                                                         color: Colors.black,
                                                         fontSize: width * 0.03,
@@ -190,7 +192,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                                                     Icon(Icons.access_time, color: Colors.black, size: width * 0.035),
                                                     SizedBox(width: width * 0.02),
                                                     Text(
-                                                      '$startTime - $endTime',
+                                                      '$startTime-$endTime',
                                                       style: GoogleFonts.poppins(
                                                         color: Colors.black,
                                                         fontSize: width * 0.03,

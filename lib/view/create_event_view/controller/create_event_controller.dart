@@ -299,11 +299,10 @@ class CreateEventController extends GetxController{
           isLoading.value = false;
         }
       } catch (e) {
-        print('Error: $e');
+        print('Error creating event from search: $e');
       } finally {
         isLoading.value = false;  // Reset loading state
       }
-
 
     }
 

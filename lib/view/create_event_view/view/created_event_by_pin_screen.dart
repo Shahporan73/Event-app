@@ -17,6 +17,7 @@ import 'package:event_app/view/home_view/model/category_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import 'selected_contact_screen.dart';
 
@@ -36,15 +37,20 @@ class _CreatedEventByPinScreenState extends State<CreatedEventByPinScreen> {
   String date = '';
   String sTime = '';
   String eTime = '';
+  DateTime? selectedDate;
+
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
+      firstDate: DateTime.now(),
       lastDate: DateTime(2100),
     );
     if (pickedDate != null) {
+      // Update the selectedDate variable
+      selectedDate = pickedDate;
+
       // Convert the selected date to ISO 8601 format
       date = '${pickedDate.day}-${pickedDate.month}-${pickedDate.year}';
       controller.eventSelectedDate.value = pickedDate.toIso8601String();
@@ -57,37 +63,36 @@ class _CreatedEventByPinScreenState extends State<CreatedEventByPinScreen> {
       initialTime: TimeOfDay.now(),
     );
 
-    if (pickedTime != null) {
-      final now = DateTime.now();
-
-      // Combine the selected time with the current date
+    if (pickedTime != null && selectedDate != null) {
+      // Combine the selected time with the selected date
       DateTime selectedDateTime = DateTime(
-        now.year,
-        now.month,
-        now.day,
+        selectedDate!.year,
+        selectedDate!.month,
+        selectedDate!.day,
         pickedTime.hour,
         pickedTime.minute,
       );
 
       // Ensure the selected time is in the future
+      final now = DateTime.now();
       if (selectedDateTime.isBefore(now)) {
         // Adjust time to the future (add 1 hour, for example)
-        selectedDateTime = selectedDateTime.add(Duration(hours: 1));  // Adjust this as necessary
+        selectedDateTime = selectedDateTime.add(Duration(hours: 1)); // Adjust this as necessary
       }
 
-      // Convert the selected time to UTC
-      String isoTime = selectedDateTime.toUtc().toIso8601String();
+      // Store the selected time in local time (without converting to UTC)
+      String isoTime = selectedDateTime.toIso8601String(); // Keep it in local time
 
       String formattedTime = pickedTime.format(context);
 
       if (isOpening) {
         // If it's opening time, store it in controller
         sTime = formattedTime;
-        controller.eventStartTime.value = isoTime;
+        controller.eventStartTime.value = isoTime; // Store local time
       } else {
         // If it's closing time, store it in controller
         eTime = formattedTime;
-        controller.eventEndTime.value = isoTime;
+        controller.eventEndTime.value = isoTime; // Store local time
 
         // Ensure that the end time is after the start time
         DateTime startTime = DateTime.parse(controller.eventStartTime.value);
@@ -97,12 +102,18 @@ class _CreatedEventByPinScreenState extends State<CreatedEventByPinScreen> {
           // Handle case where end time is before start time
           // Adjust the end time to be 1 hour after the start time (or any suitable adjustment)
           endTime = startTime.add(Duration(hours: 1)); // Example: add 1 hour to the end time
-          controller.eventEndTime.value = endTime.toUtc().toIso8601String();
-          eTime = endTime.toLocal().toString(); // Update the formatted end time
+          controller.eventEndTime.value = endTime.toIso8601String(); // Store adjusted local time
+          eTime = DateFormat("h:mm a").format(endTime); // Update the formatted end time
         }
       }
+    } else {
+      // Handle case where selectedDate is null (no date selected yet)
+      print("Please select a date first.");
+      Get.rawSnackbar(message: "Please select a date first.");
     }
   }
+
+
   @override
   void initState() {
     // TODO: implement initState
