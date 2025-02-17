@@ -36,6 +36,14 @@ void main() async{
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  // Force portrait mode
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+
+
+
   ///=========================== Get Storage =====================================================================================
   await GetStorage.init();
 

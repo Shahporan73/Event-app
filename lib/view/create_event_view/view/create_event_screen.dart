@@ -116,7 +116,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                             String startTime = convertFormatTime12hr(data.startTime.toString());
                             String endTime = convertFormatTime12hr(data.endTime.toString());
 
-                            print('Start time: $startTime, End time: $endTime');
+                            // print('Start time: $startTime, End time: $endTime');
 
                             return GestureDetector(
                               onTap: () {

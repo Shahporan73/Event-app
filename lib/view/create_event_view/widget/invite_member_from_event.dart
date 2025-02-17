@@ -170,7 +170,7 @@ class _InviteMemberFromEventState extends State<InviteMemberFromEvent> {
                             colorText: AppColors.whiteColor
                         );
                       }else {
-                        controller.inviteSelectedUsersFromCreatedEvent(selectedContactIndices.toList()); // Pass List directly
+                        controller.inviteSelectedUsersFromCreatedEvent(selectedContactIndices.toList(), context); // Pass List directly
                         selectedContactIndices.clear();
                       }
                     },

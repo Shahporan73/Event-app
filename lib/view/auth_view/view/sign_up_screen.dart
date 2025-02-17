@@ -90,7 +90,7 @@ class SignUpScreen extends StatelessWidget {
                 ),
                 heightBox20,
                 // Phone number field
-                CustomText(title: "full_name".tr,
+                CustomText(title: "username".tr,
                   fontWeight: FontWeight.w400,
                   fontSize: 14,
                   color: AppColors.black33,
@@ -100,11 +100,14 @@ class SignUpScreen extends StatelessWidget {
                   controller: controller.fullNameController,
                   decoration: InputDecoration(
                     prefixIcon: Icon(Icons.person),
-                    hintText: 'enter_full_name'.tr,
+                    hintText: 'enter_user_name'.tr,
                     hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.r),
                     ),
+                    errorText: controller.fullName.value.isNotEmpty
+                        ? controller.fullName.value
+                        : null,
                   ),
                   keyboardType: TextInputType.text,
                 ),
@@ -127,7 +130,11 @@ class SignUpScreen extends StatelessWidget {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.r),
                     ),
+                    errorText: controller.email.value.isNotEmpty
+                        ? controller.email.value
+                        : null,
                   ),
+
                   keyboardType: TextInputType.emailAddress,
                 ),
                 SizedBox(height: 15),
@@ -156,6 +163,9 @@ class SignUpScreen extends StatelessWidget {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.r),
                     ),
+                    errorText: controller.password.value.isNotEmpty
+                        ? controller.password.value
+                        : null,
                   ),
                   obscureText: !controller.isPasswordVisible.value,
                 ),
@@ -177,8 +187,9 @@ class SignUpScreen extends StatelessWidget {
                         );
                         loading.value = false;
                       });
-                    }else{
-                      Get.snackbar("error".tr, "please_fill_all_the_fields".tr);
+                    }
+                    else{
+                      // Get.snackbar("error".tr, "please_fill_all_the_fields".tr);
                       loading.value = false;
                     }
                   },

@@ -29,13 +29,13 @@ class MyEventScreen extends StatelessWidget {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
 
-    // Attach scroll listener for infinite scrolling
-    scrollController.addListener(() {
-      if (scrollController.position.pixels ==
-          scrollController.position.maxScrollExtent) {
-        controller.getMyEvents(); // Load more data
-      }
-    });
+    // // Attach scroll listener for infinite scrolling
+    // scrollController.addListener(() {
+    //   if (scrollController.position.pixels ==
+    //       scrollController.position.maxScrollExtent) {
+    //     controller.getMyEvents(); // Load more data
+    //   }
+    // });
 
     return Scaffold(
       backgroundColor: AppColors.bgColor,
@@ -65,14 +65,14 @@ class MyEventScreen extends StatelessWidget {
                       controller: scrollController,
                       physics: AlwaysScrollableScrollPhysics(),
                       scrollDirection: Axis.vertical,
-                      itemCount: controller.myEventList.length + 1,
+                      itemCount: controller.myEventList.length,
                       itemBuilder: (context, index) {
 
-                        if (index == controller.myEventList.length) {
+                        /*if (index == controller.myEventList.length) {
                           return controller.isLastPage.value
                               ? const SizedBox() // No more data
                               : const Center(child: CircularProgressIndicator());
-                        }
+                        }*/
 
                         var data = controller.myEventList[index];
                         DateTime date;

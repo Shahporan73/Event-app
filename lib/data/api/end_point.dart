@@ -1,5 +1,6 @@
 class Endpoints {
-  static const String mapApiKey = 'AIzaSyDhzY2k-tIrpnoBut75TTDJTuE1kURA_fU';
+  // static const String mapApiKey = 'AIzaSyAu6RiRrpTx0SY5nnFxml5UbOpuHiGNHKI';
+  static const String mapApiKey = 'AIzaSyCSY9HRPWjFHlFVQFS5jud96Pb8FtPunoI';
   static String placeDetailsURL ({required String PlaceId, required String apiKey}) =>
       'https://maps.googleapis.com/maps/api/place/details/json?placeid=$PlaceId&key=$apiKey';
 

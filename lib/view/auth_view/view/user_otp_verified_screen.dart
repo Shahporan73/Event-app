@@ -109,7 +109,6 @@ class UserOtpVerifiedScreen extends StatelessWidget {
                     ? Roundbutton(
                   padding_vertical: 6,
                   borderRadius: 4,
-                  isLoading: controller.isLoading.value,
                   buttonColor: Colors.red.shade50,
                   titleColor: Colors.black,
                   title: "resend_otp".tr,

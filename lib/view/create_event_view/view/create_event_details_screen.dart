@@ -24,6 +24,7 @@ import 'package:readmore/readmore.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../../res/common_widget/custom_network_image_widget.dart';
+import '../widget/invite_member_from_event.dart';
 
 class CreateEventDetailsScreen extends StatelessWidget {
   CreateEventDetailsScreen({Key? key}) : super(key: key);
@@ -483,8 +484,14 @@ class CreateEventDetailsScreen extends StatelessWidget {
                           fontSize: 12,
                           title: "invite".tr,
                           onTap: () {
+                            // Get.to(
+                            //         () => SelectedContactScreen(),
+                            //     transition: Transition.downToUp,
+                            //     duration: Duration(milliseconds: 300)
+                            // );
+                            LocalStorage.saveData(key: eventIdForInviteEvent, data: data.id);
                             Get.to(
-                                    () => SelectedContactScreen(),
+                                    () => InviteMemberFromEvent(),
                                 transition: Transition.downToUp,
                                 duration: Duration(milliseconds: 300)
                             );

@@ -258,7 +258,7 @@ class _SelectEventBySearchOrMapScreenState extends State<SelectEventBySearchOrMa
                   if (controller.isLoading.value) {
                     return Center(
                       child: SpinKitCircle(
-                        color: AppColors.primaryColor,
+                        color: AppColors.primaryColor, size: 20,
                       ),
                     );
                   } else if (controller.searchResults.isEmpty) {

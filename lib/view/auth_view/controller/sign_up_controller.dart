@@ -53,7 +53,7 @@ class SignUpController extends GetxController {
     bool isValid = true;
 
     if (fullNameController.text.trim().isEmpty) {
-      fullName.value = "full_name_is_required".tr;
+      fullName.value = "username_is_required".tr;
       isValid = false;
     } else {
       fullName.value = '';
@@ -74,6 +74,18 @@ class SignUpController extends GetxController {
       isValid = false;
     } else if (passwordController.text.trim().length < 6) {
       password.value = "password_must_be_at_least_6_characters".tr;
+      isValid = false;
+    } else if (!RegExp(r'(?=.*[A-Z])').hasMatch(passwordController.text.trim())) {
+      password.value = "password_must_contain_at_least_one_uppercase_letter".tr;
+      isValid = false;
+    } else if (!RegExp(r'(?=.*[a-z])').hasMatch(passwordController.text.trim())) {
+      password.value = "password_must_contain_at_least_one_lowercase_letter".tr;
+      isValid = false;
+    } else if (!RegExp(r'(?=.*\d)').hasMatch(passwordController.text.trim())) {
+      password.value = "password_must_contain_at_least_one_digit".tr;
+      isValid = false;
+    } else if (!RegExp(r'(?=.*[!@#$%^&*(),.?":{}|<>])').hasMatch(passwordController.text.trim())) {
+      password.value = "required_at_least_one_special_character".tr;
       isValid = false;
     } else {
       password.value = '';

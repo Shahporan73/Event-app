@@ -242,7 +242,7 @@ class SelectedContactController extends GetxController{
   }
 
   // Method to invite selected users
-  Future<void> inviteSelectedUsersFromCreatedEvent(List<String> selectedContactUserSet) async {
+  Future<void> inviteSelectedUsersFromCreatedEvent(List<String> selectedContactUserSet, context) async {
     isLoading.value = true;
     if (selectedContactUserSet.isEmpty) {
       Get.rawSnackbar(
@@ -283,6 +283,7 @@ class SelectedContactController extends GetxController{
         print("Invitation sent successfully!");
         Get.rawSnackbar(message: "Invitation sent successfully!");
         print("Response: $responseBody");
+        Navigator.pop(context);
       }
     } catch (e) {
       print("Error sending invitation: $e");

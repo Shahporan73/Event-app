@@ -91,7 +91,7 @@ class CreateEventController extends GetxController{
   Future<void> fetchPlacePhoto() async {
     try{
       var photoReference = LocalStorage.getData(key: 'photo_reference');
-      final photoUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=$photoReference&key=$Endpoints.mapApiKey";
+      final photoUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=$photoReference&key=${Endpoints.mapApiKey}";
 
       final response = await http.get(Uri.parse(photoUrl));
 

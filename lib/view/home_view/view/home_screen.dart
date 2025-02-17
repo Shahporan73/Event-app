@@ -256,9 +256,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     var longitude = LocalStorage.getData(key: nearbyLongitude);
 
 
-                    return latitude ==null && longitude ==null?
+                    return
+                      /*latitude ==null && longitude ==null?
                     Center(child: Text("Need to first location permission"),)
                         :
+                        */
                       nearbyEventController.isLoading.value ?
 
                     CustomShimmerWidget(height: height * 0.25, width: width,)
